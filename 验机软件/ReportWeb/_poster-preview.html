@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Poster Preview</title>
+<style>
+:root {
+  --paper: #efe6d2;
+  --ink: #161412;
+  --red: #c8261e;
+  --gold: #c59a3e;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0f131c;
+    --ink: #e8dcc3;
+    --red: #d94937;
+    --gold: #d1a84f;
+  }
+}
+body { margin: 0; padding: 40px; background: #333; display: flex; justify-content: center; }
+svg { border: 1px solid #666; }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="780" viewBox="0 0 260 780">
+  <rect width="260" height="780" fill="var(--paper)"/>
+  <circle cx="130" cy="180" r="95" fill="var(--red)"/>
+  <polygon points="180,0 220,0 90,780 50,780" fill="var(--gold)" opacity="0.92"/>
+  <polygon points="0,650 80,520 90,650" fill="var(--red)"/>
+  <rect x="210" y="420" width="50" height="200" fill="var(--ink)"/>
+  <circle cx="235" cy="520" r="22" fill="var(--paper)"/>
+  <polygon points="235,505 247,520 235,535" fill="var(--red)"/>
+  <line x1="30" y1="0" x2="230" y2="650" stroke="var(--ink)" stroke-width="3.5"/>
+  <g fill="var(--ink)">
+    <rect x="12" y="380" width="8" height="48"/>
+    <rect x="12" y="445" width="8" height="15"/>
+    <rect x="12" y="472" width="8" height="15"/>
+    <rect x="12" y="499" width="8" height="15"/>
+  </g>
+</svg>
+</body>
+</html>

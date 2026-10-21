@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>笔吧验机 · 验机数据总结</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="poster" aria-label="报告封面">
+  <canvas width="260" height="780" class="poster-bg" aria-hidden="true" id="posterBg"></canvas>
+
+  <div class="poster-inner">
+    <p class="kicker">核对配置，留下证据。<br>CHECK THE MACHINE · KEEP THE RECORD.</p>
+    <h1 class="mast"><span>BIBA</span><span>YANJI</span></h1>
+    <p class="mast-cn">笔吧验机 · 验机数据总结</p>
+    <p class="triad">配置 <i></i> 负载 <i></i> 人工确认</p>
+
+    <div class="emblem" aria-hidden="true">
+      <span class="em-block"></span>
+      <span class="em-glyph">验</span>
+      <span class="em-bar em-bar-1"></span><span class="em-bar em-bar-2"></span><span class="em-bar em-bar-3"></span>
+      <span class="em-ring"></span>
+    </div>
+
+    <div class="seal" role="img" id="sealLabel" aria-label="人工确认进度">
+      <b id="sealCount">–/–</b><small>人工确认</small>
+    </div>
+    <p class="vdate" id="vdate" aria-label="导出日期"></p>
+
+    <div class="motto">
+      <p>数值<br>不代表新鲜</p>
+      <p>绿点<br>不代表裁决</p>
+    </div>
+
+    <div class="poster-foot">
+      <p class="foot-title">验机数据总结</p>
+      <p class="foot-meta" id="posterMeta"></p>
+      <p class="foot-cn">只呈现采集与人工确认，不作自动合格判定</p>
+    </div>
+    <p class="sample-stamp" id="sampleStamp" hidden>示例数据<small>SAMPLE · 非真实机器</small></p>
+  </div>
+</header>
+
+<nav class="toolbar no-print" aria-label="数据操作">
+  <button class="btn btn-red" id="btnLoad" type="button">载入 JSON</button>
+  <input type="file" id="fileInput" accept=".json,application/json" hidden>
+  <button class="btn" id="btnSample" type="button">载入示例</button>
+  <button class="btn" id="btnExport" type="button">导出 JSON</button>
+  <div class="metric-menu" role="group" aria-label="指标总览">
+    <button class="btn btn-metric" type="button" data-cat="hardware" aria-expanded="false" aria-controls="metricDrawer">硬件配置</button>
+    <button class="btn btn-metric" type="button" data-cat="load" aria-expanded="false" aria-controls="metricDrawer">负载性能</button>
+    <button class="btn btn-metric" type="button" data-cat="io" aria-expanded="false" aria-controls="metricDrawer">外设</button>
+    <button class="btn btn-metric" type="button" data-cat="review" aria-expanded="false" aria-controls="metricDrawer">人工确认</button>
+  </div>
+  <button class="btn" id="btnPrint" type="button">打印 / 存 PDF</button>
+  <button class="btn" id="btnTheme" type="button">主题：跟随系统</button>
+  <a class="btn btn-ghost" href="inspection-summary.schema.json" target="_blank" rel="noopener">数据契约 v1</a>
+  <p class="source-line" id="sourceLine" role="status"></p>
+  <div class="metric-drawer" id="metricDrawer" aria-live="polite"><div class="md-inner" id="metricDrawerInner"></div></div>
+</nav>
+<p class="load-error no-print" id="loadError" role="alert" hidden></p>
+
+<main>
+  <section class="sec" id="sec-modules" aria-labelledby="h-modules">
+    <header class="sec-head"><span class="sec-no">01</span><h2 id="h-modules">模块确认<small>MODULES · IHostContext.IsDone</small></h2></header>
+    <p class="sec-note">按导航顺序（order）排列。实心块 = 操作者在该页点击了「确认通过」；它记录的是人的判断，不是软件的判定。</p>
+    <div class="progress" id="moduleProgress"></div>
+    <ol class="modules" id="moduleList"></ol>
+  </section>
+
+  <section class="sec" id="sec-config" aria-labelledby="h-config">
+    <header class="sec-head"><span class="sec-no">02</span><h2 id="h-config">配置核对<small>CONFIGURATION · HardwareReport</small></h2></header>
+    <p class="sec-note">采集值原样展示。真实流程是：采集并展示 → 人工逐项对照订单 → 点击「确认无误，通过」。标签只提示口径与复核点，不给出合格结论。</p>
+    <div class="config-bar">
+      <p class="config-stats" id="configStats"></p>
+      <div class="filters" role="group" aria-label="筛选字段">
+        <button type="button" class="chip is-on" data-filter="all">全部</button>
+        <button type="button" class="chip" data-filter="review">需人工复核</button>
+        <button type="button" class="chip" data-filter="missing">未取得</button>
+        <button type="button" class="chip" data-filter="scope">口径提示</button>
+      </div>
+    </div>
+    <div id="expectedCompare"></div>
+    <div class="groups" id="configGroups"></div>
+  </section>
+
+  <section class="sec" id="sec-stress" aria-labelledby="h-stress">
+    <header class="sec-head"><span class="sec-no">03</span><h2 id="h-stress">散热测试<small>THERMAL · SensorMonitorService.Reading</small></h2></header>
+    <p class="sec-note" id="stressNote"></p>
+    <div class="tiles" id="stressTiles"></div>
+    <div class="charts" id="stressCharts"></div>
+    <details class="table-view" id="stressTableWrap"><summary>表格视图（每 30 秒一行）</summary><div id="stressTable"></div></details>
+  </section>
+
+  <section class="sec" id="sec-disk" aria-labelledby="h-disk">
+    <header class="sec-head"><span class="sec-no">04</span><h2 id="h-disk">硬盘跑分<small>DISK · 硬盘基准.json / 硬盘成绩记录.csv</small></h2></header>
+    <p class="sec-note">SEQ1M Q8T1 与 RND4K Q1T1 量级相差约百倍，分开两张图、各用自己的刻度。成绩落盘不等于整机验收报告。</p>
+    <div class="disk" id="diskPanels"></div>
+    <div id="diskHistory"></div>
+  </section>
+
+  <section class="sec" id="sec-io" aria-labelledby="h-io">
+    <header class="sec-head"><span class="sec-no">05</span><h2 id="h-io">外设检查<small>KEYBOARD · SCREEN · AV</small></h2></header>
+    <div class="io" id="ioPanels"></div>
+  </section>
+
+  <section class="sec sec-report" id="sec-report" aria-labelledby="h-report">
+    <header class="sec-head"><span class="sec-no">06</span><h2 id="h-report">报告与边界<small>REPORT · WHAT THIS CANNOT PROVE</small></h2></header>
+    <div class="report" id="reportBody"></div>
+  </section>
+</main>
+
+<footer class="page-foot">
+  <p>笔吧验机 · 验机数据总结网页 · 契约 biba-inspection-summary/1 · 正仓 Bibapcs/BibaYanji</p>
+  <p>网页只读展示导出数据：由验机软件「导出报告」或全部模块确认后自动生成；也可载入 JSON 文件。</p>
+</footer>
+
+<div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+<div class="drop-hint no-print" id="dropHint" hidden><p>松开以载入 JSON</p></div>
+
+<script src="sample-data.js"></script>
+<script src="report-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

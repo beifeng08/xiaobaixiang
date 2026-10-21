@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Export Posters</title>
+</head>
+<body>
+<canvas id="light" width="260" height="780"></canvas>
+<canvas id="dark" width="260" height="780"></canvas>
+<script>
+const palettes = {
+  light: { paper: "#efe6d2", ink: "#161412", red: "#c8261e", gold: "#c59a3e" },
+  dark: { paper: "#0f131c", ink: "#e8dcc3", red: "#d94937", gold: "#d1a84f" }
+};
+
+function draw(ctx, pal) {
+  // Background
+  ctx.fillStyle = pal.paper;
+  ctx.fillRect(0, 0, 260, 780);
+
+  // Big circle
+  ctx.fillStyle = pal.red;
+  ctx.beginPath();
+  ctx.arc(130, 180, 95, 0, 2 * Math.PI);
+  ctx.fill();
+
+  // Gold diagonal band
+  ctx.fillStyle = pal.gold;
+  ctx.globalAlpha = 0.92;
+  ctx.beginPath();
+  ctx.moveTo(180, 0);
+  ctx.lineTo(220, 0);
+  ctx.lineTo(90, 780);
+  ctx.lineTo(50, 780);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Bottom-left red triangle
+  ctx.fillStyle = pal.red;
+  ctx.beginPath();
+  ctx.moveTo(0, 650);
+  ctx.lineTo(80, 520);
+  ctx.lineTo(90, 650);
+  ctx.closePath();
+  ctx.fill();
+
+  // Right bar
+  ctx.fillStyle = pal.ink;
+  ctx.fillRect(210, 420, 50, 200);
+
+  // Circle hole
+  ctx.fillStyle = pal.paper;
+  ctx.beginPath();
+  ctx.arc(235, 520, 22, 0, 2 * Math.PI);
+  ctx.fill();
+
+  // Red triangle inside hole
+  ctx.fillStyle = pal.red;
+  ctx.beginPath();
+  ctx.moveTo(235, 505);
+  ctx.lineTo(247, 520);
+  ctx.lineTo(235, 535);
+  ctx.closePath();
+  ctx.fill();
+
+  // Diagonal line
+  ctx.strokeStyle = pal.ink;
+  ctx.lineWidth = 3.5;
+  ctx.beginPath();
+  ctx.moveTo(30, 0);
+  ctx.lineTo(230, 650);
+  ctx.stroke();
+
+  // Gauge marks
+  ctx.fillStyle = pal.ink;
+  ctx.fillRect(12, 380, 8, 48);
+  ctx.fillRect(12, 445, 8, 15);
+  ctx.fillRect(12, 472, 8, 15);
+  ctx.fillRect(12, 499, 8, 15);
+}
+
+["light", "dark"].forEach((mode) => {
+  const canvas = document.getElementById(mode);
+  const ctx = canvas.getContext("2d");
+  draw(ctx, palettes[mode]);
+  canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `poster-${mode}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    console.log(`Downloaded poster-${mode}.png`);
+  });
+});
+</script>
+</body>
+</html>

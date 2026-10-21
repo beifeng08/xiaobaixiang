@@ -1,0 +1,88 @@
+<UserControl x:Class="YanJi.Plugin.KeyboardTest.KeyboardTestPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FontSize="13" Foreground="{DynamicResource TextBrush}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="20" MaxWidth="1080">
+            <Border Style="{StaticResource CardBorder}" CornerRadius="0" Margin="0,0,0,16" Padding="20"
+                    Background="{DynamicResource HeroBgBrush}">
+                <StackPanel>
+                    <TextBlock Text="BIBA YANJI / KEYBOARD" Style="{DynamicResource PageEyebrow}"
+                               FontSize="12" Foreground="{DynamicResource SecondaryAccentBrush}"/>
+                    <TextBlock Text="键盘逐键测试" FontSize="22" FontWeight="SemiBold" Margin="0,6,0,10"/>
+                    <!-- 状态行：通过后变绿 -->
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="测试状态：" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="StatusText" Text="待测试" Margin="8,0,0,0"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorder}" CornerRadius="0" Margin="0,0,0,16" Padding="18">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 左侧：标签页式布局切换 -->
+                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                            <TextBlock Text="键盘布局" Style="{DynamicResource SectionTitle}" FontSize="14"
+                                       FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                <RadioButton x:Name="Layout104Radio" Content="104 键" GroupName="LayoutGroup"
+                                             IsChecked="True" Checked="Layout104_Checked"
+                                             Style="{DynamicResource SegmentedButtonStyle}" Margin="0,0,2,0"/>
+                                <RadioButton x:Name="Layout87Radio" Content="87 键 (TKL)" GroupName="LayoutGroup"
+                                             Checked="Layout87_Checked"
+                                             Style="{DynamicResource SegmentedButtonStyle}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- 右侧：操作按钮 -->
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <Button x:Name="ResetButton" Content="重置" Click="ResetButton_Click" Margin="0,0,8,0"
+                                    ToolTip="清空所有已测试标记，重新开始"/>
+                            <Button x:Name="PassButton" Content="确认无故障，通过" Click="PassButton_Click"
+                                    Style="{DynamicResource PrimaryButton}"
+                                    ToolTip="逐键按过、确认无失灵/串键后点击（笔记本没有的键保持灰色即可）"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- 进度行 -->
+                    <ProgressBar x:Name="KeyProgress" Height="10" Minimum="0" Maximum="104" Margin="0,12,0,0"/>
+                    <TextBlock x:Name="ProgressText" Text="已测试 0 / 104" Margin="0,8,0,4"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    <TextBlock Text="直接按物理键盘测试，两个布局视图可随时切换。笔记本上 Fn 组合键、厂商专用键不在测试范围内；没有小键盘的设备点 87 键视图即可"
+                               TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- 键盘区：u 单位坐标在 code-behind 生成（Canvas 尺寸也在代码里设定），Viewbox 自适应缩放 -->
+            <Border Style="{StaticResource CardBorder}" CornerRadius="0" Width="Auto" Margin="0" Padding="18">
+                <Viewbox Stretch="Uniform">
+                    <Canvas x:Name="KeyboardCanvas"/>
+                </Viewbox>
+            </Border>
+
+            <!-- 按键历史 Log 区：Consolas（LogBox 惯例），自动滚底，上限 500 条；
+                 圆角 = 外套圆角 Border（TextBox 本身无圆角，去边框去底色嵌进去），与分组卡片/键帽一致 -->
+            <Border Style="{StaticResource CardBorder}" CornerRadius="0" Margin="0,16,0,0" Padding="18">
+                <StackPanel>
+                    <TextBlock Text="按键记录" Style="{DynamicResource SectionTitle}" FontSize="14" FontWeight="SemiBold"/>
+                    <Border Margin="0,10,0,0" CornerRadius="0"
+                            Background="{DynamicResource SubtleBgBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                        <TextBox x:Name="LogBox" Height="120" Padding="10,8"
+                                 IsReadOnly="True" FontFamily="Consolas" FontSize="12"
+                                 VerticalScrollBarVisibility="Auto"
+                                 BorderThickness="0" Background="{DynamicResource SubtleBgBrush}"
+                                 Foreground="{DynamicResource TextBrush}"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

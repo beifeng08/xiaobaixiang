@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "biba-inspection-summary/1",
+  "title": "笔吧验机 · 验机数据总结（网页消费契约 v1）",
+  "description": "网页只读消费的导出格式。字段来自宿主报告服务与现有插件，不引入 AI / OCR / 自动合格判定。缺失或 null 表示未导出或未测，绝不按通过处理。",
+  "type": "object",
+  "required": ["schema", "exportedAt", "modules"],
+  "properties": {
+    "schema": { "const": "biba-inspection-summary/1" },
+    "exportedAt": { "type": "string", "format": "date-time", "description": "导出时间（本地时间带偏移）。" },
+    "source": {
+      "description": "程序版本与源码身份；勿混用 main 与 dev。sourceDirty=true 表示制品含未提交补丁，只检出 commit 不能精确还原。",
+      "type": ["object", "null"],
+      "properties": {
+        "appVersion": { "type": ["string", "null"] },
+        "branch": { "type": "string" },
+        "commit": { "type": "string" },
+        "sourceDirty": { "type": "boolean" }
+      }
+    },
+    "device": {
+      "type": ["object", "null"],
+      "properties": { "label": { "type": ["string", "null"], "description": "自定义设备编号；避免公开完整序列号。" } }
+    },
+    "modules": {
+      "description": "IHostContext.Modules（PluginInfo，System.Text.Json camelCase）+ IHostContext.IsDone(id)。done=true 只表示操作者在该页点击了“确认通过”（IModulePage.PassChanged(true)），不是自动判定。",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "version", "order", "terminal", "done"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "version": { "type": "string", "description": "plugin.json 清单版本，不是软件发行版本。" },
+          "order": { "type": "integer" },
+          "terminal": { "type": "boolean" },
+          "done": { "type": "boolean", "description": "仅表示操作者确认，不是自动判定。" },
+          "passable": { "type": "boolean", "description": "页面实现 IModulePage 且非终点模块；false 不计入人工确认进度。旧数据可省略，按可通过处理。" }
+        }
+      }
+    },
+    "config": {
+      "description": "ConfigCheck.HardwareReport：CollectedAt + Groups[InfoGroup{Title, Entries, Details}]，InfoEntry(Name, Value) 原样输出，不做二次解释。",
+      "type": ["object", "null"],
+      "required": ["collectedAt", "groups"],
+      "properties": {
+        "collectedAt": { "type": "string", "format": "date-time" },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "entries"],
+            "properties": {
+              "title": { "type": "string" },
+              "entries": { "$ref": "#/$defs/entries" },
+              "details": { "$ref": "#/$defs/entries" }
+            }
+          }
+        }
+      }
+    },
+    "keyboard": {
+      "description": "KeyboardTestPage：_testedCount / _all.Count。",
+      "type": ["object", "null"],
+      "properties": {
+        "layout": { "type": "string", "enum": ["104", "87"] },
+        "tested": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 },
+        "untested": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "av": {
+      "description": "AvConferencePage 当前选中设备名；null = 未检测到。页面状态文本可放 note。",
+      "type": ["object", "null"],
+      "properties": {
+        "camera": { "type": ["string", "null"] },
+        "microphone": { "type": ["string", "null"] },
+        "speaker": { "type": ["string", "null"] },
+        "note": { "type": ["string", "null"] }
+      }
+    },
+    "stress": {
+      "description": "StressTest：sensors = SensorMonitorService.SensorMap（所选传感器名）；samples = SensorMonitorService.Reading 序列（可空 double，null = 该拍读数为空，不得补 0）。",
+      "type": ["object", "null"],
+      "properties": {
+        "startedAt": { "type": ["string", "null"], "format": "date-time" },
+        "sampleIntervalSeconds": { "type": "number", "exclusiveMinimum": 0, "default": 1 },
+        "sensors": {
+          "type": ["object", "null"],
+          "properties": {
+            "cpuName": { "type": ["string", "null"] },
+            "cpuTemp": { "type": ["string", "null"] },
+            "cpuPower": { "type": ["string", "null"] },
+            "gpuName": { "type": ["string", "null"] },
+            "gpuTemp": { "type": ["string", "null"] },
+            "gpuPower": { "type": ["string", "null"] }
+          }
+        },
+        "samples": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "object",
+            "required": ["t"],
+            "properties": {
+              "t": { "type": "number", "description": "距 startedAt 的秒数。" },
+              "cpuTemp": { "type": ["number", "null"] },
+              "cpuPower": { "type": ["number", "null"] },
+              "gpuTemp": { "type": ["number", "null"] },
+              "gpuPower": { "type": ["number", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "disk": {
+      "description": "DiskMark：latest = %APPDATA%\\YanJi\\disk_result\\硬盘基准.json 原文（MB/s，snake_case 保持原格式）；history = 硬盘成绩记录.csv 逐行（时间,盘符,顺序读取,顺序写入,随机读取4K,随机写入4K）。",
+      "type": ["object", "null"],
+      "properties": {
+        "drive": { "type": ["string", "null"] },
+        "latest": {
+          "type": ["object", "null"],
+          "properties": {
+            "seq_read": { "type": "number", "minimum": 0 },
+            "seq_write": { "type": "number", "minimum": 0 },
+            "rnd4k_read": { "type": "number", "minimum": 0 },
+            "rnd4k_write": { "type": "number", "minimum": 0 }
+          }
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time": { "type": "string" },
+              "drive": { "type": "string" },
+              "seqRead": { "type": "number", "minimum": 0 },
+              "seqWrite": { "type": "number", "minimum": 0 },
+              "rnd4kRead": { "type": "number", "minimum": 0 },
+              "rnd4kWrite": { "type": "number", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "sectionErrors": {
+      "description": "插件报告片段读取异常；对应片段为 null。",
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "expected": {
+      "description": "验机前人工录入的已知信息，仅用于并排对照。",
+      "type": ["object", "null"],
+      "properties": {
+        "enteredAt": { "type": ["string", "null"], "format": "date-time" },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "label", "value"],
+            "properties": {
+              "key": { "type": "string" },
+              "label": { "type": ["string", "null"] },
+              "value": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "remarks": { "type": ["string", "null"], "description": "人工备注：未测项、差异、异常现象。" }
+  },
+  "$defs": {
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "value"],
+        "properties": { "name": { "type": "string" }, "value": { "type": "string" } }
+      }
+    }
+  }
+}
