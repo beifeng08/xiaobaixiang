@@ -21,13 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- 扬声器试音曲（幻月遠征隊 版权所有，使用已经著作权人同意，页面署名保留），随插件目录输出 -->
-    <None Include="..\..\不死のバイオレット - 幻月遠征隊.mp3"
-          Link="不死のバイオレット - 幻月遠征隊.mp3"
-          CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\AUDIO-LICENSE.md"
-          Link="AUDIO-LICENSE.md"
-          CopyToOutputDirectory="PreserveNewest" />
     <None Update="plugin.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

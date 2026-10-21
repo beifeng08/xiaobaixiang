@@ -27,7 +27,6 @@ Run-Dotnet @("publish", (Join-Path $repo "FurMark/FurMark.csproj"), "-p:PublishP
 Run-Dotnet @("publish", (Join-Path $hostDirectory.FullName "$hostName.csproj"), "-p:PublishProfile=FolderProfile", "-p:GeneratePackageOnBuild=false", "-p:Version=$PackageVersion", "-p:PublishDir=$payload/", "--nologo")
 # Include redistribution notices and the exact source revision with both package forms.
 Copy-Item (Join-Path $repo "LICENSE") (Join-Path $payload "LICENSE.txt")
-Copy-Item (Join-Path $repo "AUDIO-LICENSE.md") (Join-Path $payload "AUDIO-LICENSE.md")
 $licenses = Join-Path $payload "licenses"
 New-Item -ItemType Directory $licenses | Out-Null
 Copy-Item (Join-Path $libraryDirectory.FullName "LibreHardwareMonitor-master/LICENSE") (Join-Path $licenses "LibreHardwareMonitor-MPL-2.0.txt")
