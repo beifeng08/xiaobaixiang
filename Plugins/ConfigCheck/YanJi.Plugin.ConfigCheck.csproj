@@ -18,7 +18,7 @@
     <ProjectReference Include="..\..\PluginSdk\YanJi.PluginSdk.csproj" Private="false" />
     <!-- 开源硬件采集库（MPL-2.0）：源码项目引用。SetPlatform=x64：其 CsWin32 对 SetupDi* 等 API
          只在指定 CPU 架构下生成（AnyCPU 会跳过导致编译失败）——与主程序原引用方式相同 -->
-    <ProjectReference Include="..\..\集成开源项目代码\LibreHardwareMonitor-master\LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj"
+    <ProjectReference Include="..\..\LibreHardwareMonitor-master\LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj"
                       SetPlatform="Platform=x64" />
   </ItemGroup>
 

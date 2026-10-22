@@ -17,7 +17,7 @@
     <!-- 插件契约由宿主提供：Private=false 不把 YanJi.PluginSdk.dll 拷进插件目录，运行时与宿主共享同一类型 -->
     <ProjectReference Include="..\..\PluginSdk\YanJi.PluginSdk.csproj" Private="false" />
     <!-- 传感器监控（LHM，MPL-2.0）：SetPlatform=x64 原因同 ConfigCheck 插件 -->
-    <ProjectReference Include="..\..\集成开源项目代码\LibreHardwareMonitor-master\LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj"
+    <ProjectReference Include="..\..\LibreHardwareMonitor-master\LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj"
                       SetPlatform="Platform=x64" />
   </ItemGroup>
 

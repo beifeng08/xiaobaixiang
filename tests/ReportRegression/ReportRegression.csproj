@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <SourceRoot Condition="'$(SourceRoot)' == ''">$(MSBuildThisFileDirectory)..\..</SourceRoot>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(SourceRoot)\验机软件\Services\ReportService.cs" Link="ReportService.cs" />
+    <Compile Include="$(SourceRoot)\验机软件\Services\AutoReportState.cs" Link="AutoReportState.cs" />
+    <Compile Include="$(SourceRoot)\验机软件\Settings.cs" Link="Settings.cs" />
+    <Compile Include="$(SourceRoot)\PluginSdk\Contracts.cs" Link="Contracts.cs" />
+  </ItemGroup>
+</Project>

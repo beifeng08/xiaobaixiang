@@ -10,7 +10,7 @@ $output = [IO.Path]::GetFullPath($OutputDirectory)
 $publish = Join-Path $repo "publish"
 $hostDirectory = Get-ChildItem $repo -Directory | Where-Object { Test-Path (Join-Path $_.FullName "app.manifest") } | Select-Object -First 1
 $hostName = $hostDirectory.Name
-$libraryDirectory = Get-ChildItem $repo -Directory | Where-Object { Test-Path (Join-Path $_.FullName "LibreHardwareMonitor-master") } | Select-Object -First 1
+$libraryDirectory = Join-Path $repo "LibreHardwareMonitor-master"
 $dotnet = (Get-Command dotnet -ErrorAction Stop).Source
 if (!(Test-Path $IsccPath -PathType Leaf)) { throw "ISCC.exe not found: $IsccPath" }
 if (Test-Path $output) { throw "Output directory must be new to avoid stale files: $output" }
@@ -29,8 +29,8 @@ Run-Dotnet @("publish", (Join-Path $hostDirectory.FullName "$hostName.csproj"), 
 Copy-Item (Join-Path $repo "LICENSE") (Join-Path $payload "LICENSE.txt")
 $licenses = Join-Path $payload "licenses"
 New-Item -ItemType Directory $licenses | Out-Null
-Copy-Item (Join-Path $libraryDirectory.FullName "LibreHardwareMonitor-master/LICENSE") (Join-Path $licenses "LibreHardwareMonitor-MPL-2.0.txt")
-Copy-Item (Join-Path $libraryDirectory.FullName "LibreHardwareMonitor-master/LibreHardwareMonitorLib/Resources/PawnIo/COPYING") (Join-Path $licenses "PawnIO-COPYING.txt")
+Copy-Item (Join-Path $libraryDirectory "LICENSE") (Join-Path $licenses "LibreHardwareMonitor-MPL-2.0.txt")
+Copy-Item (Join-Path $libraryDirectory "LibreHardwareMonitorLib/Resources/PawnIo/COPYING") (Join-Path $licenses "PawnIO-COPYING.txt")
 $required = @("$hostName.exe", "coreclr.dll", "hostfxr.dll", "YanJi.PluginSdk.dll", "Tools/furmark/FurMark.exe", "Tools/furmark/coreclr.dll", "Tools/prime95/prime95.exe", "Tools/pawnio/PawnIO_setup.exe", "plugins/disk/CdmHost/CdmHost.exe", "plugins/disk/CdmHost/CdmResource/diskspd/diskspd64.exe")
 foreach ($relative in $required) { if (!(Test-Path (Join-Path $payload $relative) -PathType Leaf)) { throw "Missing package payload: $relative" } }
 $pluginIds = @("config", "keyboard", "screen", "av", "stress", "disk")

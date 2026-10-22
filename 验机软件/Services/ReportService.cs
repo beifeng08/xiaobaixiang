@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -13,9 +16,8 @@ namespace YanJi.Services;
 /// <summary>验机前录入的已知信息（订单/卖家描述等）；Key 与报告网页的对照映射一致。</summary>
 public record ExpectedField(string Key, string Label, string Value);
 
-/// <summary>验机报告：收集模块状态 + 各页 IReportSection 片段 → biba-inspection-summary/1 JSON，
-/// 写入 数据目录\reports\，并把 exe 同级 ReportWeb\ 网页复制到 数据目录\report-web\ 后附带 report-data.js 打开
-/// （网页在 file:// 下不能 fetch，只能用脚本标签带数据）。</summary>
+/// <summary>收集模块状态与 IReportSection 片段，生成 biba-inspection-summary/1 JSON。
+/// 保存时为每份报告复制网页并附带 report-data.js，以支持 file:// 离线读取。</summary>
 public static class ReportService
 {
     public const string Schema = "biba-inspection-summary/1";
@@ -37,43 +39,46 @@ public static class ReportService
         IReadOnlyList<ExpectedField> expected, string? deviceLabel)
     {
         var sectionErrors = new Dictionary<string, string>();
-        object? Section(string id)
+        object? GetSection(string id)
         {
             try
             {
                 return pages.GetValueOrDefault(id) is IReportSection section
                     ? JsonSerializer.SerializeToElement(section.GetReportSection(), Json) : null;
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                sectionErrors[id] = ex.Message;
+                sectionErrors[id] = exception.Message;
                 return null;
             }
         }
+
+        bool IsPassable(PluginInfo module) => !module.Terminal && pages[module.Id] is IModulePage;
+
         var payload = new
         {
             schema = Schema,
             exportedAt = DateTimeOffset.Now.ToString("yyyy-MM-ddTHH:mm:sszzz"),
             source = new { appVersion = AppVersion() },
             device = new { label = string.IsNullOrWhiteSpace(deviceLabel) ? null : deviceLabel.Trim() },
-            modules = modules.Where(m => pages.ContainsKey(m.Id)).Select(m => new
+            modules = modules.Where(module => pages.ContainsKey(module.Id)).Select(module => new
             {
-                id = m.Id, name = m.Name, version = m.Version, order = m.Order, terminal = m.Terminal,
-                passable = !m.Terminal && pages[m.Id] is IModulePage,
-                done = !m.Terminal && pages[m.Id] is IModulePage && isDone(m.Id),
+                id = module.Id, name = module.Name, version = module.Version, order = module.Order, terminal = module.Terminal,
+                passable = IsPassable(module),
+                done = IsPassable(module) && isDone(module.Id),
             }),
-            config = Section("config"),
-            keyboard = Section("keyboard"),
-            av = Section("av"),
-            stress = Section("stress"),
-            disk = Section("disk"),
+            config = GetSection("config"),
+            keyboard = GetSection("keyboard"),
+            av = GetSection("av"),
+            stress = GetSection("stress"),
+            disk = GetSection("disk"),
             sectionErrors,
             expected = expected.Count == 0 ? null : new
             {
                 enteredAt = expectedAt?.ToString("yyyy-MM-ddTHH:mm:sszzz"),
-                fields = expected.Select(f => new { key = f.Key, label = f.Label, value = f.Value }),
+                fields = expected.Select(field => new { key = field.Key, label = field.Label, value = field.Value }),
             },
-            remarks = expected.FirstOrDefault(f => f.Key == "notes")?.Value is { Length: > 0 } n ? n : null,
+            remarks = expected.FirstOrDefault(field => field.Key == "notes")?.Value is { Length: > 0 } notes ? notes : null,
         };
         return JsonSerializer.Serialize(payload, Json);
     }

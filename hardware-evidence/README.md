@@ -31,7 +31,7 @@ Maven 编译原默认包 DemoCommand 与新入口，并将锁定的运行时依�
 | `ResultResponseReader.cs`、`ResultResponse.cs` | 16 MiB 上限、严格 UTF-8/JSON、重复键/身份/类型/版本/状态/引用/人工语义校验 |
 | `cpuid-probe/` | 已有独立探针；输出形状尚未并入正式 collect 契约 |
 
-生产引擎只使用 JDK 标准库与 Jackson 2.22.3（databind/core=2.22.3，annotations=2.22，Apache-2.0）。Jackson 官方 Maven POM 已核许可证/版本，实际依赖已解析；ObjectMapper.writeValueAsBytes 经 JDK 21 javap 与实际编译/运行确认，无手拼业务 JSON。测试用 JUnit 5.11.4（EPL-2.0）；Maven 构建插件 Apache-2.0。C# 仍无第三方 NuGet。后续插件入口必须携带对应 Credits。
+运行时依赖为 JDK 标准库与 Jackson 2.22.3（databind/core=2.22.3，annotations=2.22，Apache-2.0），业务 JSON 由 `ObjectMapper.writeValueAsBytes` 序列化。版本和许可依据 Jackson 官方 Maven POM；依赖已解析，序列化调用已通过 JDK 21 字节码检查、编译和运行验证。测试使用 JUnit 5.11.4（EPL-2.0），Maven 构建插件使用 Apache-2.0 许可。C# 无第三方 NuGet 依赖；接入插件时需填写对应 Credits。
 
 ## 可复现验证
 
@@ -42,4 +42,4 @@ Maven 编译原默认包 DemoCommand 与新入口，并将锁定的运行时依�
 
 脚本运行 Java 单元测试，单独编译测试故障进程，将真实 class/依赖复制到中文空格目录，再构建并运行 C# 接收与联调检查。真实引擎调用、纯接收样例测试、故障替身分别标注。测试产物及原始记录保留在 `hardware-evidence/out/`，Maven `target/`、.NET bin/obj 与 out 均不入库。
 
-当前仍未验证目录权限拒绝/重解析点实跑、全部后代进程退出、宿主崩溃、页面生命周期和无预装 Java 发布。旧 `src/main/csharp/README.md`、validation.json 及 CSharp 交接正文是历史快照；当前入口以本文、新契约及新验证记录为准。
+尚未验证目录权限拒绝、重解析点实跑、全部后代进程退出、宿主崩溃、页面生命周期和无预装 Java 的发布环境。`src/main/csharp/README.md`、`validation.json` 及 CSharp 交接正文保留历史状态；当前构建和调用以本文及 `result-demo-v1` 为准，验证结果以对应运行记录为准。
