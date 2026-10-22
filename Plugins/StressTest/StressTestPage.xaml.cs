@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -5,32 +8,25 @@ using System.Windows.Threading;
 
 namespace YanJi.Plugin.StressTest;
 
-/// <summary>「散热测试」页面：CPU 单烤（prime95）/ GPU 单烤（FurMark）/ 双烤。
-/// 进程起停全部走 StressTestService；安全约定：页面 Unloaded（切走/关窗）自动停止烤机，
-/// 程序退出还有 Job 对象兜底，绝不留下后台烤机进程。通过后状态行变绿并同步导航圆点。</summary>
 public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, YanJi.PluginSdk.IReportSection
 {
     readonly DispatcherTimer _tick = new() { Interval = TimeSpan.FromMilliseconds(500) };
-    TimeSpan _lastRun = TimeSpan.Zero; // 最近一次烤了多久（未烤过为 0，状态行提示用）
-    DateTime? _runStart;               // 本轮烤机起点（running→停止 的那一拍结算进 _lastRun）
+    TimeSpan _lastRun = TimeSpan.Zero; 
+    DateTime? _runStart;               
 
-    // 报告用的整轮记录：烤机开始时清空重记；读数为 null 原样保留，不补 0
     const int SampleIntervalSeconds = 2;
     const int MaxRecordedSamples = 6 * 3600 / SampleIntervalSeconds;
     readonly List<(double T, SensorMonitorService.Reading R)> _record = [];
     DateTime? _recordStart;
 
-    /// <summary>核对完成状态变化（true = 已通过，false = 回到待核对）；MainWindow 据此同步导航圆点。</summary>
     public event Action<bool>? PassChanged;
 
-    /// <summary>当前是否已核对通过。</summary>
     public bool Passed { get; private set; }
 
     public StressTestPage()
     {
         InitializeComponent();
 
-        // 线程数下拉：1 .. 逻辑核心数，默认拉满
         var (phys, logical) = StressTestService.CoreCounts;
         for (int i = 1; i <= logical; i++)
             ThreadsBox.Items.Add(new ComboBoxItem { Content = $"{i} 线程", Tag = i });
@@ -50,14 +46,14 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
             _sensorFailure = message;
             RefreshSensorHint();
         }, allowCanceled: true);
-        // 页面常驻机制下切走即 Unloaded：必须停烤机与传感器轮询（关窗也会触发，双保险）
+        
         Unloaded += (_, _) =>
         {
             _tick.Stop();
             try { StressTestService.Stop(); }
             finally { SensorMonitorService.Stop(); }
         };
-        // 页面可见时才开传感器轮询（Loaded 在切回时会重发，Start 幂等）
+        
         Loaded += (_, _) =>
         {
             ResetSensorState();
@@ -91,7 +87,6 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
         RefreshRunningState();
     }
 
-    /// <summary>烤机事件日志（服务在后台线程触发，封送 UI 追加；上限 500 条截最旧，自动滚底）。</summary>
     void OnStressLogged(string line) =>
         Dispatcher.BeginInvoke(() =>
         {
@@ -108,12 +103,11 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
 
     void PassButton_Click(object sender, RoutedEventArgs e)
     {
-        // 通过即停烤（随后自动跳转切页，Unloaded 也会再兜一次）
+        
         StressTestService.Stop();
         SetPassed(true);
     }
 
-    /// <summary>服务状态变化可能在线程池线程（ProcessExit 等），封送 UI 线程刷新。</summary>
     void OnServiceStateChanged() =>
         Dispatcher.BeginInvoke(() =>
         {
@@ -121,8 +115,6 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
             else _tick.Stop();
             RefreshRunningState();
         });
-
-    // ═══ 数据监控（SensorMonitorService 事件均在后台线程，封送 UI） ═══
 
     bool _cpuTempDown, _cpuPowerDown, _gpuTempDown, _gpuPowerDown;
     SensorMonitorService.SensorMap? _sensorMap;
@@ -177,8 +169,6 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
             }
         });
 
-    /// <summary>单图更新：有值推点（收起叠层）；无值置占位——CPU 两路显示「文案 + 安装按钮」叠层，
-    /// GPU 两路用图表自带占位文案（状态不变时不重复操作）。</summary>
     void UpdateChart(LineChartControl chart, UIElement? overlay, double? value, ref bool unavailable)
     {
         if (value is double v)
@@ -195,7 +185,7 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
             unavailable = true;
             if (overlay != null)
             {
-                chart.SetUnavailable(""); // 占位由叠层出（文案 + 按钮），图表只留网格
+                chart.SetUnavailable(""); 
                 overlay.Visibility = Visibility.Visible;
             }
             else
@@ -206,7 +196,6 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
         RefreshSensorHint();
     }
 
-    /// <summary>传感器口径四行排版：每路一行「指标 ← 硬件 / 传感器」，不可用行注明状态。</summary>
     void RefreshSensorHint()
     {
         var m = _sensorMap;
@@ -238,8 +227,6 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
             RefreshSensorHint();
         });
 
-    // ═══ GPU 选择（换绑立即清两图旧曲线；采样周期内生效） ═══
-
     bool _gpuBoxSyncing;
 
     void OnGpuListReady(IReadOnlyList<SensorMonitorService.GpuOption> options, int selected) =>
@@ -264,14 +251,12 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
     void OnGpuChanging() =>
         QueueSensorUpdate(() =>
         {
-            // 立即清两图旧曲线与降级标志（新传感器下轮采样重评估）
+            
             GpuTempChart.Clear();
             GpuPowerChart.Clear();
             _gpuTempDown = _gpuPowerDown = false;
         });
 
-    /// <summary>「安装 PawnIO 驱动」：静默跑官方签名安装器（-install -silent），装完重初始化 LHM Computer
-    /// （Stop+Start，无需重启程序），CPU 两路随即出真实读数；失败则提示。</summary>
     async void InstallPawnIo_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not Button btn) return;
@@ -305,7 +290,7 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
         }
         else
         {
-            // running→停止 的那一拍：结算本次烤机时长
+            
             if (_runStart is DateTime rs)
             {
                 _lastRun = DateTime.Now - rs;
@@ -318,13 +303,11 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
                 RunStateText.Text = "尚未烤过机；烤机会让硬件满载发热，请留意温度与风扇状态";
         }
 
-        // 通过按钮旁的提示：未在烤 / 已烤时长，由用户自行判断（不做强限制）
         if (!Passed)
             PassHintText.Text = running ? "正在烤机" :
                 _lastRun > TimeSpan.Zero ? $"本次已烤 {FormatSpan(_lastRun)}" : "尚未烤过机";
     }
 
-    /// <summary>更新核对状态行（通过 = 绿色「✓ 已核对通过」）并通知导航圆点。</summary>
     void SetPassed(bool passed)
     {
         Passed = passed;
@@ -352,7 +335,7 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
     static T ParseTag<T>(ComboBox box) where T : notnull
     {
         object tag = ((ComboBoxItem)box.SelectedItem).Tag;
-        // Tag 在 XAML 里一律是字符串：枚举走 Enum.Parse，int 等走 Convert
+        
         if (typeof(T).IsEnum) return (T)Enum.Parse(typeof(T), (string)tag);
         return (T)Convert.ChangeType(tag, typeof(T));
     }
@@ -360,7 +343,6 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
     static string FormatSpan(TimeSpan s) =>
         s.TotalHours >= 1 ? $"{(int)s.TotalHours}:{s.Minutes:00}:{s.Seconds:00}" : $"{s.Minutes:00}:{s.Seconds:00}";
 
-    /// <summary>报告片段：最近一轮烤机的完整读数序列 + 所选传感器名；未烤过机为 null。</summary>
     public object? GetReportSection()
     {
         if (_recordStart is not DateTime start || _record.Count == 0) return null;

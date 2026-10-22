@@ -13,7 +13,7 @@
   <Project Path="FurMark/FurMark.csproj" />
   <!-- 开源采集库源码（MPL-2.0），配置核对/散热测试插件以项目引用使用。
        平台映射：CsWin32 部分 API 只在指定架构生成，AnyCPU 解决方案平台下固定按 x64 构建 -->
-  <Project Path="集成开源项目代码/LibreHardwareMonitor-master/LibreHardwareMonitorLib/LibreHardwareMonitorLib.csproj">
+  <Project Path="LibreHardwareMonitor-master/LibreHardwareMonitorLib/LibreHardwareMonitorLib.csproj">
     <Platform Solution="*|AnyCPU" Project="x64" />
   </Project>
 </Solution>

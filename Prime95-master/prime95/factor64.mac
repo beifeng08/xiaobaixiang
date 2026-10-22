@@ -1,0 +1,2774 @@
+; Copyright (c) 2026 beifeng08
+; Licensed under the MIT License. See LICENSE in the project root.
+
+sse2_fac MACRO fac_size
+
+	IF fac_size GE 75
+	movdqa	xmm3, xmm0		
+	movdqa	xmm4, xmm0		
+	pmuludq	xmm0, xmm0		
+	movdqa	xmm5, xmm1		
+	pmuludq	xmm1, xmm1		
+	pmuludq	xmm3, xmm2		
+	pmuludq	xmm4, xmm5		
+	pmuludq	xmm5, xmm2		
+	movdqa	xmm6, xmm0		
+	psrlq	xmm0, 30		
+	movdqa	xmm7, XMMWORD PTR XMM_TWO_120_MODF2
+	pmuludq	xmm7, xmm0		
+	paddq	xmm1, xmm7		
+	movdqa	xmm7, XMMWORD PTR XMM_TWO_120_MODF1
+	pmuludq	xmm7, xmm0		
+	psllq	xmm3, 1			
+	pmuludq	xmm0, XMMWORD PTR XMM_TWO_120_MODF3
+					
+	psllq	xmm4, 1			
+	pmuludq	xmm2, xmm2		
+	psllq	xmm5, 1			
+	pand	xmm6, XMMWORD PTR XMM_BITS30
+					
+	paddq	xmm4, xmm7		
+	paddq	xmm5, xmm0		
+	paddq	xmm1, xmm3		
+					
+	movdqa	xmm0, xmm1		
+	psrlq	xmm1, 30		
+	paddq	xmm4, xmm1		
+	pand	xmm0, XMMWORD PTR XMM_BITS30
+					
+	movdqa	xmm3, xmm4		
+	psrlq	xmm4, 30		
+	paddd	xmm6, xmm4		
+					
+	movdqa	xmm7, XMMWORD PTR XMM_TWO_120_MODF2
+	pmuludq	xmm7, xmm6		
+	pand	xmm3, XMMWORD PTR XMM_BITS30
+					
+	movdqa	xmm1, XMMWORD PTR XMM_TWO_120_MODF1
+	pmuludq	xmm1, xmm6		
+	psllq	xmm3, 30		
+	pmuludq	xmm6, XMMWORD PTR XMM_TWO_120_MODF3
+					
+	por	xmm0, xmm3		
+	paddq	xmm5, xmm7		
+	paddq	xmm0, xmm1		
+	paddq	xmm2, xmm6		
+					
+	movdqa	xmm7, XMMWORD PTR XMM_BITS30
+	pand	xmm7, xmm5		
+	psrlq	xmm5, 30		
+	paddq	xmm0, xmm5		
+	psllq	xmm7, 30		
+	paddq	xmm7, xmm2		
+					
+	ENDIF
+
+	IF fac_size LT 75
+	movdqa	xmm3, xmm0		
+	movdqa	xmm4, xmm0		
+	pmuludq	xmm0, xmm2		
+	movdqa	xmm5, xmm1		
+	pmuludq	xmm1, xmm1		
+	pmuludq	xmm3, xmm3		
+	pmuludq	xmm4, xmm5		
+	psllq	xmm0, 1			
+	pmuludq	xmm5, xmm2		
+	paddq	xmm1, xmm0		
+	pmuludq	xmm2, xmm2		
+	psllq	xmm4, 1			
+	psllq	xmm5, 1			
+					
+	movdqa	xmm0, xmm1		
+	psrlq	xmm1, 30		
+	paddq	xmm4, xmm1		
+	pand	xmm0, XMMWORD PTR XMM_BITS30
+					
+	movdqa	xmm6, xmm4		
+	psrlq	xmm4, 30		
+	paddd	xmm3, xmm4		
+					
+	movdqa	xmm7, XMMWORD PTR XMM_TWO_120_MODF2
+	pmuludq	xmm7, xmm3		
+	pand	xmm6, XMMWORD PTR XMM_BITS30
+					
+	movdqa	xmm1, XMMWORD PTR XMM_TWO_120_MODF1
+	pmuludq	xmm1, xmm3		
+	psllq	xmm6, 30		
+	pmuludq	xmm3, XMMWORD PTR XMM_TWO_120_MODF3
+					
+	por	xmm0, xmm6		
+	paddq	xmm5, xmm7		
+	paddq	xmm0, xmm1		
+	paddq	xmm2, xmm3		
+					
+	movdqa	xmm7, XMMWORD PTR XMMWORD PTR XMM_BITS30
+	pand	xmm7, xmm5		
+	psrlq	xmm5, 30		
+	paddq	xmm0, xmm5		
+	psllq	xmm7, 30		
+	paddq	xmm7, xmm2		
+					
+	ENDIF
+
+	movdqa	xmm6, xmm0		
+
+	psrlq	xmm0, 30		
+	movdqa	xmm1, XMMWORD PTR XMM_I2
+	pmuludq	xmm1, xmm0		
+	movdqa	xmm3, XMMWORD PTR XMM_I1
+	pmuludq	xmm0, xmm3		
+	pand	xmm6, XMMWORD PTR XMM_BITS30
+					
+	pmuludq	xmm3, xmm6		
+	paddq	xmm1, xmm3		
+	psrlq	xmm1, 30		
+	paddq	xmm0, xmm1		
+
+	movd	xmm2, XMM_BS
+	psrlq	xmm0, xmm2		
+	movdqa	xmm1, XMMWORD PTR XMM_BITS30
+	pand	xmm1, xmm0		
+	psrlq	xmm0, 30		
+
+	movdqa	xmm3, XMMWORD PTR XMM_F2
+	pmuludq	xmm3, xmm1		
+	movdqa	xmm4, XMMWORD PTR XMM_F3
+	pmuludq	xmm4, xmm0		
+	movdqa	xmm5, XMMWORD PTR XMM_F1
+	pmuludq	xmm5, xmm1		
+	pmuludq	xmm0, XMMWORD PTR XMM_F2
+	pmuludq	xmm1, XMMWORD PTR XMM_F3
+	paddq	xmm3, xmm4		
+	paddd	xmm5, xmm0		
+	movdqa	xmm2, XMMWORD PTR XMM_BITS30
+	pand	xmm2, xmm3		
+	psllq	xmm2, 30		
+	paddq	xmm1, xmm2		
+	psrlq	xmm3, 30		
+	paddd	xmm5, xmm3		
+
+	psubq	xmm7, xmm1		
+	psubd	xmm6, xmm5		
+
+	movd	xmm1, XMM_SHIFTER[rdi*8]
+	psllq	xmm6, xmm1		
+	psllq	xmm7, xmm1		
+
+	movdqa	xmm1, XMMWORD PTR XMM_BITS30	
+	movdqa	xmm2, xmm7		
+	psrlq	xmm7, 30		
+	pand	xmm1, xmm7		
+	psrlq	xmm7, 2			
+	psrad	xmm7, 28		
+	paddd	xmm6, xmm7		
+	pand	xmm2, XMMWORD PTR XMM_BITS30
+					
+	movdqa	xmm0, XMMWORD PTR XMM_BITS28	
+	pand	xmm0, xmm6		
+	ENDM
+
+sse2_fac_initval MACRO
+	LOCAL	retry, ok1, ok2
+
+retry:	movdqa	xmm7, XMMWORD PTR XMM_INVFAC 
+	psrlq	xmm7, 3			
+	movdqa	xmm6, XMMWORD PTR XMM_BITS30
+	pand	xmm6, xmm7		
+	psrlq	xmm7, 30		
+	movdqa	XMMWORD PTR XMM_I2, xmm6
+	movdqa	XMMWORD PTR XMM_I1, xmm7
+
+	movdqa	xmm3, XMMWORD PTR XMM_F2
+	pmuludq	xmm3, xmm6		
+	movdqa	xmm4, XMMWORD PTR XMM_F3
+	pmuludq	xmm4, xmm7		
+	movdqa	xmm5, XMMWORD PTR XMM_F1
+	pmuludq	xmm5, xmm6		
+	pmuludq	xmm7, XMMWORD PTR XMM_F2
+	pmuludq	xmm6, XMMWORD PTR XMM_F3
+	paddq	xmm3, xmm4		
+	paddd	xmm5, xmm7		
+	movdqa	xmm2, XMMWORD PTR XMM_BITS30
+	pand	xmm2, xmm3		
+	psllq	xmm2, 30		
+	paddq	xmm6, xmm2		
+	psrlq	xmm3, 30		
+	paddd	xmm5, xmm3		
+
+	psrlq	xmm6, 60
+	paddd	xmm5, xmm6		
+
+	psllq	xmm5, 4			
+	pmovmskb edx, xmm5
+	test	edx, 0008h		
+	jnz	short ok1		
+	movdqa	xmm7, XMMWORD PTR XMM_INVFAC 
+	psubq	xmm7, XMMWORD PTR XMM_LOWONE
+	movdqa	XMMWORD PTR XMM_INVFAC, xmm7
+	jmp	retry			
+ok1:	test	edx, 0800h		
+	jnz	short ok2		
+	movdqa	xmm7, XMMWORD PTR XMM_INVFAC 
+	psubq	xmm7, XMMWORD PTR XMM_HIGHONE
+	movdqa	XMMWORD PTR XMM_INVFAC, xmm7
+	jmp	retry			
+ok2:
+
+	movdqa	xmm7, XMMWORD PTR XMM_INVFAC 
+	movd	xmm0, XMM_INIT120BS
+	psrlq	xmm7, xmm0		
+	movdqa	xmm6, XMMWORD PTR XMM_BITS30
+	pand	xmm6, xmm7		
+	psrlq	xmm7, 30		
+
+	movdqa	xmm3, XMMWORD PTR XMM_F2
+	pmuludq	xmm3, xmm6		
+	movdqa	xmm4, XMMWORD PTR XMM_F3
+	pmuludq	xmm4, xmm7		
+	movdqa	xmm5, XMMWORD PTR XMM_F1
+	pmuludq	xmm5, xmm6		
+	pmuludq	xmm7, XMMWORD PTR XMM_F2
+	pmuludq	xmm6, XMMWORD PTR XMM_F3
+	paddq	xmm3, xmm4		
+	paddd	xmm5, xmm7		
+	movdqa	xmm2, XMMWORD PTR XMM_BITS30
+	pand	xmm2, xmm3		
+	psllq	xmm2, 30		
+	paddq	xmm6, xmm2		
+	psrlq	xmm3, 30		
+	paddd	xmm5, xmm3		
+
+	pxor	xmm1, xmm1
+	pxor	xmm0, xmm0
+	psubq	xmm1, xmm6		
+	psubd	xmm0, xmm5		
+
+	movdqa	xmm4, XMMWORD PTR XMM_BITS30	
+	movdqa	xmm5, xmm1		
+	psrlq	xmm1, 30		
+	pand	xmm4, xmm1		
+	psrlq	xmm1, 2			
+	psrad	xmm1, 28		
+	paddd	xmm0, xmm1		
+	pand	xmm5, XMMWORD PTR XMM_BITS30	
+	pand	xmm0, XMMWORD PTR XMM_BITS28	
+	movdqa	XMMWORD PTR XMM_TWO_120_MODF2, xmm4
+	movdqa	XMMWORD PTR XMM_TWO_120_MODF3, xmm5
+	movdqa	XMMWORD PTR XMM_TWO_120_MODF1, xmm0
+
+	movdqa	xmm0, XMMWORD PTR XMM_INVFAC	
+	movd	xmm1, XMM_INITBS
+	psrlq	xmm0, xmm1		
+	movdqa	xmm1, XMMWORD PTR XMM_BITS30
+	pand	xmm1, xmm0		
+	psrlq	xmm0, 30		
+
+	movdqa	xmm6, XMMWORD PTR XMM_INITVAL	
+	pxor	xmm7, xmm7		
+
+	movdqa	xmm3, XMMWORD PTR XMM_F2
+	pmuludq	xmm3, xmm1		
+	movdqa	xmm4, XMMWORD PTR XMM_F3
+	pmuludq	xmm4, xmm0		
+	movdqa	xmm5, XMMWORD PTR XMM_F1
+	pmuludq	xmm5, xmm1		
+	pmuludq	xmm0, XMMWORD PTR XMM_F2
+	pmuludq	xmm1, XMMWORD PTR XMM_F3
+	paddq	xmm3, xmm4		
+	paddd	xmm5, xmm0		
+	movdqa	xmm2, XMMWORD PTR XMM_BITS30
+	pand	xmm2, xmm3		
+	psllq	xmm2, 30		
+	paddq	xmm1, xmm2		
+	psrlq	xmm3, 30		
+	paddd	xmm5, xmm3		
+
+	psubq	xmm7, xmm1		
+	psubd	xmm6, xmm5		
+
+	movdqa	xmm1, XMMWORD PTR XMM_BITS30	
+	movdqa	xmm2, xmm7		
+	psrlq	xmm7, 30		
+	pand	xmm1, xmm7		
+	psrlq	xmm7, 2			
+	psrad	xmm7, 28		
+	paddd	xmm6, xmm7		
+	pand	xmm2, XMMWORD PTR XMM_BITS30	
+	movdqa	xmm0, XMMWORD PTR XMM_BITS28	
+	pand	xmm0, xmm6		
+	ENDM
+
+sse2_fac_initval MACRO
+	LOCAL	retry, invfac_ok, invfac_adjust
+
+	movdqa	xmm15, XMMWORD PTR XMM_BITS30
+
+	movdqa	xmm1, XMMWORD PTR XMM_INVFAC 
+	movdqa	xmm7, XMMWORD PTR XMM_INVFACa 
+retry:	movdqa	xmm3, xmm1
+	psrlq	xmm3, 3			
+	movdqa	xmm0, xmm3
+	pand	xmm0, xmm15		
+	psrlq	xmm3, 30		
+	movdqa	XMMWORD PTR XMM_I2, xmm0
+	movdqa	XMMWORD PTR XMM_I1, xmm3
+
+	movdqa	xmm9, xmm7
+	psrlq	xmm9, 3			
+	movdqa	xmm6, xmm9
+	pand	xmm6, xmm15		
+	psrlq	xmm9, 30		
+	movdqa	XMMWORD PTR XMM_I2a, xmm6
+	movdqa	XMMWORD PTR XMM_I1a, xmm9
+
+	movdqa	xmm4, xmm3
+	pmuludq xmm4, XMMWORD PTR XMM_F3 
+	movdqa	xmm2, xmm0
+	pmuludq xmm2, XMMWORD PTR XMM_F2 
+	pmuludq xmm3, XMMWORD PTR XMM_F2 
+	movdqa	xmm5, xmm0
+	pmuludq xmm5, XMMWORD PTR XMM_F1 
+	pmuludq xmm0, XMMWORD PTR XMM_F3 
+	paddq	xmm4, xmm2		
+	paddd	xmm3, xmm5		
+	movdqa	xmm5, xmm4
+	pand	xmm5, xmm15		
+	psrlq	xmm4, 30		
+	psllq	xmm5, 30		
+	paddq	xmm0, xmm5		
+	paddd	xmm3, xmm4		
+
+	movdqa	xmm10, xmm9
+	pmuludq xmm10, XMMWORD PTR XMM_F3a 
+	movdqa	xmm8, xmm6
+	pmuludq xmm8, XMMWORD PTR XMM_F2a 
+	pmuludq xmm9, XMMWORD PTR XMM_F2a 
+	movdqa	xmm11, xmm6
+	pmuludq xmm11, XMMWORD PTR XMM_F1a 
+	pmuludq xmm6, XMMWORD PTR XMM_F3a 
+	paddq	xmm10, xmm8		
+	paddd	xmm9, xmm11		
+	movdqa	xmm11, xmm10
+	pand	xmm11, xmm15		
+	psrlq	xmm10, 30		
+	psllq	xmm11, 30		
+	paddq	xmm6, xmm11		
+	paddd	xmm9, xmm10		
+
+	psrlq	xmm0, 60
+	paddd	xmm3, xmm0		
+
+	psrlq	xmm6, 60
+	paddd	xmm9, xmm6		
+
+	pand	xmm3, XMMWORD PTR YMM_28TH_BIT 
+	pxor	xmm2, xmm2
+	pcmpeqd xmm3, xmm2		
+	pand	xmm9, XMMWORD PTR YMM_28TH_BIT 
+	pcmpeqd xmm9, xmm2		
+	pmovmskb rdx, xmm3
+	and	edx, 0F0Fh		
+	jnz	short invfac_adjust	
+	pmovmskb rdx, xmm9
+	and	edx, 0F0Fh		
+	jz	short invfac_ok		
+invfac_adjust:
+	psllq	xmm3, 32		
+	movdqa	xmm2, xmm3
+	psrlq	xmm3, 32
+	por	xmm3, xmm2
+	psllq	xmm9, 32		
+	movdqa	xmm2, xmm9
+	psrlq	xmm9, 32
+	por	xmm9, xmm2
+	movdqa	xmm1, XMMWORD PTR XMM_INVFAC 
+	paddq	xmm1, xmm3		
+	movdqa	XMMWORD PTR XMM_INVFAC, xmm1 
+	movdqa	xmm7, XMMWORD PTR XMM_INVFACa 
+	paddq	xmm7, xmm9		
+	movdqa	XMMWORD PTR XMM_INVFACa, xmm7 
+	jmp	retry			
+invfac_ok:
+
+	movdqa	xmm3, XMMWORD PTR XMM_INVFAC 
+	psrlq	xmm3, XMMWORD PTR XMM_INIT120BS 
+	movdqa	xmm0, xmm3
+	pand	xmm0, xmm15		
+	psrlq	xmm3, 30		
+
+	movdqa	xmm9, XMMWORD PTR XMM_INVFACa 
+	psrlq	xmm9, XMMWORD PTR XMM_INIT120BS 
+	movdqa	xmm6, xmm9
+	pand	xmm6, xmm15		
+	psrlq	xmm9, 30		
+
+	movdqa	xmm4, xmm3
+	pmuludq xmm4, XMMWORD PTR XMM_F3 
+	movdqa	xmm2, xmm0
+	pmuludq xmm2, XMMWORD PTR XMM_F2 
+	pmuludq xmm3, XMMWORD PTR XMM_F2 
+	movdqa	xmm5, xmm0
+	pmuludq xmm5, XMMWORD PTR XMM_F1 
+	pmuludq xmm0, XMMWORD PTR XMM_F3 
+	paddq	xmm4, xmm2		
+	paddd	xmm3, xmm5		
+	movdqa	xmm5, xmm4
+	pand	xmm5, xmm15		
+	psrlq	xmm4, 30		
+	psllq	xmm5, 30		
+	paddq	xmm0, xmm5		
+	paddd	xmm3, xmm4		
+
+	movdqa	xmm10, xmm9
+	pmuludq xmm10, XMMWORD PTR XMM_F3a 
+	movdqa	xmm8, xmm6
+	pmuludq xmm8, XMMWORD PTR XMM_F2a 
+	pmuludq xmm9, XMMWORD PTR XMM_F2a 
+	movdqa	xmm11, xmm6
+	pmuludq xmm11, XMMWORD PTR XMM_F1a 
+	pmuludq xmm6, XMMWORD PTR XMM_F3a 
+	paddq	xmm10, xmm8		
+	paddd	xmm9, xmm11		
+	movdqa	xmm11, xmm10
+	pand	xmm11, xmm15		
+	psrlq	xmm10, 30		
+	psllq	xmm11, 30		
+	paddq	xmm6, xmm11		
+	paddd	xmm9, xmm10		
+
+	pxor	xmm5, xmm5
+	pxor	xmm4, xmm4
+	psubq	xmm5, xmm0		
+	psubd	xmm4, xmm3		
+
+	pxor	xmm11, xmm11
+	pxor	xmm10, xmm10
+	psubq	xmm11, xmm6		
+	psubd	xmm10, xmm9		
+
+	movdqa	xmm2, xmm5
+	pand	xmm2, xmm15		
+	psrlq	xmm5, 30		
+	movdqa	xmm1, xmm5
+	pand	xmm1, xmm15		
+	psrlq	xmm5, 2			
+	psrad	xmm5, 28		
+	paddd	xmm4, xmm5		
+	movdqa	xmm0, xmm4
+	pand	xmm0, XMMWORD PTR XMM_BITS28 
+	movdqa XMMWORD PTR XMM_TWO_120_MODF3, xmm2
+	movdqa XMMWORD PTR XMM_TWO_120_MODF2, xmm1
+	movdqa XMMWORD PTR XMM_TWO_120_MODF1, xmm0
+
+	movdqa	xmm8, xmm11
+	pand	xmm8, xmm15		
+	psrlq	xmm11, 30		
+	movdqa	xmm7, xmm11
+	pand	xmm7, xmm15		
+	psrlq	xmm11, 2		
+	psrad	xmm11, 28		
+	paddd	xmm10, xmm11		
+	movdqa	xmm6, xmm10
+	pand	xmm6, XMMWORD PTR XMM_BITS28 
+	movdqa XMMWORD PTR XMM_TWO_120_MODF3a, xmm8
+	movdqa XMMWORD PTR XMM_TWO_120_MODF2a, xmm7
+	movdqa XMMWORD PTR XMM_TWO_120_MODF1a, xmm6
+
+	movdqa	xmm0, XMMWORD PTR XMM_INVFAC 
+	movd	xmm1, XMM_INITBS
+	psrlq	xmm0, xmm1		
+	movdqa	xmm3, xmm0
+	psrlq	xmm3, 30		
+	pand	xmm0, xmm15		
+
+	movdqa	xmm6, XMMWORD PTR XMM_INVFACa 
+	psrlq	xmm6, xmm1		
+	movdqa	xmm9, xmm6
+	psrlq	xmm9, 30		
+	pand	xmm6, xmm15		
+
+	movdqa	xmm4, xmm3
+	pmuludq xmm4, XMMWORD PTR XMM_F3 
+	movdqa	xmm2, xmm0
+	pmuludq xmm2, XMMWORD PTR XMM_F2 
+	pmuludq xmm3, XMMWORD PTR XMM_F2 
+	movdqa	xmm5, xmm0
+	pmuludq xmm5, XMMWORD PTR XMM_F1 
+	pmuludq xmm0, XMMWORD PTR XMM_F3 
+	paddq	xmm4, xmm2		
+	paddd	xmm3, xmm5		
+	movdqa	xmm5, xmm4
+	pand	xmm5, xmm15		
+	psrlq	xmm4, 30		
+	psllq	xmm5, 30		
+	paddq	xmm0, xmm5		
+	paddd	xmm3, xmm4		
+
+	movdqa	xmm10, xmm9
+	pmuludq xmm10, XMMWORD PTR XMM_F3a 
+	movdqa	xmm8, xmm6
+	pmuludq xmm8, XMMWORD PTR XMM_F2a 
+	pmuludq xmm9, XMMWORD PTR XMM_F2a 
+	movdqa	xmm11, xmm6
+	pmuludq xmm11, XMMWORD PTR XMM_F1a 
+	pmuludq xmm6, XMMWORD PTR XMM_F3a 
+	paddq	xmm10, xmm8		
+	paddd	xmm9, xmm11		
+	movdqa	xmm11, xmm10
+	pand	xmm11, xmm15		
+	psrlq	xmm10, 30		
+	psllq	xmm11, 30		
+	paddq	xmm6, xmm11		
+	paddd	xmm9, xmm10		
+
+	pxor	xmm5, xmm5		
+	movdqa	xmm4, XMMWORD PTR XMM_INITVAL 
+
+	pxor	xmm11, xmm11		
+	movdqa	xmm10, XMMWORD PTR XMM_INITVAL 
+
+	psubq	xmm5, xmm0		
+	psubd	xmm4, xmm3		
+
+	psubq	xmm11, xmm6		
+	psubd	xmm10, xmm9		
+	ENDM
+
+sse2_fac MACRO fac_size
+
+	movdqa	xmm2, xmm5
+	pand	xmm2, xmm15		
+	psrlq	xmm5, 30		
+	movdqa	xmm1, xmm5
+	pand	xmm1, xmm15		
+	psrlq	xmm5, 2			
+	psrad	xmm5, 28		
+	paddd	xmm4, xmm5		
+	movdqa	xmm0, xmm4
+	pand	xmm0, XMMWORD PTR XMM_BITS28 
+
+	movdqa	xmm8, xmm11
+	pand	xmm8, xmm15		
+	psrlq	xmm11, 30		
+	movdqa	xmm7, xmm11
+	pand	xmm7, xmm15		
+	psrlq	xmm11, 2		
+	psrad	xmm11, 28		
+	paddd	xmm10, xmm11		
+	movdqa	xmm6, xmm10
+	pand	xmm6, XMMWORD PTR XMM_BITS28 
+
+	movdqa	xmm3, xmm0		
+	paddq	xmm3, xmm0		
+	movdqa	xmm5, xmm1		
+	paddq	xmm5, xmm1		
+	pmuludq	xmm1, xmm1		
+	movdqa	xmm4, xmm0		
+	pmuludq	xmm4, xmm0		
+	pmuludq	xmm3, xmm2		
+	pmuludq	xmm0, xmm5		
+	pmuludq	xmm5, xmm2		
+	pmuludq	xmm2, xmm2		
+	paddq	xmm1, xmm3		
+
+	movdqa	xmm9, xmm6		
+	paddq	xmm9, xmm6		
+	movdqa	xmm11, xmm7		
+	paddq	xmm11, xmm7		
+	pmuludq	xmm7, xmm7		
+	movdqa	xmm10, xmm6		
+	pmuludq	xmm10, xmm6		
+	pmuludq	xmm9, xmm8		
+	pmuludq	xmm6, xmm11		
+	pmuludq	xmm11, xmm8		
+	pmuludq	xmm8, xmm8		
+	paddq	xmm7, xmm9		
+
+	IF fac_size GE 75
+	movdqa	xmm3, xmm4		
+	psrlq	xmm3, 30		
+	pmuludq xmm3, XMMWORD PTR XMM_TWO_120_MODF2 
+	paddq	xmm1, xmm3		
+	movdqa	xmm3, xmm4		
+	psrlq	xmm3, 30		
+	pmuludq xmm3, XMMWORD PTR XMM_TWO_120_MODF1 
+	paddq	xmm0, xmm3		
+	movdqa	xmm3, xmm4		
+	psrlq	xmm3, 30		
+	pmuludq xmm3, XMMWORD PTR XMM_TWO_120_MODF3 
+	paddq	xmm5, xmm3		
+	pand	xmm4, xmm15		
+
+	movdqa	xmm9, xmm10		
+	psrlq	xmm9, 30		
+	pmuludq xmm9, XMMWORD PTR XMM_TWO_120_MODF2a 
+	paddq	xmm7, xmm9		
+	movdqa	xmm9, xmm10		
+	psrlq	xmm9, 30		
+	pmuludq xmm9, XMMWORD PTR XMM_TWO_120_MODF1a 
+	paddq	xmm6, xmm9		
+	movdqa	xmm9, xmm10		
+	psrlq	xmm9, 30		
+	pmuludq xmm9, XMMWORD PTR XMM_TWO_120_MODF3a 
+	paddq	xmm11, xmm9		
+	pand	xmm10, xmm15		
+	ENDIF
+
+	movdqa	xmm3, xmm1		
+	psrlq	xmm3, 30		
+	pand	xmm1, xmm15		
+	paddq	xmm0, xmm3		
+	movdqa	xmm3, xmm0		
+	psrlq	xmm3, 30		
+	pand	xmm0, xmm15		
+	psllq	xmm0, 30		
+	paddd	xmm4, xmm3		
+	por	xmm1, xmm0		
+	movdqa	xmm0, xmm4		
+	pmuludq xmm0, XMMWORD PTR XMM_TWO_120_MODF2 
+	movdqa	xmm3, xmm4		
+	pmuludq xmm3, XMMWORD PTR XMM_TWO_120_MODF1 
+	pmuludq xmm4, XMMWORD PTR XMM_TWO_120_MODF3 
+	paddq	xmm5, xmm0		
+	paddq	xmm1, xmm3		
+	movdqa	xmm0, xmm5		
+	psrlq	xmm0, 30		
+	pand	xmm5, xmm15		
+	psllq	xmm5, 30		
+	paddq	xmm2, xmm4		
+	paddq	xmm1, xmm0		
+	paddq	xmm2, xmm5		
+					
+	movdqa	xmm9, xmm7		
+	psrlq	xmm9, 30		
+	pand	xmm7, xmm15		
+	paddq	xmm6, xmm9		
+	movdqa	xmm9, xmm6		
+	psrlq	xmm9, 30		
+	pand	xmm6, xmm15		
+	psllq	xmm6, 30		
+	paddd	xmm10, xmm9		
+	por	xmm7, xmm6		
+	movdqa	xmm6, xmm10		
+	pmuludq xmm6, XMMWORD PTR XMM_TWO_120_MODF2a 
+	movdqa	xmm9, xmm10		
+	pmuludq xmm9, XMMWORD PTR XMM_TWO_120_MODF1a 
+	pmuludq xmm10, XMMWORD PTR XMM_TWO_120_MODF3a 
+	paddq	xmm11, xmm6		
+	paddq	xmm7, xmm9		
+	movdqa	xmm6, xmm11		
+	psrlq	xmm6, 30		
+	pand	xmm11, xmm15		
+	psllq	xmm11, 30		
+	paddq	xmm8, xmm10		
+	paddq	xmm7, xmm6		
+	paddq	xmm8, xmm11		
+					
+	movdqa	xmm0, xmm1		
+	psrlq	xmm0, 30		
+	movdqa	xmm3, xmm1		
+	pand	xmm3, xmm15		
+	movdqa	xmm4, xmm0		
+	pmuludq xmm4, XMMWORD PTR XMM_I2 
+	movdqa	xmm5, xmm3		
+	pmuludq xmm5, XMMWORD PTR XMM_I1 
+	pmuludq xmm0, XMMWORD PTR XMM_I1 
+	paddq	xmm4, xmm5		
+	psrlq	xmm4, 30		
+	paddq	xmm0, xmm4		
+
+	movdqa	xmm6, xmm7		
+	psrlq	xmm6, 30		
+	movdqa	xmm9, xmm7		
+	pand	xmm9, xmm15		
+	movdqa	xmm10, xmm6		
+	pmuludq xmm10, XMMWORD PTR XMM_I2a 
+	movdqa	xmm11, xmm9		
+	pmuludq xmm11, XMMWORD PTR XMM_I1a 
+	pmuludq xmm6, XMMWORD PTR XMM_I1a 
+	paddq	xmm10, xmm11		
+	psrlq	xmm10, 30		
+	paddq	xmm6, xmm10		
+
+	psrlq	xmm0, XMMWORD PTR XMM_BS 
+	movdqa	xmm3, xmm0
+	psrlq	xmm3, 30		
+	pand	xmm0, xmm15		
+
+	psrlq	xmm6, XMMWORD PTR XMM_BS 
+	movdqa	xmm9, xmm6
+	psrlq	xmm9, 30		
+	pand	xmm6, xmm15		
+
+	movdqa	xmm4, xmm3
+	pmuludq xmm4, XMMWORD PTR XMM_F3 
+	movdqa	xmm5, xmm0
+	pmuludq xmm5, XMMWORD PTR XMM_F2 
+	pmuludq xmm3, XMMWORD PTR XMM_F2 
+	paddq	xmm4, xmm5		
+	movdqa	xmm5, xmm0
+	pmuludq xmm5, XMMWORD PTR XMM_F1 
+	pmuludq xmm0, XMMWORD PTR XMM_F3 
+	paddd	xmm3, xmm5		
+	movdqa	xmm5, xmm4
+	pand	xmm5, xmm15		
+	psrlq	xmm4, 30		
+	psllq	xmm5, 30		
+	paddq	xmm0, xmm5		
+	paddd	xmm3, xmm4		
+
+	movdqa	xmm10, xmm9
+	pmuludq xmm10, XMMWORD PTR XMM_F3a 
+	movdqa	xmm11, xmm6
+	pmuludq xmm11, XMMWORD PTR XMM_F2a 
+	pmuludq xmm9, XMMWORD PTR XMM_F2a 
+	paddq	xmm10, xmm11		
+	movdqa	xmm11, xmm6
+	pmuludq xmm11, XMMWORD PTR XMM_F1a 
+	pmuludq xmm6, XMMWORD PTR XMM_F3a 
+	paddd	xmm9, xmm11		
+	movdqa	xmm11, xmm10
+	pand	xmm11, xmm15		
+	psrlq	xmm10, 30		
+	psllq	xmm11, 30		
+	paddq	xmm6, xmm11		
+	paddd	xmm9, xmm10		
+
+	movdqa	xmm5, xmm2
+	psubq	xmm5, xmm0		
+	movdqa	xmm4, xmm1
+	psubd	xmm4, xmm3		
+
+	movdqa	xmm11, xmm8
+	psubq	xmm11, xmm6		
+	movdqa	xmm10, xmm7
+	psubd	xmm10, xmm9		
+
+	movdqu	xmm0, XMMWORD PTR XMM_SHIFTER[rdi*8]
+	psllq	xmm5, xmm0		
+	psllq	xmm4, xmm0		
+
+	psllq	xmm11, xmm0		
+	psllq	xmm10, xmm0		
+	ENDM
+
+sse2_compare_part1 MACRO
+	psubq	xmm5, XMMWORD PTR YMM_ONE 
+	movdqa	xmm2, xmm5
+	pand	xmm2, xmm15		
+	psubq	xmm11, XMMWORD PTR YMM_ONE 
+	movdqa	xmm8, xmm11
+	pand	xmm8, xmm15		
+	ENDM
+
+sse2_compare_part2 MACRO
+	psrlq	xmm5, 30		
+	movdqa	xmm1, xmm5
+	pand	xmm1, xmm15		
+	psrlq	xmm5, 2			
+	psrad	xmm5, 28		
+	paddd	xmm4, xmm5		
+	movdqa	xmm0, xmm4
+	pand	xmm0, XMMWORD PTR XMM_BITS28 
+	psrlq	xmm11, 30		
+	movdqa	xmm7, xmm11
+	pand	xmm7, xmm15		
+	psrlq	xmm11, 2		
+	psrad	xmm11, 28		
+	paddd	xmm10, xmm11		
+	movdqa	xmm6, xmm10
+	pand	xmm6, XMMWORD PTR XMM_BITS28 
+	ENDM
+
+avx2_fac_initval MACRO
+	LOCAL	retry, invfac_ok
+
+	vmovdqa	ymm15, YMMWORD PTR YMM_BITS30
+	vmovdqa	ymm13, YMMWORD PTR YMM_F2
+	vmovdqa	ymm14, YMMWORD PTR YMM_F3
+
+	vmovdqa	ymm1, YMMWORD PTR YMM_INVFAC			
+retry:	vpsrlq	ymm3, ymm1, 3					
+	vpand	ymm0, ymm3, ymm15				
+	vpsrlq	ymm3, ymm3, 30					
+	vmovdqa	YMMWORD PTR YMM_I2, ymm0			
+	vmovdqa	YMMWORD PTR YMM_I1, ymm3
+
+	vpmuludq ymm4, ymm3, ymm14				
+	vpmuludq ymm2, ymm0, ymm13				
+	vpmuludq ymm3, ymm3, ymm13				
+	vpmuludq ymm5, ymm0, YMMWORD PTR YMM_F1			
+	vpmuludq ymm0, ymm0, ymm14				
+	vpaddq	ymm4, ymm4, ymm2				
+	vpaddd	ymm3, ymm3, ymm5				
+	vpand	ymm5, ymm4, ymm15				
+	vpsrlq	ymm4, ymm4, 30					
+	vpsllq	ymm5, ymm5, 30					
+	vpaddq	ymm0, ymm0, ymm5				
+	vpaddd	ymm3, ymm3, ymm4				
+
+	vpsrlq	ymm0, ymm0, 60
+	vpaddd	ymm3, ymm3, ymm0				
+
+	vpand	ymm3, ymm3, YMMWORD PTR YMM_28TH_BIT		
+	vpxor	ymm2, ymm2, ymm2
+	vpcmpeqq ymm3, ymm3, ymm2
+	vpmovmskb rdx, ymm3
+	and	edx, 0FFFFFFFFh					
+	jz	short invfac_ok					
+	vmovdqa	ymm1, YMMWORD PTR YMM_INVFAC			
+	vpaddq	ymm1, ymm1, ymm3				
+	vmovdqa	YMMWORD PTR YMM_INVFAC, ymm1			
+	jmp	retry						
+invfac_ok:
+
+	vmovdqa	ymm1, YMMWORD PTR YMM_INVFAC			
+	vpsrlq	ymm3, ymm1, XMMWORD PTR XMM_INIT120BS		
+	vpand	ymm0, ymm3, ymm15				
+	vpsrlq	ymm3, ymm3, 30					
+
+	vpmuludq ymm4, ymm3, ymm14				
+	vpmuludq ymm2, ymm0, ymm13				
+	vpmuludq ymm3, ymm3, ymm13				
+	vpmuludq ymm5, ymm0, YMMWORD PTR YMM_F1			
+	vpmuludq ymm0, ymm0, ymm14				
+	vpaddq	ymm4, ymm4, ymm2				
+	vpaddd	ymm3, ymm3, ymm5				
+	vpand	ymm5, ymm4, ymm15				
+	vpsrlq	ymm4, ymm4, 30					
+	vpsllq	ymm5, ymm5, 30					
+	vpaddq	ymm0, ymm0, ymm5				
+	vpaddd	ymm3, ymm3, ymm4				
+
+	vpxor	ymm2, ymm2, ymm2
+	vpsubq	ymm5, ymm2, ymm0				
+	vpsubd	ymm4, ymm2, ymm3				
+
+	vpand	ymm2, ymm5, ymm15				
+	vpsrlq	ymm5, ymm5, 30					
+	vpand	ymm1, ymm5, ymm15				
+	vpsrlq	ymm5, ymm5, 2					
+	vpsrad	ymm5, ymm5, 28					
+	vpaddd	ymm4, ymm4, ymm5				
+	vpand	ymm0, ymm4, YMMWORD PTR YMM_BITS28		
+	vmovdqa YMMWORD PTR YMM_TWO_120_MODF3, ymm2
+	vmovdqa YMMWORD PTR YMM_TWO_120_MODF2, ymm1
+	vmovdqa YMMWORD PTR YMM_TWO_120_MODF1, ymm0
+
+	vmovdqa	ymm1, YMMWORD PTR YMM_INVFAC			
+	vpsrlq	ymm0, ymm1, XMMWORD PTR XMM_INITBS		
+	vpsrlq	ymm3, ymm0, 30					
+	vpand	ymm0, ymm0, ymm15				
+
+	vpmuludq ymm4, ymm3, ymm14				
+	vpmuludq ymm2, ymm0, ymm13				
+	vpmuludq ymm3, ymm3, ymm13				
+	vpmuludq ymm5, ymm0, YMMWORD PTR YMM_F1			
+	vpmuludq ymm0, ymm0, ymm14				
+	vpaddq	ymm4, ymm4, ymm2				
+	vpaddd	ymm3, ymm3, ymm5				
+	vpand	ymm5, ymm4, ymm15				
+	vpsrlq	ymm4, ymm4, 30					
+	vpsllq	ymm5, ymm5, 30					
+	vpaddq	ymm0, ymm0, ymm5				
+	vpaddd	ymm3, ymm3, ymm4				
+
+	vpxor	ymm2, ymm2, ymm2				
+	vmovdqa	ymm1, YMMWORD PTR YMM_INITVAL			
+
+	vpsubq	ymm5, ymm2, ymm0				
+	vpsubd	ymm4, ymm1, ymm3				
+
+	vpand	ymm2, ymm5, ymm15				
+	vpsrlq	ymm5, ymm5, 30					
+	vpand	ymm1, ymm5, ymm15				
+	vpsrlq	ymm5, ymm5, 2					
+	vpsrad	ymm5, ymm5, 28					
+	vpaddd	ymm4, ymm4, ymm5				
+	vpand	ymm0, ymm4, YMMWORD PTR YMM_BITS28		
+
+	vmovdqa	ymm12, YMMWORD PTR YMM_I1
+	vmovdqa	ymm9, YMMWORD PTR YMM_TWO_120_MODF1
+	vmovdqa	ymm10, YMMWORD PTR YMM_TWO_120_MODF2
+	vmovdqa	ymm11, YMMWORD PTR YMM_TWO_120_MODF3
+	ENDM
+
+avx2_fac MACRO fac_size
+
+	vpaddq	ymm3, ymm0, ymm0				
+	vpaddq	ymm5, ymm1, ymm1				
+	vpmuludq ymm1, ymm1, ymm1				
+	vpmuludq ymm4, ymm0, ymm0				
+	vpmuludq ymm3, ymm3, ymm2				
+	vpmuludq ymm0, ymm0, ymm5				
+	vpmuludq ymm5, ymm5, ymm2				
+	vpmuludq ymm2, ymm2, ymm2				
+	vpaddq	ymm1, ymm1, ymm3				
+								
+	IF fac_size GE 75
+
+	vpsrlq	ymm3, ymm4, 30					
+
+	vpmuludq ymm3, ymm3, ymm10				
+	vpaddq	ymm1, ymm1, ymm3				
+
+	vpsrlq	ymm3, ymm4, 30					
+
+	vpmuludq ymm3, ymm3, ymm9				
+	vpaddq	ymm0, ymm0, ymm3				
+
+	vpsrlq	ymm3, ymm4, 30					
+	vpmuludq ymm3, ymm3, ymm11				
+	vpaddq	ymm5, ymm5, ymm3				
+
+	vpand	ymm4, ymm4, ymm15				
+
+	ENDIF
+
+	vpsrlq	ymm3, ymm1, 30					
+	vpand	ymm1, ymm1, ymm15				
+	vpaddq	ymm0, ymm0, ymm3				
+	vpsrlq	ymm3, ymm0, 30					
+	vpand	ymm0, ymm0, ymm15				
+	vpsllq	ymm0, ymm0, 30					
+	vpaddd	ymm4, ymm4, ymm3				
+	vpor	ymm1, ymm1, ymm0				
+	vpmuludq ymm0, ymm4, ymm10				
+	vpmuludq ymm3, ymm4, ymm9				
+	vpmuludq ymm4, ymm4, ymm11				
+	vpaddq	ymm5, ymm5, ymm0				
+	vpaddq	ymm1, ymm1, ymm3				
+	vpsrlq	ymm0, ymm5, 30					
+	vpand	ymm5, ymm5, ymm15				
+	vpsllq	ymm5, ymm5, 30					
+	vpaddq	ymm2, ymm2, ymm4				
+	vpaddq	ymm1, ymm1, ymm0				
+	vpaddq	ymm2, ymm2, ymm5				
+								
+	vpsrlq	ymm0, ymm1, 30				
+	vpand	ymm3, ymm1, ymm15			
+	vpmuludq ymm4, ymm0, YMMWORD PTR YMM_I2		
+	vpmuludq ymm5, ymm12, ymm3			
+	vpmuludq ymm0, ymm12, ymm0			
+	vpaddq	ymm4, ymm4, ymm5			
+	vpsrlq	ymm4, ymm4, 30				
+	vpaddq	ymm0, ymm0, ymm4			
+
+	vpsrlq	ymm0, ymm0, XMMWORD PTR XMM_BS		
+	vpsrlq	ymm3, ymm0, 30				
+	vpand	ymm0, ymm0, ymm15			
+
+	vpmuludq ymm4, ymm3, ymm14			
+	vpmuludq ymm5, ymm0, ymm13			
+	vpmuludq ymm3, ymm3, ymm13			
+
+	vpaddq	ymm4, ymm4, ymm5			
+	vpmuludq ymm5, ymm0, YMMWORD PTR YMM_F1		
+	vpmuludq ymm0, ymm0, ymm14			
+	vpaddd	ymm3, ymm3, ymm5			
+
+	vpand	ymm5, ymm4, ymm15			
+	vpsrlq	ymm4, ymm4, 30				
+	vpsllq	ymm5, ymm5, 30				
+	vpaddq	ymm0, ymm0, ymm5			
+	vpaddd	ymm3, ymm3, ymm4			
+
+	vpsubq	ymm5, ymm2, ymm0			
+	vpsubd	ymm4, ymm1, ymm3			
+
+	vmovdqu	xmm0, XMMWORD PTR XMM_SHIFTER[rdi*8]
+	vpsllq	ymm5, ymm5, xmm0			
+	vpsllq	ymm4, ymm4, xmm0			
+
+	vpand	ymm2, ymm5, ymm15			
+	vpsrlq	ymm5, ymm5, 30				
+	vpand	ymm1, ymm5, ymm15			
+	vpsrlq	ymm5, ymm5, 2				
+	vpsrad	ymm5, ymm5, 28				
+	vpaddd	ymm4, ymm4, ymm5			
+	vpand	ymm0, ymm4, YMMWORD PTR YMM_BITS28	
+	ENDM
+
+avx2_fac_initval MACRO
+	LOCAL	retry, invfac_adjust, invfac_ok
+
+	vmovdqa	ymm15, YMMWORD PTR YMM_BITS30
+
+	vmovdqa	ymm1, YMMWORD PTR YMM_INVFAC			
+	vmovdqa	ymm7, YMMWORD PTR YMM_INVFACa			
+retry:	vpsrlq	ymm3, ymm1, 3					
+	vpand	ymm0, ymm3, ymm15				
+	vpsrlq	ymm3, ymm3, 30					
+	vmovdqa	YMMWORD PTR YMM_I2, ymm0			
+	vmovdqa	YMMWORD PTR YMM_I1, ymm3
+
+	vpsrlq	ymm9, ymm7, 3					
+	vpand	ymm6, ymm9, ymm15				
+	vpsrlq	ymm9, ymm9, 30					
+	vmovdqa	YMMWORD PTR YMM_I2a, ymm6			
+	vmovdqa	YMMWORD PTR YMM_I1a, ymm9
+
+	vpmuludq ymm4, ymm3, YMMWORD PTR YMM_F3			
+	vpmuludq ymm2, ymm0, YMMWORD PTR YMM_F2			
+	vpmuludq ymm3, ymm3, YMMWORD PTR YMM_F2			
+	vpmuludq ymm5, ymm0, YMMWORD PTR YMM_F1			
+	vpmuludq ymm0, ymm0, YMMWORD PTR YMM_F3			
+	vpaddq	ymm4, ymm4, ymm2				
+	vpaddd	ymm3, ymm3, ymm5				
+	vpand	ymm5, ymm4, ymm15				
+	vpsrlq	ymm4, ymm4, 30					
+	vpsllq	ymm5, ymm5, 30					
+	vpaddq	ymm0, ymm0, ymm5				
+	vpaddd	ymm3, ymm3, ymm4				
+
+	vpmuludq ymm10, ymm9, YMMWORD PTR YMM_F3a		
+	vpmuludq ymm8, ymm6, YMMWORD PTR YMM_F2a		
+	vpmuludq ymm9, ymm9, YMMWORD PTR YMM_F2a		
+	vpmuludq ymm11, ymm6, YMMWORD PTR YMM_F1a		
+	vpmuludq ymm6, ymm6, YMMWORD PTR YMM_F3a		
+	vpaddq	ymm10, ymm10, ymm8				
+	vpaddd	ymm9, ymm9, ymm11				
+	vpand	ymm11, ymm10, ymm15				
+	vpsrlq	ymm10, ymm10, 30				
+	vpsllq	ymm11, ymm11, 30				
+	vpaddq	ymm6, ymm6, ymm11				
+	vpaddd	ymm9, ymm9, ymm10				
+
+	vpsrlq	ymm0, ymm0, 60
+	vpaddd	ymm3, ymm3, ymm0				
+
+	vpsrlq	ymm6, ymm6, 60
+	vpaddd	ymm9, ymm9, ymm6				
+
+	vpand	ymm3, ymm3, YMMWORD PTR YMM_28TH_BIT		
+	vpxor	ymm2, ymm2, ymm2
+	vpcmpeqq ymm3, ymm3, ymm2
+	vpand	ymm9, ymm9, YMMWORD PTR YMM_28TH_BIT		
+	vpcmpeqq ymm9, ymm9, ymm2
+	vpmovmskb rdx, ymm3
+	and	edx, 0FFFFFFFFh					
+	jnz	short invfac_adjust				
+	vpmovmskb rdx, ymm9
+	and	edx, 0FFFFFFFFh					
+	jz	short invfac_ok					
+invfac_adjust:
+	vmovdqa	ymm1, YMMWORD PTR YMM_INVFAC			
+	vpaddq	ymm1, ymm1, ymm3				
+	vmovdqa	YMMWORD PTR YMM_INVFAC, ymm1			
+	vmovdqa	ymm7, YMMWORD PTR YMM_INVFACa			
+	vpaddq	ymm7, ymm7, ymm9				
+	vmovdqa	YMMWORD PTR YMM_INVFACa, ymm7			
+	jmp	retry						
+invfac_ok:
+
+	vmovdqa	ymm1, YMMWORD PTR YMM_INVFAC			
+	vpsrlq	ymm3, ymm1, XMMWORD PTR XMM_INIT120BS		
+	vpand	ymm0, ymm3, ymm15				
+	vpsrlq	ymm3, ymm3, 30					
+
+	vmovdqa	ymm7, YMMWORD PTR YMM_INVFACa			
+	vpsrlq	ymm9, ymm7, XMMWORD PTR XMM_INIT120BS		
+	vpand	ymm6, ymm9, ymm15				
+	vpsrlq	ymm9, ymm9, 30					
+
+	vpmuludq ymm4, ymm3, YMMWORD PTR YMM_F3			
+	vpmuludq ymm2, ymm0, YMMWORD PTR YMM_F2			
+	vpmuludq ymm3, ymm3, YMMWORD PTR YMM_F2			
+	vpmuludq ymm5, ymm0, YMMWORD PTR YMM_F1			
+	vpmuludq ymm0, ymm0, YMMWORD PTR YMM_F3			
+	vpaddq	ymm4, ymm4, ymm2				
+	vpaddd	ymm3, ymm3, ymm5				
+	vpand	ymm5, ymm4, ymm15				
+	vpsrlq	ymm4, ymm4, 30					
+	vpsllq	ymm5, ymm5, 30					
+	vpaddq	ymm0, ymm0, ymm5				
+	vpaddd	ymm3, ymm3, ymm4				
+
+	vpmuludq ymm10, ymm9, YMMWORD PTR YMM_F3a		
+	vpmuludq ymm8, ymm6, YMMWORD PTR YMM_F2a		
+	vpmuludq ymm9, ymm9, YMMWORD PTR YMM_F2a		
+	vpmuludq ymm11, ymm6, YMMWORD PTR YMM_F1a		
+	vpmuludq ymm6, ymm6, YMMWORD PTR YMM_F3a		
+	vpaddq	ymm10, ymm10, ymm8				
+	vpaddd	ymm9, ymm9, ymm11				
+	vpand	ymm11, ymm10, ymm15				
+	vpsrlq	ymm10, ymm10, 30				
+	vpsllq	ymm11, ymm11, 30				
+	vpaddq	ymm6, ymm6, ymm11				
+	vpaddd	ymm9, ymm9, ymm10				
+
+	vpxor	ymm2, ymm2, ymm2
+	vpsubq	ymm5, ymm2, ymm0				
+	vpsubd	ymm4, ymm2, ymm3				
+
+	vpsubq	ymm11, ymm2, ymm6				
+	vpsubd	ymm10, ymm2, ymm9				
+
+	vpand	ymm2, ymm5, ymm15				
+	vpsrlq	ymm5, ymm5, 30					
+	vpand	ymm1, ymm5, ymm15				
+	vpsrlq	ymm5, ymm5, 2					
+	vpsrad	ymm5, ymm5, 28					
+	vpaddd	ymm4, ymm4, ymm5				
+	vpand	ymm0, ymm4, YMMWORD PTR YMM_BITS28		
+	vmovdqa YMMWORD PTR YMM_TWO_120_MODF3, ymm2
+	vmovdqa YMMWORD PTR YMM_TWO_120_MODF2, ymm1
+	vmovdqa YMMWORD PTR YMM_TWO_120_MODF1, ymm0
+
+	vpand	ymm8, ymm11, ymm15				
+	vpsrlq	ymm11, ymm11, 30				
+	vpand	ymm7, ymm11, ymm15				
+	vpsrlq	ymm11, ymm11, 2					
+	vpsrad	ymm11, ymm11, 28				
+	vpaddd	ymm10, ymm10, ymm11				
+	vpand	ymm6, ymm10, YMMWORD PTR YMM_BITS28		
+	vmovdqa YMMWORD PTR YMM_TWO_120_MODF3a, ymm8
+	vmovdqa YMMWORD PTR YMM_TWO_120_MODF2a, ymm7
+	vmovdqa YMMWORD PTR YMM_TWO_120_MODF1a, ymm6
+
+	vmovdqa	ymm1, YMMWORD PTR YMM_INVFAC			
+	vpsrlq	ymm0, ymm1, XMMWORD PTR XMM_INITBS		
+	vpsrlq	ymm3, ymm0, 30					
+	vpand	ymm0, ymm0, ymm15				
+
+	vmovdqa	ymm7, YMMWORD PTR YMM_INVFACa			
+	vpsrlq	ymm6, ymm7, XMMWORD PTR XMM_INITBS		
+	vpsrlq	ymm9, ymm6, 30					
+	vpand	ymm6, ymm6, ymm15				
+
+	vpmuludq ymm4, ymm3, YMMWORD PTR YMM_F3			
+	vpmuludq ymm2, ymm0, YMMWORD PTR YMM_F2			
+	vpmuludq ymm3, ymm3, YMMWORD PTR YMM_F2			
+	vpmuludq ymm5, ymm0, YMMWORD PTR YMM_F1			
+	vpmuludq ymm0, ymm0, YMMWORD PTR YMM_F3			
+	vpaddq	ymm4, ymm4, ymm2				
+	vpaddd	ymm3, ymm3, ymm5				
+	vpand	ymm5, ymm4, ymm15				
+	vpsrlq	ymm4, ymm4, 30					
+	vpsllq	ymm5, ymm5, 30					
+	vpaddq	ymm0, ymm0, ymm5				
+	vpaddd	ymm3, ymm3, ymm4				
+
+	vpmuludq ymm10, ymm9, YMMWORD PTR YMM_F3a		
+	vpmuludq ymm8, ymm6, YMMWORD PTR YMM_F2a		
+	vpmuludq ymm9, ymm9, YMMWORD PTR YMM_F2a		
+	vpmuludq ymm11, ymm6, YMMWORD PTR YMM_F1a		
+	vpmuludq ymm6, ymm6, YMMWORD PTR YMM_F3a		
+	vpaddq	ymm10, ymm10, ymm8				
+	vpaddd	ymm9, ymm9, ymm11				
+	vpand	ymm11, ymm10, ymm15				
+	vpsrlq	ymm10, ymm10, 30				
+	vpsllq	ymm11, ymm11, 30				
+	vpaddq	ymm6, ymm6, ymm11				
+	vpaddd	ymm9, ymm9, ymm10				
+
+	vpxor	ymm2, ymm2, ymm2				
+	vmovdqa	ymm1, YMMWORD PTR YMM_INITVAL			
+
+	vpsubq	ymm5, ymm2, ymm0				
+	vpsubd	ymm4, ymm1, ymm3				
+
+	vpsubq	ymm11, ymm2, ymm6				
+	vpsubd	ymm10, ymm1, ymm9				
+	ENDM
+
+avx2_fac MACRO fac_size
+
+	vpand	ymm2, ymm5, ymm15				
+	vpsrlq	ymm5, ymm5, 30					
+	vpand	ymm1, ymm5, ymm15				
+	vpsrlq	ymm5, ymm5, 2					
+	vpsrad	ymm5, ymm5, 28					
+	vpaddd	ymm4, ymm4, ymm5				
+	vpand	ymm0, ymm4, YMMWORD PTR YMM_BITS28		
+
+	vpand	ymm8, ymm11, ymm15				
+	vpsrlq	ymm11, ymm11, 30				
+	vpand	ymm7, ymm11, ymm15				
+	vpsrlq	ymm11, ymm11, 2					
+	vpsrad	ymm11, ymm11, 28				
+	vpaddd	ymm10, ymm10, ymm11				
+	vpand	ymm6, ymm10, YMMWORD PTR YMM_BITS28		
+
+	vpaddq	ymm3, ymm0, ymm0				
+	vpaddq	ymm5, ymm1, ymm1				
+	vpmuludq ymm1, ymm1, ymm1				
+	vpmuludq ymm4, ymm0, ymm0				
+	vpmuludq ymm3, ymm3, ymm2				
+	vpmuludq ymm0, ymm0, ymm5				
+	vpmuludq ymm5, ymm5, ymm2				
+	vpmuludq ymm2, ymm2, ymm2				
+	vpaddq	ymm1, ymm1, ymm3				
+								
+	vpaddq	ymm9, ymm6, ymm6				
+	vpaddq	ymm11, ymm7, ymm7				
+	vpmuludq ymm7, ymm7, ymm7				
+	vpmuludq ymm10, ymm6, ymm6				
+	vpmuludq ymm9, ymm9, ymm8				
+	vpmuludq ymm6, ymm6, ymm11				
+	vpmuludq ymm11, ymm11, ymm8				
+	vpmuludq ymm8, ymm8, ymm8				
+	vpaddq	ymm7, ymm7, ymm9				
+								
+	IF fac_size GE 75
+	vpsrlq	ymm3, ymm4, 30					
+	vpmuludq ymm12, ymm3, YMMWORD PTR YMM_TWO_120_MODF2	
+	vpaddq	ymm1, ymm1, ymm12				
+	vpmuludq ymm12, ymm3, YMMWORD PTR YMM_TWO_120_MODF1	
+	vpaddq	ymm0, ymm0, ymm12				
+	vpmuludq ymm3, ymm3, YMMWORD PTR YMM_TWO_120_MODF3	
+	vpaddq	ymm5, ymm5, ymm3				
+	vpand	ymm4, ymm4, ymm15				
+
+	vpsrlq	ymm9, ymm10, 30					
+	vpmuludq ymm12, ymm9, YMMWORD PTR YMM_TWO_120_MODF2a	
+	vpaddq	ymm7, ymm7, ymm12				
+	vpmuludq ymm12, ymm9, YMMWORD PTR YMM_TWO_120_MODF1a	
+	vpaddq	ymm6, ymm6, ymm12				
+	vpmuludq ymm9, ymm9, YMMWORD PTR YMM_TWO_120_MODF3a	
+	vpaddq	ymm11, ymm11, ymm9				
+	vpand	ymm10, ymm10, ymm15				
+	ENDIF
+
+	vpsrlq	ymm3, ymm1, 30					
+	vpand	ymm1, ymm1, ymm15				
+	vpaddq	ymm0, ymm0, ymm3				
+	vpsrlq	ymm3, ymm0, 30					
+	vpand	ymm0, ymm0, ymm15				
+	vpsllq	ymm0, ymm0, 30					
+	vpaddd	ymm4, ymm4, ymm3				
+	vpor	ymm1, ymm1, ymm0				
+	vpmuludq ymm0, ymm4, YMMWORD PTR YMM_TWO_120_MODF2	
+	vpmuludq ymm3, ymm4, YMMWORD PTR YMM_TWO_120_MODF1	
+	vpmuludq ymm4, ymm4, YMMWORD PTR YMM_TWO_120_MODF3	
+	vpaddq	ymm5, ymm5, ymm0				
+	vpaddq	ymm1, ymm1, ymm3				
+	vpsrlq	ymm0, ymm5, 30					
+	vpand	ymm5, ymm5, ymm15				
+	vpsllq	ymm5, ymm5, 30					
+	vpaddq	ymm2, ymm2, ymm4				
+	vpaddq	ymm1, ymm1, ymm0				
+	vpaddq	ymm2, ymm2, ymm5				
+								
+	vpsrlq	ymm9, ymm7, 30					
+	vpand	ymm7, ymm7, ymm15				
+	vpaddq	ymm6, ymm6, ymm9				
+	vpsrlq	ymm9, ymm6, 30					
+	vpand	ymm6, ymm6, ymm15				
+	vpsllq	ymm6, ymm6, 30					
+	vpaddd	ymm10, ymm10, ymm9				
+	vpor	ymm7, ymm7, ymm6				
+	vpmuludq ymm6, ymm10, YMMWORD PTR YMM_TWO_120_MODF2a	
+	vpmuludq ymm9, ymm10, YMMWORD PTR YMM_TWO_120_MODF1a	
+	vpmuludq ymm10, ymm10, YMMWORD PTR YMM_TWO_120_MODF3a	
+	vpaddq	ymm11, ymm11, ymm6				
+	vpaddq	ymm7, ymm7, ymm9				
+	vpsrlq	ymm6, ymm11, 30					
+	vpand	ymm11, ymm11, ymm15				
+	vpsllq	ymm11, ymm11, 30				
+	vpaddq	ymm8, ymm8, ymm10				
+	vpaddq	ymm7, ymm7, ymm6				
+	vpaddq	ymm8, ymm8, ymm11				
+								
+	vpsrlq	ymm0, ymm1, 30				
+	vpand	ymm3, ymm1, ymm15			
+	vpmuludq ymm4, ymm0, YMMWORD PTR YMM_I2		
+	vpmuludq ymm5, ymm3, YMMWORD PTR YMM_I1		
+	vpmuludq ymm0, ymm0, YMMWORD PTR YMM_I1		
+	vpaddq	ymm4, ymm4, ymm5			
+	vpsrlq	ymm4, ymm4, 30				
+	vpaddq	ymm0, ymm0, ymm4			
+
+	vpsrlq	ymm6, ymm7, 30				
+	vpand	ymm9, ymm7, ymm15			
+	vpmuludq ymm10, ymm6, YMMWORD PTR YMM_I2a	
+	vpmuludq ymm11, ymm9, YMMWORD PTR YMM_I1a	
+	vpmuludq ymm6, ymm6, YMMWORD PTR YMM_I1a	
+	vpaddq	ymm10, ymm10, ymm11			
+	vpsrlq	ymm10, ymm10, 30			
+	vpaddq	ymm6, ymm6, ymm10			
+
+	vpsrlq	ymm0, ymm0, XMMWORD PTR XMM_BS		
+	vpsrlq	ymm3, ymm0, 30				
+	vpand	ymm0, ymm0, ymm15			
+
+	vpsrlq	ymm6, ymm6, XMMWORD PTR XMM_BS		
+	vpsrlq	ymm9, ymm6, 30				
+	vpand	ymm6, ymm6, ymm15			
+
+	vpmuludq ymm4, ymm3, YMMWORD PTR YMM_F3		
+	vpmuludq ymm5, ymm0, YMMWORD PTR YMM_F2		
+	vpmuludq ymm3, ymm3, YMMWORD PTR YMM_F2		
+
+	vpaddq	ymm4, ymm4, ymm5			
+	vpmuludq ymm5, ymm0, YMMWORD PTR YMM_F1		
+	vpmuludq ymm0, ymm0, YMMWORD PTR YMM_F3		
+	vpaddd	ymm3, ymm3, ymm5			
+
+	vpand	ymm5, ymm4, ymm15			
+	vpsrlq	ymm4, ymm4, 30				
+	vpsllq	ymm5, ymm5, 30				
+	vpaddq	ymm0, ymm0, ymm5			
+	vpaddd	ymm3, ymm3, ymm4			
+
+	vpmuludq ymm10, ymm9, YMMWORD PTR YMM_F3a	
+	vpmuludq ymm11, ymm6, YMMWORD PTR YMM_F2a	
+	vpmuludq ymm9, ymm9, YMMWORD PTR YMM_F2a	
+
+	vpaddq	ymm10, ymm10, ymm11			
+	vpmuludq ymm11, ymm6, YMMWORD PTR YMM_F1a	
+	vpmuludq ymm6, ymm6, YMMWORD PTR YMM_F3a	
+	vpaddd	ymm9, ymm9, ymm11			
+
+	vpand	ymm11, ymm10, ymm15			
+	vpsrlq	ymm10, ymm10, 30			
+	vpsllq	ymm11, ymm11, 30			
+	vpaddq	ymm6, ymm6, ymm11			
+	vpaddd	ymm9, ymm9, ymm10			
+
+	vpsubq	ymm5, ymm2, ymm0			
+	vpsubd	ymm4, ymm1, ymm3			
+
+	vpsubq	ymm11, ymm8, ymm6			
+	vpsubd	ymm10, ymm7, ymm9			
+
+	vmovdqu	xmm0, XMMWORD PTR XMM_SHIFTER[rdi*8]
+	vpsllq	ymm5, ymm5, xmm0			
+	vpsllq	ymm4, ymm4, xmm0			
+
+	vpsllq	ymm11, ymm11, xmm0			
+	vpsllq	ymm10, ymm10, xmm0			
+	ENDM
+
+avx2_compare_part1 MACRO
+	vpsubq	ymm5, ymm5, YMMWORD PTR YMM_ONE		
+	vpand	ymm2, ymm5, ymm15			
+	vpsubq	ymm11, ymm11, YMMWORD PTR YMM_ONE	
+	vpand	ymm8, ymm11, ymm15			
+	ENDM
+
+avx2_compare_part2 MACRO
+	vpsrlq	ymm5, ymm5, 30				
+	vpand	ymm1, ymm5, ymm15			
+	vpsrlq	ymm5, ymm5, 2				
+	vpsrad	ymm5, ymm5, 28				
+	vpaddd	ymm4, ymm4, ymm5			
+	vpand	ymm0, ymm4, YMMWORD PTR YMM_BITS28	
+	vpsrlq	ymm11, ymm11, 30			
+	vpand	ymm7, ymm11, ymm15			
+	vpsrlq	ymm11, ymm11, 2				
+	vpsrad	ymm11, ymm11, 28			
+	vpaddd	ymm10, ymm10, ymm11			
+	vpand	ymm6, ymm10, YMMWORD PTR YMM_BITS28	
+	ENDM
+
+avx_fma_fac_initval MACRO
+	LOCAL	large_initial_value, small_initial_value, equals_split, done
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST3		
+	vmovapd	ymm14, YMMWORD PTR YMM_FMA_RND_CONST2		
+	lea	r8, YMM_FMA_ONE_OR_TWO				
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_LOW_MASK		
+	vandpd	ymm0, ymm13, YMMWORD PTR YMM_FMA_FAC_LO_INT	
+	vorpd	ymm0, ymm0, ymm15				
+	vorpd	ymm1, ymm15, YMMWORD PTR YMM_FMA_FAC_HI_INT	
+	yfmsubpd ymm1, ymm1, YMMWORD PTR YMM_FMA_TWO_TO_LO, ymm14 
+	vsubpd	ymm0, ymm0, ymm15				
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_HI, ymm0		
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_LO, ymm1		
+
+	vaddpd	ymm3, ymm0, ymm1				
+	vmovapd	ymm2, YMMWORD PTR YMM_FMA_ONE
+	vdivpd	ymm2, ymm2, ymm3				
+	vmovapd	YMMWORD PTR YMM_FMA_INVFAC, ymm2		
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_RND_CONST4		
+	vaddpd	ymm4, ymm2, ymm13				
+	vsubpd	ymm4, ymm4, ymm13				
+	yfnmaddpd ymm5, ymm4, ymm0, YMMWORD PTR YMM_FMA_ONE	
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_RND_CONST5		
+	yfnmaddpd ymm6, ymm4, ymm1, ymm12			
+	vsubpd	ymm6, ymm6, ymm12				
+	yfnmsubpd ymm4, ymm4, ymm1, ymm6			
+	vaddpd	ymm5, ymm5, ymm6				
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI, ymm5	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO, ymm4	
+
+	vmovapd	ymm5, YMMWORD PTR YMM_FMA_TWO			
+	yfmaddpd ymm4, ymm5, ymm2, ymm13			
+	vsubpd	ymm4, ymm4, ymm13				
+	yfnmaddpd ymm3, ymm4, ymm0, ymm5			
+	yfnmaddpd ymm6, ymm4, ymm1, ymm12			
+	vsubpd	ymm6, ymm6, ymm12				
+	yfnmsubpd ymm4, ymm4, ymm1, ymm6			
+	vaddpd	ymm3, ymm3, ymm6				
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_HI, ymm3	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_LO, ymm4	
+
+	cmp	FMA_INITVAL_TYPE, 0
+	jl	small_initial_value
+	je	short large_initial_value
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_TWOPOW_SPLIT		
+	cmp	FMA_INITVAL_TYPE, 1
+	je	short equals_split
+	vmulpd	ymm3, ymm13, ymm3
+	vmulpd	ymm4, ymm13, ymm4
+	jmp	done
+
+equals_split:
+	vmulpd	ymm3, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI
+	vmulpd	ymm4, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO
+	jmp	done
+
+large_initial_value:
+
+	vmovapd	ymm5, YMMWORD PTR YMM_FMA_INITVAL		
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_RND_CONST1		
+	yfmaddpd ymm6, ymm5, ymm3, ymm13			
+	vsubpd	ymm6, ymm6, ymm13				
+	yfmsubpd ymm3, ymm5, ymm3, ymm6				
+								
+	yfmaddpd ymm7, ymm5, ymm4, ymm14			
+	vsubpd	ymm7, ymm7, ymm14				
+	yfmsubpd ymm4, ymm5, ymm4, ymm7				
+	vaddpd	ymm3, ymm3, ymm7				
+								
+	yfmaddpd ymm2, ymm6, ymm2, ymm15			
+	vsubpd	ymm2, ymm2, ymm15				
+
+	yfnmaddpd ymm0, ymm2, ymm0, ymm6			
+	vaddpd	ymm3, ymm3, ymm0				
+
+	yfnmaddpd ymm0, ymm2, ymm1, ymm14			
+	vsubpd	ymm0, ymm0, ymm14				
+	yfnmsubpd ymm1, ymm2, ymm1, ymm0			
+
+	vaddpd	ymm3, ymm3, ymm0				
+	vaddpd	ymm4, ymm4, ymm1				
+
+	jmp	done
+
+small_initial_value:
+	vmovapd	ymm3, YMMWORD PTR YMM_FMA_INITVAL		
+
+	yfmaddpd ymm2, ymm3, ymm2, ymm15			
+	vsubpd	ymm2, ymm2, ymm15				
+	yfnmaddpd ymm3, ymm2, ymm0, ymm3			
+
+	yfnmaddpd ymm0, ymm2, ymm1, ymm14			
+	vsubpd	ymm0, ymm0, ymm14				
+	yfnmsubpd ymm4, ymm2, ymm1, ymm0			
+
+	vaddpd	ymm3, ymm3, ymm0				
+
+done:
+	ENDM
+
+avx_fma_fac MACRO fac_size
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST0		
+	yfmaddpd ymm0, ymm3, ymm3, ymm15			
+	vsubpd	ymm0, ymm0, ymm15				
+	yfmsubpd ymm1, ymm3, ymm3, ymm0				
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST1		
+	yfmaddpd ymm2, ymm3, ymm4, ymm15			
+	vsubpd	ymm2, ymm2, ymm15				
+	yfmsubpd ymm3, ymm3, ymm4, ymm2				
+
+	yfmaddpd ymm2, YMMWORD PTR YMM_FMA_TWO, ymm2, ymm1	
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST2		
+	yfmaddpd ymm1, ymm4, ymm4, ymm15			
+	vsubpd	ymm1, ymm1, ymm15				
+	yfmsubpd ymm4, ymm4, ymm4, ymm1				
+
+	yfmaddpd ymm3, YMMWORD PTR YMM_FMA_TWO, ymm3, ymm1	
+
+	mov	edx, FMA_SHIFTER[rdi*4-4]			
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST1		
+	yfmaddpd ymm5, ymm0, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI[rdx], ymm15 
+	vsubpd	ymm5, ymm5, ymm15				
+	yfmsubpd ymm1, ymm0, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI[rdx], ymm5 
+
+	yfmaddpd ymm2, YMMWORD PTR [r8][rdx], ymm2, ymm5	
+
+	yfmaddpd ymm3, YMMWORD PTR [r8][rdx], ymm3, ymm1	
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST2		
+	yfmaddpd ymm1, ymm0, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO[rdx], ymm15 
+	vsubpd	ymm1, ymm1, ymm15				
+	yfmsubpd ymm0, ymm0, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO[rdx], ymm1 
+
+	vaddpd	ymm3, ymm3, ymm1				
+
+	yfmaddpd ymm4, YMMWORD PTR [r8][rdx], ymm4, ymm0	
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST3		
+	yfmaddpd ymm1, ymm2, YMMWORD PTR YMM_FMA_INVFAC, ymm15	
+	vsubpd	ymm1, ymm1, ymm15				
+
+	yfnmaddpd ymm2, ymm1, YMMWORD PTR YMM_FMA_FAC_HI, ymm2	
+	vaddpd	ymm3, ymm3, ymm2				
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST2		
+	yfnmaddpd ymm0, ymm1, YMMWORD PTR YMM_FMA_FAC_LO, ymm15	
+	vsubpd	ymm0, ymm0, ymm15				
+	yfnmsubpd ymm1, ymm1, YMMWORD PTR YMM_FMA_FAC_LO, ymm0	
+
+	vaddpd	ymm3, ymm3, ymm0				
+	vaddpd	ymm4, ymm4, ymm1				
+	ENDM
+
+avx_fma_compare MACRO
+	vaddpd	ymm2, ymm3, ymm4				
+	ENDM
+
+avx_fma_fac_initval MACRO avx_level
+	LOCAL	large_initial_value, small_initial_value, equals_split, done
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST3		
+	vmovapd	ymm14, YMMWORD PTR YMM_FMA_RND_CONST2		
+	lea	r8, YMM_FMA_ONE_OR_TWO				
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_LOW_MASK		
+	vandpd	ymm0, ymm13, YMMWORD PTR YMM_FMA_FAC_LO_INT	
+	vandpd	ymm4, ymm13, YMMWORD PTR YMM_FMA_FAC_LO_INTa	
+
+	vorpd	ymm0, ymm0, ymm15				
+	vorpd	ymm4, ymm4, ymm15				
+
+	vorpd	ymm10, ymm15, YMMWORD PTR YMM_FMA_FAC_HI_INT	
+	vorpd	ymm11, ymm15, YMMWORD PTR YMM_FMA_FAC_HI_INTa	
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_TWO_TO_LO		
+	yfmsubpd ymm10, ymm10, ymm13, ymm14			
+	yfmsubpd ymm11, ymm11, ymm13, ymm14			
+
+	vsubpd	ymm0, ymm0, ymm15				
+	vsubpd	ymm4, ymm4, ymm15				
+
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_HI, ymm10		
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_HIa, ymm11		
+
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_LO, ymm0		
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_LOa, ymm4		
+
+	vaddpd	ymm3, ymm10, ymm0				
+	vaddpd	ymm7, ymm11, ymm4				
+	vmovapd	ymm9, YMMWORD PTR YMM_FMA_ONE
+	vdivpd	ymm8, ymm9, ymm3				
+	vdivpd	ymm9, ymm9, ymm7				
+	vmovapd	YMMWORD PTR YMM_FMA_INVFAC, ymm8		
+	vmovapd	YMMWORD PTR YMM_FMA_INVFACa, ymm9		
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_RND_CONST4		
+	vaddpd	ymm1, ymm8, ymm13				
+	vaddpd	ymm5, ymm9, ymm13				
+	vsubpd	ymm1, ymm1, ymm13				
+	vsubpd	ymm5, ymm5, ymm13				
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_ONE			
+	yfnmaddpd ymm2, ymm1, ymm10, ymm12			
+	yfnmaddpd ymm6, ymm5, ymm11, ymm12			
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_RND_CONST5		
+	yfnmaddpd ymm3, ymm1, ymm0, ymm12			
+	yfnmaddpd ymm7, ymm5, ymm4, ymm12			
+	vsubpd	ymm3, ymm3, ymm12				
+	vsubpd	ymm7, ymm7, ymm12				
+	vaddpd	ymm2, ymm2, ymm3				
+	vaddpd	ymm6, ymm6, ymm7				
+	yfnmsubpd ymm1, ymm1, ymm0, ymm3			
+	yfnmsubpd ymm5, ymm5, ymm4, ymm7			
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI, ymm2	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIa, ymm6	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO, ymm1	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOa, ymm5	
+
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_TWO			
+	yfmaddpd ymm1, ymm12, ymm8, ymm13			
+	yfmaddpd ymm5, ymm12, ymm9, ymm13			
+	vsubpd	ymm1, ymm1, ymm13				
+	vsubpd	ymm5, ymm5, ymm13				
+	yfnmaddpd ymm2, ymm1, ymm10, ymm12			
+	yfnmaddpd ymm6, ymm5, ymm11, ymm12			
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_RND_CONST5		
+	yfnmaddpd ymm3, ymm1, ymm0, ymm12			
+	yfnmaddpd ymm7, ymm5, ymm4, ymm12			
+	vsubpd	ymm3, ymm3, ymm12				
+	vsubpd	ymm7, ymm7, ymm12				
+	vaddpd	ymm2, ymm2, ymm3				
+	vaddpd	ymm6, ymm6, ymm7				
+	yfnmsubpd ymm1, ymm1, ymm0, ymm3			
+	yfnmsubpd ymm5, ymm5, ymm4, ymm7			
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_HI, ymm2	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_HIa, ymm6	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_LO, ymm1	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_LOa, ymm5	
+
+	cmp	FMA_INITVAL_TYPE, 0
+	jl	small_initial_value
+	je	short large_initial_value
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_TWOPOW_SPLIT		
+	cmp	FMA_INITVAL_TYPE, 1
+	je	short equals_split
+	vmulpd	ymm2, ymm13, ymm2				
+	vmulpd	ymm3, ymm13, ymm1
+	vmulpd	ymm6, ymm13, ymm6				
+	vmulpd	ymm7, ymm13, ymm5
+	jmp	done
+
+equals_split:
+	vmulpd	ymm2, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI 
+	vmulpd	ymm3, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO
+	vmulpd	ymm6, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIa 
+	vmulpd	ymm7, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOa
+	jmp	done
+
+large_initial_value:
+
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_INITVAL		
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_RND_CONST1		
+
+	yfmaddpd ymm0, ymm12, ymm2, ymm13			
+	yfmaddpd ymm3, ymm12, ymm1, ymm14			
+	yfmaddpd ymm4, ymm12, ymm6, ymm13			
+	yfmaddpd ymm7, ymm12, ymm5, ymm14			
+	vsubpd	ymm0, ymm0, ymm13				
+	vsubpd	ymm3, ymm3, ymm14				
+	vsubpd	ymm4, ymm4, ymm13				
+	vsubpd	ymm7, ymm7, ymm14				
+	yfmsubpd ymm2, ymm12, ymm2, ymm0			
+	yfmsubpd ymm1, ymm12, ymm1, ymm3			
+	yfmsubpd ymm6, ymm12, ymm6, ymm4			
+	yfmsubpd ymm5, ymm12, ymm5, ymm7			
+	vaddpd	ymm2, ymm2, ymm3				
+	vaddpd	ymm6, ymm6, ymm7				
+	yfmaddpd ymm3, ymm0, ymm8, ymm15			
+	yfmaddpd ymm7, ymm4, ymm9, ymm15			
+	vsubpd	ymm3, ymm3, ymm15				
+	vsubpd	ymm7, ymm7, ymm15				
+	yfnmaddpd ymm0, ymm3, ymm10, ymm0			
+	yfnmaddpd ymm4, ymm7, ymm11, ymm4			
+	vaddpd	ymm2, ymm2, ymm0				
+	vaddpd	ymm6, ymm6, ymm4				
+	yfnmaddpd ymm0, ymm3, YMMWORD PTR YMM_FMA_FAC_LO, ymm14	
+	yfnmaddpd ymm4, ymm7, YMMWORD PTR YMM_FMA_FAC_LOa, ymm14
+	vsubpd	ymm0, ymm0, ymm14				
+	vsubpd	ymm4, ymm4, ymm14				
+	vaddpd	ymm2, ymm2, ymm0				
+	vaddpd	ymm6, ymm6, ymm4				
+	yfnmsubpd ymm3, ymm3, YMMWORD PTR YMM_FMA_FAC_LO, ymm0	
+	yfnmsubpd ymm7, ymm7, YMMWORD PTR YMM_FMA_FAC_LOa, ymm4	
+	vaddpd	ymm3, ymm1, ymm3				
+	vaddpd	ymm7, ymm5, ymm7				
+	jmp	done
+
+small_initial_value:
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_INITVAL		
+	yfmaddpd ymm1, ymm12, ymm8, ymm15			
+	yfmaddpd ymm5, ymm12, ymm9, ymm15			
+	vsubpd	ymm1, ymm1, ymm15				
+	vsubpd	ymm5, ymm5, ymm15				
+	yfnmaddpd ymm2, ymm1, ymm10, ymm12			
+	yfnmaddpd ymm6, ymm5, ymm11, ymm12			
+	yfnmaddpd ymm3, ymm1, ymm0, ymm14			
+	yfnmaddpd ymm7, ymm5, ymm4, ymm14			
+	vsubpd	ymm3, ymm3, ymm14				
+	vsubpd	ymm7, ymm7, ymm14				
+	vaddpd	ymm2, ymm2, ymm3				
+	vaddpd	ymm6, ymm6, ymm7				
+	yfnmsubpd ymm3, ymm1, ymm0, ymm3			
+	yfnmsubpd ymm7, ymm5, ymm4, ymm7			
+
+done:
+	ENDM
+
+avx_fma_fac MACRO fac_size
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_RND_CONST0		
+	yfmaddpd ymm0, ymm2, ymm2, ymm13			
+	yfmaddpd ymm4, ymm6, ymm6, ymm13			
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST1		
+	yfmaddpd ymm1, ymm2, ymm3, ymm15			
+	yfmaddpd ymm5, ymm6, ymm7, ymm15			
+
+	vmovapd	ymm14, YMMWORD PTR YMM_FMA_RND_CONST2		
+	yfmaddpd ymm8, ymm3, ymm3, ymm14			
+	yfmaddpd ymm11, ymm7, ymm7, ymm14			
+
+	vsubpd	ymm0, ymm0, ymm13				
+	vsubpd	ymm4, ymm4, ymm13				
+
+	mov	edx, FMA_SHIFTER[rdi*4-4]			
+
+	vsubpd	ymm1, ymm1, ymm15				
+	vsubpd	ymm5, ymm5, ymm15				
+
+	vsubpd	ymm8, ymm8, ymm14				
+	vsubpd	ymm11, ymm11, ymm14				
+
+	yfmsubpd ymm9, ymm2, ymm2, ymm0				
+	yfmsubpd ymm12, ymm6, ymm6, ymm4			
+
+	yfmaddpd ymm10, ymm0, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI[rdx], ymm15
+								
+	yfmaddpd ymm13, ymm4, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIa[rdx], ymm15
+								
+	yfmsubpd ymm2, ymm2, ymm3, ymm1				
+	yfmsubpd ymm6, ymm6, ymm7, ymm5				
+
+	yfmsubpd ymm3, ymm3, ymm3, ymm8				
+	yfmsubpd ymm7, ymm7, ymm7, ymm11			
+
+	yfmaddpd ymm9, YMMWORD PTR YMM_FMA_TWO, ymm1, ymm9	
+	yfmaddpd ymm12, YMMWORD PTR YMM_FMA_TWO, ymm5, ymm12	
+
+	vsubpd	ymm10, ymm10, ymm15				
+	vsubpd	ymm13, ymm13, ymm15				
+
+	yfmaddpd ymm2, YMMWORD PTR YMM_FMA_TWO, ymm2, ymm8	
+	yfmaddpd ymm6, YMMWORD PTR YMM_FMA_TWO, ymm6, ymm11	
+
+	yfmaddpd ymm1, ymm0, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO[rdx], ymm14 
+	yfmaddpd ymm5, ymm4, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOa[rdx], ymm14
+
+	vmovapd ymm15, YMMWORD PTR [r8][rdx]			
+	yfmaddpd ymm9, ymm15, ymm9, ymm10			
+	yfmaddpd ymm12, ymm15, ymm12, ymm13			
+
+	yfmsubpd ymm10, ymm0, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI[rdx], ymm10
+								
+	yfmsubpd ymm13, ymm4, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIa[rdx], ymm13
+								
+	vsubpd	ymm1, ymm1, ymm14				
+	vsubpd	ymm5, ymm5, ymm14				
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST3		
+	yfmaddpd ymm8, ymm9, YMMWORD PTR YMM_FMA_INVFAC, ymm15	
+	yfmaddpd ymm11, ymm12, YMMWORD PTR YMM_FMA_INVFACa, ymm15
+
+	vmovapd ymm15, YMMWORD PTR [r8][rdx]			
+	yfmaddpd ymm2, ymm15, ymm2, ymm10			
+	yfmaddpd ymm6, ymm15, ymm6, ymm13			
+
+	yfmsubpd ymm0, ymm0, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO[rdx], ymm1
+	yfmsubpd ymm4, ymm4, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOa[rdx], ymm5
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST3		
+	vsubpd	ymm8, ymm8, ymm15				
+	vsubpd	ymm11, ymm11, ymm15				
+
+	vaddpd	ymm2, ymm2, ymm1				
+	vaddpd	ymm6, ymm6, ymm5				
+
+	vmovapd ymm15, YMMWORD PTR [r8][rdx]			
+	yfmaddpd ymm3, ymm15, ymm3, ymm0			
+	yfmaddpd ymm7, ymm15, ymm7, ymm4			
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST2		
+	yfnmaddpd ymm0, ymm8, YMMWORD PTR YMM_FMA_FAC_LO, ymm15	
+	yfnmaddpd ymm4, ymm11, YMMWORD PTR YMM_FMA_FAC_LOa, ymm15
+
+	yfnmaddpd ymm9, ymm8, YMMWORD PTR YMM_FMA_FAC_HI, ymm9	
+	yfnmaddpd ymm12, ymm11, YMMWORD PTR YMM_FMA_FAC_HIa, ymm12
+
+	vsubpd	ymm0, ymm0, ymm15				
+	vsubpd	ymm4, ymm4, ymm15				
+
+ 	vaddpd	ymm2, ymm2, ymm9				
+ 	vaddpd	ymm6, ymm6, ymm12				
+
+	yfnmsubpd ymm8, ymm8, YMMWORD PTR YMM_FMA_FAC_LO, ymm0	
+	yfnmsubpd ymm11, ymm11, YMMWORD PTR YMM_FMA_FAC_LOa, ymm4
+
+	vaddpd	ymm2, ymm2, ymm0				
+	vaddpd	ymm6, ymm6, ymm4				
+
+	vaddpd	ymm3, ymm3, ymm8				
+	vaddpd	ymm7, ymm7, ymm11				
+	ENDM
+
+avx_fma_compare MACRO
+	vaddpd	ymm2, ymm2, ymm3				
+	vaddpd	ymm6, ymm6, ymm7
+	ENDM
+
+avx_fma_fac_initval MACRO avx_level
+	LOCAL	large_initial_value, small_initial_value, equals_split, done
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST3		
+	vmovapd	ymm14, YMMWORD PTR YMM_FMA_RND_CONST2		
+	lea	r8, YMM_FMA_ONE_OR_TWO				
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_LOW_MASK		
+	vandpd	ymm0, ymm13, YMMWORD PTR YMM_FMA_FAC_LO_INT	
+	vandpd	ymm4, ymm13, YMMWORD PTR YMM_FMA_FAC_LO_INTa	
+	vandpd	ymm8, ymm13, YMMWORD PTR YMM_FMA_FAC_LO_INTb	
+
+	vorpd	ymm0, ymm0, ymm15				
+	vorpd	ymm4, ymm4, ymm15				
+	vorpd	ymm8, ymm8, ymm15				
+
+	vorpd	ymm2, ymm15, YMMWORD PTR YMM_FMA_FAC_HI_INT	
+	vorpd	ymm6, ymm15, YMMWORD PTR YMM_FMA_FAC_HI_INTa	
+	vorpd	ymm10, ymm15, YMMWORD PTR YMM_FMA_FAC_HI_INTb	
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_TWO_TO_LO		
+	yfmsubpd ymm2, ymm2, ymm13, ymm14			
+	yfmsubpd ymm6, ymm6, ymm13, ymm14			
+	yfmsubpd ymm10, ymm10, ymm13, ymm14			
+
+	vsubpd	ymm0, ymm0, ymm15				
+	vsubpd	ymm4, ymm4, ymm15				
+	vsubpd	ymm8, ymm8, ymm15				
+
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_HI, ymm2		
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_HIa, ymm6		
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_HIb, ymm10		
+
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_LO, ymm0		
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_LOa, ymm4		
+	vmovapd	YMMWORD PTR YMM_FMA_FAC_LOb, ymm8		
+
+	vaddpd	ymm3, ymm2, ymm0				
+	vaddpd	ymm7, ymm6, ymm4				
+	vaddpd	ymm11, ymm10, ymm8				
+	vmovapd	ymm9, YMMWORD PTR YMM_FMA_ONE
+	vdivpd	ymm1, ymm9, ymm3				
+	vdivpd	ymm5, ymm9, ymm7				
+	vdivpd	ymm9, ymm9, ymm11				
+	vmovapd	YMMWORD PTR YMM_FMA_INVFAC, ymm1		
+	vmovapd	YMMWORD PTR YMM_FMA_INVFACa, ymm5		
+	vmovapd	YMMWORD PTR YMM_FMA_INVFACb, ymm9		
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_RND_CONST4		
+	vaddpd	ymm1, ymm1, ymm13				
+	vaddpd	ymm5, ymm5, ymm13				
+	vaddpd	ymm9, ymm9, ymm13				
+	vsubpd	ymm1, ymm1, ymm13				
+	vsubpd	ymm5, ymm5, ymm13				
+	vsubpd	ymm9, ymm9, ymm13				
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_ONE			
+	yfnmaddpd ymm2, ymm1, ymm2, ymm12			
+	yfnmaddpd ymm6, ymm5, ymm6, ymm12			
+	yfnmaddpd ymm10, ymm9, ymm10, ymm12			
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_RND_CONST5		
+	yfnmaddpd ymm3, ymm1, ymm0, ymm12			
+	yfnmaddpd ymm7, ymm5, ymm4, ymm12			
+	yfnmaddpd ymm11, ymm9, ymm8, ymm12			
+	vsubpd	ymm3, ymm3, ymm12				
+	vsubpd	ymm7, ymm7, ymm12				
+	vsubpd	ymm11, ymm11, ymm12				
+	vaddpd	ymm2, ymm2, ymm3				
+	vaddpd	ymm6, ymm6, ymm7				
+	vaddpd	ymm10, ymm10, ymm11				
+	yfnmsubpd ymm1, ymm1, ymm0, ymm3			
+	yfnmsubpd ymm5, ymm5, ymm4, ymm7			
+	yfnmsubpd ymm9, ymm9, ymm8, ymm11			
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI, ymm2	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIa, ymm6	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIb, ymm10	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO, ymm1	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOa, ymm5	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOb, ymm9	
+
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_TWO			
+	yfmaddpd ymm1, ymm12, YMMWORD PTR YMM_FMA_INVFAC, ymm13	
+	yfmaddpd ymm5, ymm12, YMMWORD PTR YMM_FMA_INVFACa, ymm13
+	yfmaddpd ymm9, ymm12, YMMWORD PTR YMM_FMA_INVFACb, ymm13
+	vsubpd	ymm1, ymm1, ymm13				
+	vsubpd	ymm5, ymm5, ymm13				
+	vsubpd	ymm9, ymm9, ymm13				
+	yfnmaddpd ymm2, ymm1, YMMWORD PTR YMM_FMA_FAC_HI, ymm12	
+	yfnmaddpd ymm6, ymm5, YMMWORD PTR YMM_FMA_FAC_HIa, ymm12
+	yfnmaddpd ymm10, ymm9, YMMWORD PTR YMM_FMA_FAC_HIb, ymm12
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_RND_CONST5		
+	yfnmaddpd ymm3, ymm1, ymm0, ymm12			
+	yfnmaddpd ymm7, ymm5, ymm4, ymm12			
+	yfnmaddpd ymm11, ymm9, ymm8, ymm12			
+	vsubpd	ymm3, ymm3, ymm12				
+	vsubpd	ymm7, ymm7, ymm12				
+	vsubpd	ymm11, ymm11, ymm12				
+	vaddpd	ymm2, ymm2, ymm3				
+	vaddpd	ymm6, ymm6, ymm7				
+	vaddpd	ymm10, ymm10, ymm11				
+	yfnmsubpd ymm1, ymm1, ymm0, ymm3			
+	yfnmsubpd ymm5, ymm5, ymm4, ymm7			
+	yfnmsubpd ymm9, ymm9, ymm8, ymm11			
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_HI, ymm2	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_HIa, ymm6	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_HIb, ymm10	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_LO, ymm1	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_LOa, ymm5	
+	vmovapd	YMMWORD PTR YMM_FMA_TWOPOW2_MODF_LOb, ymm9	
+
+	cmp	FMA_INITVAL_TYPE, 0
+	jl	small_initial_value
+	je	short large_initial_value
+
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_TWOPOW_SPLIT		
+	cmp	FMA_INITVAL_TYPE, 1
+	je	short equals_split
+	vmulpd	ymm2, ymm13, ymm2				
+	vmulpd	ymm3, ymm13, ymm1
+	vmulpd	ymm6, ymm13, ymm6				
+	vmulpd	ymm7, ymm13, ymm5
+	vmulpd	ymm10, ymm13, ymm10				
+	vmulpd	ymm11, ymm13, ymm9
+	jmp	done
+
+equals_split:
+	vmulpd	ymm2, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI 
+	vmulpd	ymm3, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO
+	vmulpd	ymm6, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIa 
+	vmulpd	ymm7, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOa
+	vmulpd	ymm10, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIb 
+	vmulpd	ymm11, ymm13, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOb
+	jmp	done
+
+large_initial_value:
+
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_INITVAL		
+	vmovapd	ymm13, YMMWORD PTR YMM_FMA_RND_CONST1		
+
+	yfmaddpd ymm0, ymm12, ymm2, ymm13			
+	yfmaddpd ymm3, ymm12, ymm1, ymm14			
+	yfmaddpd ymm4, ymm12, ymm6, ymm13			
+	yfmaddpd ymm7, ymm12, ymm5, ymm14			
+	yfmaddpd ymm8, ymm12, ymm10, ymm13			
+	yfmaddpd ymm11, ymm12, ymm9, ymm14			
+	vsubpd	ymm0, ymm0, ymm13				
+	vsubpd	ymm3, ymm3, ymm14				
+	vsubpd	ymm4, ymm4, ymm13				
+	vsubpd	ymm7, ymm7, ymm14				
+	vsubpd	ymm8, ymm8, ymm13				
+	vsubpd	ymm11, ymm11, ymm14				
+	yfmsubpd ymm2, ymm12, ymm2, ymm0			
+	yfmsubpd ymm1, ymm12, ymm1, ymm3			
+	yfmsubpd ymm6, ymm12, ymm6, ymm4			
+	yfmsubpd ymm5, ymm12, ymm5, ymm7			
+	yfmsubpd ymm10, ymm12, ymm10, ymm8			
+	yfmsubpd ymm9, ymm12, ymm9, ymm11			
+	vaddpd	ymm2, ymm2, ymm3				
+	vaddpd	ymm6, ymm6, ymm7				
+	vaddpd	ymm10, ymm10, ymm11				
+	yfmaddpd ymm3, ymm0, YMMWORD PTR YMM_FMA_INVFAC, ymm15	
+	yfmaddpd ymm7, ymm4, YMMWORD PTR YMM_FMA_INVFACa, ymm15	
+	yfmaddpd ymm11, ymm8, YMMWORD PTR YMM_FMA_INVFACb, ymm15
+	vsubpd	ymm3, ymm3, ymm15				
+	vsubpd	ymm7, ymm7, ymm15				
+	vsubpd	ymm11, ymm11, ymm15				
+	yfnmaddpd ymm0, ymm3, YMMWORD PTR YMM_FMA_FAC_HI, ymm0	
+	yfnmaddpd ymm4, ymm7, YMMWORD PTR YMM_FMA_FAC_HIa, ymm4	
+	yfnmaddpd ymm8, ymm11, YMMWORD PTR YMM_FMA_FAC_HIb, ymm8
+	vaddpd	ymm2, ymm2, ymm0				
+	vaddpd	ymm6, ymm6, ymm4				
+	vaddpd	ymm10, ymm10, ymm8				
+	yfnmaddpd ymm0, ymm3, YMMWORD PTR YMM_FMA_FAC_LO, ymm14	
+	yfnmaddpd ymm4, ymm7, YMMWORD PTR YMM_FMA_FAC_LOa, ymm14
+	yfnmaddpd ymm8, ymm11, YMMWORD PTR YMM_FMA_FAC_LOb, ymm14
+	vsubpd	ymm0, ymm0, ymm14				
+	vsubpd	ymm4, ymm4, ymm14				
+	vsubpd	ymm8, ymm8, ymm14				
+	vaddpd	ymm2, ymm2, ymm0				
+	vaddpd	ymm6, ymm6, ymm4				
+	vaddpd	ymm10, ymm10, ymm8				
+	yfnmsubpd ymm3, ymm3, YMMWORD PTR YMM_FMA_FAC_LO, ymm0	
+	yfnmsubpd ymm7, ymm7, YMMWORD PTR YMM_FMA_FAC_LOa, ymm4	
+	yfnmsubpd ymm11, ymm11, YMMWORD PTR YMM_FMA_FAC_LOb, ymm8
+	vaddpd	ymm3, ymm1, ymm3				
+	vaddpd	ymm7, ymm5, ymm7				
+	vaddpd	ymm11, ymm9, ymm11				
+	jmp	done
+
+small_initial_value:
+	vmovapd	ymm12, YMMWORD PTR YMM_FMA_INITVAL		
+	yfmaddpd ymm1, ymm12, YMMWORD PTR YMM_FMA_INVFAC, ymm15	
+	yfmaddpd ymm5, ymm12, YMMWORD PTR YMM_FMA_INVFACa, ymm15
+	yfmaddpd ymm9, ymm12, YMMWORD PTR YMM_FMA_INVFACb, ymm15
+	vsubpd	ymm1, ymm1, ymm15				
+	vsubpd	ymm5, ymm5, ymm15				
+	vsubpd	ymm9, ymm9, ymm15				
+	yfnmaddpd ymm2, ymm1, YMMWORD PTR YMM_FMA_FAC_HI, ymm12	
+	yfnmaddpd ymm6, ymm5, YMMWORD PTR YMM_FMA_FAC_HIa, ymm12
+	yfnmaddpd ymm10, ymm9, YMMWORD PTR YMM_FMA_FAC_HIb, ymm12
+	yfnmaddpd ymm3, ymm1, ymm0, ymm14			
+	yfnmaddpd ymm7, ymm5, ymm4, ymm14			
+	yfnmaddpd ymm11, ymm9, ymm8, ymm14			
+	vsubpd	ymm3, ymm3, ymm14				
+	vsubpd	ymm7, ymm7, ymm14				
+	vsubpd	ymm11, ymm11, ymm14				
+	vaddpd	ymm2, ymm2, ymm3				
+	vaddpd	ymm6, ymm6, ymm7				
+	vaddpd	ymm10, ymm10, ymm11				
+	yfnmsubpd ymm3, ymm1, ymm0, ymm3			
+	yfnmsubpd ymm7, ymm5, ymm4, ymm7			
+	yfnmsubpd ymm11, ymm9, ymm8, ymm11			
+
+done:
+	ENDM
+
+avx_fma_fac MACRO fac_size
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST0		
+	yfmaddpd ymm0, ymm2, ymm2, ymm15			
+	yfmaddpd ymm4, ymm6, ymm6, ymm15			
+	yfmaddpd ymm8, ymm10, ymm10, ymm15			
+	vsubpd	ymm0, ymm0, ymm15				
+	vsubpd	ymm4, ymm4, ymm15				
+	vsubpd	ymm8, ymm8, ymm15				
+	yfmsubpd ymm1, ymm2, ymm2, ymm0				
+	yfmsubpd ymm5, ymm6, ymm6, ymm4				
+	yfmsubpd ymm9, ymm10, ymm10, ymm8			
+
+	mov	edx, FMA_SHIFTER[rdi*4-4]			
+
+	vmovapd	ymm14, YMMWORD PTR YMM_FMA_RND_CONST1		
+	yfmaddpd ymm15, ymm2, ymm3, ymm14			
+	vsubpd	ymm15, ymm15, ymm14				
+	yfmaddpd ymm12, ymm0, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI[rdx], ymm14
+								
+	yfmsubpd ymm2, ymm2, ymm3, ymm15			
+	yfmaddpd ymm1, YMMWORD PTR YMM_FMA_TWO, ymm15, ymm1	
+
+	yfmaddpd ymm15, ymm6, ymm7, ymm14			
+	vsubpd	ymm15, ymm15, ymm14				
+	yfmaddpd ymm13, ymm4, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIa[rdx], ymm14
+								
+	yfmsubpd ymm6, ymm6, ymm7, ymm15			
+	yfmaddpd ymm5, YMMWORD PTR YMM_FMA_TWO, ymm15, ymm5	
+
+	yfmaddpd ymm15, ymm10, ymm11, ymm14			
+	vsubpd	ymm15, ymm15, ymm14				
+	yfmaddpd ymm14, ymm8, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIb[rdx], ymm14
+								
+	yfmsubpd ymm10, ymm10, ymm11, ymm15			
+	yfmaddpd ymm9, YMMWORD PTR YMM_FMA_TWO, ymm15, ymm9	
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST1		
+	vsubpd	ymm12, ymm12, ymm15				
+	vsubpd	ymm13, ymm13, ymm15				
+	vsubpd	ymm14, ymm14, ymm15				
+
+	vmovapd ymm15, YMMWORD PTR [r8][rdx]			
+	yfmaddpd ymm1, ymm15, ymm1, ymm12			
+	yfmaddpd ymm5, ymm15, ymm5, ymm13			
+	yfmaddpd ymm9, ymm15, ymm9, ymm14			
+
+	yfmaddpd ymm15, ymm3, ymm3, YMMWORD PTR YMM_FMA_RND_CONST2 
+	vsubpd	ymm15, ymm15, YMMWORD PTR YMM_FMA_RND_CONST2	
+	yfmsubpd ymm3, ymm3, ymm3, ymm15			
+	yfmaddpd ymm2, YMMWORD PTR YMM_FMA_TWO, ymm2, ymm15	
+
+	yfmaddpd ymm15, ymm7, ymm7, YMMWORD PTR YMM_FMA_RND_CONST2 
+	vsubpd	ymm15, ymm15, YMMWORD PTR YMM_FMA_RND_CONST2	
+	yfmsubpd ymm7, ymm7, ymm7, ymm15			
+	yfmaddpd ymm6, YMMWORD PTR YMM_FMA_TWO, ymm6, ymm15	
+
+	yfmaddpd ymm15, ymm11, ymm11, YMMWORD PTR YMM_FMA_RND_CONST2 
+	vsubpd	ymm15, ymm15, YMMWORD PTR YMM_FMA_RND_CONST2	
+	yfmsubpd ymm11, ymm11, ymm11, ymm15			
+	yfmaddpd ymm10, YMMWORD PTR YMM_FMA_TWO, ymm10, ymm15	
+
+	vmovapd ymm15, YMMWORD PTR [r8][rdx]			
+	yfmsubpd ymm12, ymm0, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI[rdx], ymm12
+								
+	yfmaddpd ymm2, ymm15, ymm2, ymm12			
+	yfmsubpd ymm13, ymm4, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIa[rdx], ymm13
+								
+	yfmaddpd ymm6, ymm15, ymm6, ymm13			
+	yfmsubpd ymm14, ymm8, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIb[rdx], ymm14
+								
+	yfmaddpd ymm10, ymm15, ymm10, ymm14			
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST2		
+	vmovapd ymm12, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO[rdx]	
+	yfmaddpd ymm13, ymm0, ymm12, ymm15			
+	vsubpd	ymm13, ymm13, ymm15				
+	yfmsubpd ymm0, ymm0, ymm12, ymm13			
+	vaddpd	ymm2, ymm2, ymm13				
+
+	vmovapd ymm12, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOa[rdx]
+	yfmaddpd ymm13, ymm4, ymm12, ymm15			
+	vsubpd	ymm13, ymm13, ymm15				
+	yfmsubpd ymm4, ymm4, ymm12, ymm13			
+	vaddpd	ymm6, ymm6, ymm13				
+
+	vmovapd ymm12, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOb[rdx]
+	yfmaddpd ymm13, ymm8, ymm12, ymm15			
+	vsubpd	ymm13, ymm13, ymm15				
+	yfmsubpd ymm8, ymm8, ymm12, ymm13			
+	vaddpd	ymm10, ymm10, ymm13				
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST3		
+	yfmaddpd ymm12, ymm1, YMMWORD PTR YMM_FMA_INVFAC, ymm15	
+	yfmaddpd ymm3, YMMWORD PTR [r8][rdx], ymm3, ymm0	
+
+	yfmaddpd ymm13, ymm5, YMMWORD PTR YMM_FMA_INVFACa, ymm15
+	yfmaddpd ymm7, YMMWORD PTR [r8][rdx], ymm7, ymm4	
+
+	yfmaddpd ymm14, ymm9, YMMWORD PTR YMM_FMA_INVFACb, ymm15
+	yfmaddpd ymm11, YMMWORD PTR [r8][rdx], ymm11, ymm8	
+
+	vsubpd	ymm12, ymm12, ymm15				
+	yfnmaddpd ymm0, ymm12, YMMWORD PTR YMM_FMA_FAC_HI, ymm1	
+ 	vaddpd	ymm2, ymm2, ymm0				
+
+	vsubpd	ymm13, ymm13, ymm15				
+	yfnmaddpd ymm4, ymm13, YMMWORD PTR YMM_FMA_FAC_HIa, ymm5
+ 	vaddpd	ymm6, ymm6, ymm4				
+
+	vsubpd	ymm14, ymm14, ymm15				
+	yfnmaddpd ymm8, ymm14, YMMWORD PTR YMM_FMA_FAC_HIb, ymm9
+ 	vaddpd	ymm10, ymm10, ymm8				
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST2		
+	yfnmaddpd ymm0, ymm12, YMMWORD PTR YMM_FMA_FAC_LO, ymm15
+	vsubpd	ymm0, ymm0, ymm15				
+	yfnmsubpd ymm12, ymm12, YMMWORD PTR YMM_FMA_FAC_LO, ymm0
+
+	yfnmaddpd ymm4, ymm13, YMMWORD PTR YMM_FMA_FAC_LOa, ymm15
+	vsubpd	ymm4, ymm4, ymm15				
+	yfnmsubpd ymm13, ymm13, YMMWORD PTR YMM_FMA_FAC_LOa, ymm4
+
+	yfnmaddpd ymm8, ymm14, YMMWORD PTR YMM_FMA_FAC_LOb, ymm15
+	vsubpd	ymm8, ymm8, ymm15				
+	yfnmsubpd ymm14, ymm14, YMMWORD PTR YMM_FMA_FAC_LOb, ymm8
+
+	vaddpd	ymm2, ymm2, ymm0				
+	vaddpd	ymm3, ymm3, ymm12				
+
+	vaddpd	ymm6, ymm6, ymm4				
+	vaddpd	ymm7, ymm7, ymm13				
+
+	vaddpd	ymm10, ymm10, ymm8				
+	vaddpd	ymm11, ymm11, ymm14				
+	ENDM
+
+avx_fma_fac MACRO fac_size
+
+	vmovapd	ymm14, YMMWORD PTR YMM_FMA_RND_CONST0		
+	yfmaddpd ymm0, ymm2, ymm2, ymm14			
+	yfmaddpd ymm4, ymm6, ymm6, ymm14			
+	yfmaddpd ymm8, ymm10, ymm10, ymm14			
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST1		
+	yfmaddpd ymm1, ymm2, ymm3, ymm15			
+	yfmaddpd ymm5, ymm6, ymm7, ymm15			
+	yfmaddpd ymm9, ymm10, ymm11, ymm15			
+
+	yfmaddpd ymm12, ymm3, ymm3, YMMWORD PTR YMM_FMA_RND_CONST2 
+	yfmaddpd ymm13, ymm7, ymm7, YMMWORD PTR YMM_FMA_RND_CONST2 
+
+	mov	edx, FMA_SHIFTER[rdi*4-4]			
+
+	vsubpd	ymm0, ymm0, ymm14				
+	vsubpd	ymm4, ymm4, ymm14				
+	vsubpd	ymm8, ymm8, ymm14				
+
+	vsubpd	ymm1, ymm1, ymm15				
+	vsubpd	ymm5, ymm5, ymm15				
+	vsubpd	ymm9, ymm9, ymm15				
+
+	yfmaddpd ymm14, ymm11, ymm11, YMMWORD PTR YMM_FMA_RND_CONST2 
+	vsubpd	ymm12, ymm12, YMMWORD PTR YMM_FMA_RND_CONST2	
+
+	vmovapd	YMMWORD PTR YMM_FMA_SAVE, ymm2			
+	vmovapd	YMMWORD PTR YMM_FMA_SAVEa, ymm6			
+	vmovapd	YMMWORD PTR YMM_FMA_SAVEb, ymm10		
+
+	yfmsubpd ymm2, ymm2, ymm2, ymm0				
+	yfmsubpd ymm6, ymm6, ymm6, ymm4				
+	yfmsubpd ymm10, ymm10, ymm10, ymm8			
+
+	vmovapd	YMMWORD PTR YMM_FMA_SAVE2, ymm0			
+	vmovapd	YMMWORD PTR YMM_FMA_SAVE2a, ymm4		
+	vmovapd	YMMWORD PTR YMM_FMA_SAVE2b, ymm8		
+
+	yfmaddpd ymm0, ymm0, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI[rdx], ymm15
+								
+	yfmaddpd ymm4, ymm4, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIa[rdx], ymm15
+								
+	yfmaddpd ymm8, ymm8, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIb[rdx], ymm15
+								
+	vsubpd	ymm13, ymm13, YMMWORD PTR YMM_FMA_RND_CONST2	
+	vsubpd	ymm14, ymm14, YMMWORD PTR YMM_FMA_RND_CONST2	
+
+	yfmaddpd ymm2, YMMWORD PTR YMM_FMA_TWO, ymm1, ymm2	
+	yfmaddpd ymm6, YMMWORD PTR YMM_FMA_TWO, ymm5, ymm6	
+	yfmaddpd ymm10, YMMWORD PTR YMM_FMA_TWO, ymm9, ymm10	
+
+	vsubpd	ymm0, ymm0, ymm15				
+	vsubpd	ymm4, ymm4, ymm15				
+	vsubpd	ymm8, ymm8, ymm15				
+
+	yfmsubpd ymm1, YMMWORD PTR YMM_FMA_SAVE, ymm3, ymm1	
+	yfmsubpd ymm5, YMMWORD PTR YMM_FMA_SAVEa, ymm7, ymm5	
+	yfmsubpd ymm9, YMMWORD PTR YMM_FMA_SAVEb, ymm11, ymm9	
+
+	yfmsubpd ymm3, ymm3, ymm3, ymm12			
+	yfmsubpd ymm7, ymm7, ymm7, ymm13			
+	yfmsubpd ymm11, ymm11, ymm11, ymm14			
+
+	vmovapd ymm15, YMMWORD PTR [r8][rdx]			
+	yfmaddpd ymm2, ymm15, ymm2, ymm0			
+	yfmaddpd ymm6, ymm15, ymm6, ymm4			
+	yfmaddpd ymm10, ymm15, ymm10, ymm8			
+
+	vmovapd	YMMWORD PTR YMM_FMA_SAVE, ymm3			
+	vmovapd	YMMWORD PTR YMM_FMA_SAVEa, ymm7			
+	vmovapd	YMMWORD PTR YMM_FMA_SAVEb, ymm11		
+
+	vmovapd ymm3, YMMWORD PTR YMM_FMA_SAVE2			
+	vmovapd ymm7, YMMWORD PTR YMM_FMA_SAVE2a		
+	vmovapd ymm11, YMMWORD PTR YMM_FMA_SAVE2b		
+
+	yfmsubpd ymm0, ymm3, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HI[rdx], ymm0
+								
+	yfmsubpd ymm4, ymm7, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIa[rdx], ymm4
+								
+	yfmsubpd ymm8, ymm11, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_HIb[rdx], ymm8
+								
+	yfmaddpd ymm1, YMMWORD PTR YMM_FMA_TWO, ymm1, ymm12	
+	yfmaddpd ymm5, YMMWORD PTR YMM_FMA_TWO, ymm5, ymm13	
+	yfmaddpd ymm9, YMMWORD PTR YMM_FMA_TWO, ymm9, ymm14	
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST3		
+	yfmaddpd ymm12, ymm2, YMMWORD PTR YMM_FMA_INVFAC, ymm15	
+	yfmaddpd ymm13, ymm6, YMMWORD PTR YMM_FMA_INVFACa, ymm15
+	yfmaddpd ymm14, ymm10, YMMWORD PTR YMM_FMA_INVFACb, ymm15
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST2		
+	yfmaddpd ymm3, ymm3, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO[rdx], ymm15 
+	yfmaddpd ymm7, ymm7, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOa[rdx], ymm15
+	yfmaddpd ymm11, ymm11, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOb[rdx], ymm15
+
+	vmovapd ymm15, YMMWORD PTR [r8][rdx]			
+	yfmaddpd ymm1, ymm15, ymm1, ymm0			
+	yfmaddpd ymm5, ymm15, ymm5, ymm4			
+	yfmaddpd ymm9, ymm15, ymm9, ymm8			
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST3		
+	vsubpd	ymm12, ymm12, ymm15				
+	vsubpd	ymm13, ymm13, ymm15				
+	vsubpd	ymm14, ymm14, ymm15				
+
+	vmovapd	ymm15, YMMWORD PTR YMM_FMA_RND_CONST2		
+	vsubpd	ymm3, ymm3, ymm15				
+	vsubpd	ymm7, ymm7, ymm15				
+	vsubpd	ymm11, ymm11, ymm15				
+
+	yfnmaddpd ymm2, ymm12, YMMWORD PTR YMM_FMA_FAC_HI, ymm2	
+	yfnmaddpd ymm6, ymm13, YMMWORD PTR YMM_FMA_FAC_HIa, ymm6
+	yfnmaddpd ymm10, ymm14, YMMWORD PTR YMM_FMA_FAC_HIb, ymm10
+
+	yfnmaddpd ymm0, ymm12, YMMWORD PTR YMM_FMA_FAC_LO, ymm15
+	yfnmaddpd ymm4, ymm13, YMMWORD PTR YMM_FMA_FAC_LOa, ymm15
+	yfnmaddpd ymm8, ymm14, YMMWORD PTR YMM_FMA_FAC_LOb, ymm15
+
+ 	vaddpd	ymm2, ymm1, ymm2				
+ 	vaddpd	ymm6, ymm5, ymm6				
+ 	vaddpd	ymm10, ymm9, ymm10				
+
+	vmovapd ymm1, YMMWORD PTR YMM_FMA_SAVE2			
+	vmovapd ymm5, YMMWORD PTR YMM_FMA_SAVE2a		
+	vmovapd ymm9, YMMWORD PTR YMM_FMA_SAVE2b		
+
+	yfmsubpd ymm1, ymm1, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LO[rdx], ymm3
+	yfmsubpd ymm5, ymm5, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOa[rdx], ymm7
+	yfmsubpd ymm9, ymm9, YMMWORD PTR YMM_FMA_TWOPOW1_MODF_LOb[rdx], ymm11
+
+	vsubpd	ymm0, ymm0, ymm15				
+	vsubpd	ymm4, ymm4, ymm15				
+	vsubpd	ymm8, ymm8, ymm15				
+
+	vmovapd ymm15, YMMWORD PTR [r8][rdx]			
+	yfmaddpd ymm1, ymm15, YMMWORD PTR YMM_FMA_SAVE, ymm1	
+	yfmaddpd ymm5, ymm15, YMMWORD PTR YMM_FMA_SAVEa, ymm5	
+	yfmaddpd ymm9, ymm15, YMMWORD PTR YMM_FMA_SAVEb, ymm9	
+
+	vaddpd	ymm2, ymm2, ymm3				
+	vaddpd	ymm6, ymm6, ymm7				
+	vaddpd	ymm10, ymm10, ymm11				
+
+	yfnmsubpd ymm12, ymm12, YMMWORD PTR YMM_FMA_FAC_LO, ymm0
+	yfnmsubpd ymm13, ymm13, YMMWORD PTR YMM_FMA_FAC_LOa, ymm4
+	yfnmsubpd ymm14, ymm14, YMMWORD PTR YMM_FMA_FAC_LOb, ymm8
+
+	vaddpd	ymm2, ymm2, ymm0				
+	vaddpd	ymm6, ymm6, ymm4				
+	vaddpd	ymm10, ymm10, ymm8				
+
+	vaddpd	ymm3, ymm1, ymm12				
+	vaddpd	ymm7, ymm5, ymm13				
+	vaddpd	ymm11, ymm9, ymm14				
+	ENDM
+
+avx_fma_compare MACRO
+	vaddpd	ymm2, ymm2, ymm3				
+	vaddpd	ymm6, ymm6, ymm7
+	vaddpd	ymm10, ymm10, ymm11
+	ENDM
+
+avx512_fma_fac_init_once MACRO
+	vbroadcastsd zmm31, QWORD PTR ZMM_FMA_RND_CONST3	
+	vbroadcastsd zmm30, QWORD PTR ZMM_FMA_RND_CONST2	
+	lea	r13, ZMM_FMA_ONE_OR_TWO				
+	ENDM
+
+avx512_fma_fac_initval MACRO
+	LOCAL	large_initial_value, small_initial_value, equals_split, done
+
+	vpbroadcastq zmm29, QWORD PTR ZMM_FMA_LOW_MASK		
+	vpandq	zmm0, zmm29, ZMMWORD PTR ZMM_FMA_FAC_LO_INT	
+	vpandq	zmm7, zmm29, ZMMWORD PTR ZMM_FMA_FAC_LO_INTa	
+	vpandq	zmm14, zmm29, ZMMWORD PTR ZMM_FMA_FAC_LO_INTb	
+	vpandq	zmm21, zmm29, ZMMWORD PTR ZMM_FMA_FAC_LO_INTc	
+
+	vporq	zmm0, zmm0, zmm31				
+	vporq	zmm7, zmm7, zmm31				
+	vporq	zmm14, zmm14, zmm31				
+	vporq	zmm21, zmm21, zmm31				
+
+	vporq	zmm2, zmm31, ZMMWORD PTR ZMM_FMA_FAC_HI_INT	
+	vporq	zmm9, zmm31, ZMMWORD PTR ZMM_FMA_FAC_HI_INTa	
+	vporq	zmm16, zmm31, ZMMWORD PTR ZMM_FMA_FAC_HI_INTb	
+	vporq	zmm23, zmm31, ZMMWORD PTR ZMM_FMA_FAC_HI_INTc	
+
+	vbroadcastsd zmm29, QWORD PTR ZMM_FMA_TWO_TO_LO		
+	yfmsubpd zmm2, zmm2, zmm29, zmm30			
+	yfmsubpd zmm9, zmm9, zmm29, zmm30			
+	yfmsubpd zmm16, zmm16, zmm29, zmm30			
+	yfmsubpd zmm23, zmm23, zmm29, zmm30			
+
+	vsubpd	zmm0, zmm0, zmm31				
+	vsubpd	zmm7, zmm7, zmm31				
+	vsubpd	zmm14, zmm14, zmm31				
+	vsubpd	zmm21, zmm21, zmm31				
+
+	vmovapd	ZMMWORD PTR ZMM_FMA_FAC_HI, zmm2		
+	vmovapd	ZMMWORD PTR ZMM_FMA_FAC_HIa, zmm9		
+	vmovapd	ZMMWORD PTR ZMM_FMA_FAC_HIb, zmm16		
+	vmovapd	ZMMWORD PTR ZMM_FMA_FAC_HIc, zmm23		
+
+	vmovapd	ZMMWORD PTR ZMM_FMA_FAC_LO, zmm0		
+	vmovapd	ZMMWORD PTR ZMM_FMA_FAC_LOa, zmm7		
+	vmovapd	ZMMWORD PTR ZMM_FMA_FAC_LOb, zmm14		
+	vmovapd	ZMMWORD PTR ZMM_FMA_FAC_LOc, zmm21		
+
+	vaddpd	zmm3, zmm2, zmm0				
+	vaddpd	zmm10, zmm9, zmm7				
+	vaddpd	zmm17, zmm16, zmm14				
+	vaddpd	zmm24, zmm23, zmm21				
+	vmovapd	zmm27, ZMMWORD PTR ZMM_FMA_ONE
+	vdivpd	zmm1, zmm27, zmm3				
+	vdivpd	zmm8, zmm27, zmm10				
+	vdivpd	zmm15, zmm27, zmm17				
+	vdivpd	zmm22, zmm27, zmm24				
+	vmovapd	ZMMWORD PTR ZMM_FMA_INVFAC, zmm1		
+	vmovapd	ZMMWORD PTR ZMM_FMA_INVFACa, zmm8		
+	vmovapd	ZMMWORD PTR ZMM_FMA_INVFACb, zmm15		
+	vmovapd	ZMMWORD PTR ZMM_FMA_INVFACc, zmm22		
+
+	vbroadcastsd zmm29, QWORD PTR ZMM_FMA_RND_CONST4	
+	vaddpd	zmm3, zmm1, zmm29				
+	vaddpd	zmm10, zmm8, zmm29				
+	vaddpd	zmm17, zmm15, zmm29				
+	vaddpd	zmm24, zmm22, zmm29				
+	vmovapd	zmm28, ZMMWORD PTR ZMM_FMA_TWO			
+	yfmaddpd zmm4, zmm28, zmm1, zmm29			
+	yfmaddpd zmm11, zmm28, zmm8, zmm29			
+	yfmaddpd zmm18, zmm28, zmm15, zmm29			
+	yfmaddpd zmm25, zmm28, zmm22, zmm29			
+	vsubpd	zmm3, zmm3, zmm29				
+	vsubpd	zmm10, zmm10, zmm29				
+	vsubpd	zmm17, zmm17, zmm29				
+	vsubpd	zmm24, zmm24, zmm29				
+	vsubpd	zmm4, zmm4, zmm29				
+	vsubpd	zmm11, zmm11, zmm29				
+	vsubpd	zmm18, zmm18, zmm29				
+	vsubpd	zmm25, zmm25, zmm29				
+	vbroadcastsd zmm29, QWORD PTR ZMM_FMA_RND_CONST5	
+	yfnmaddpd zmm5, zmm3, zmm0, zmm29			
+	yfnmaddpd zmm12, zmm10, zmm7, zmm29			
+	yfnmaddpd zmm19, zmm17, zmm14, zmm29			
+	yfnmaddpd zmm26, zmm24, zmm21, zmm29			
+	yfnmaddpd zmm6, zmm3, zmm2, zmm27			
+	yfnmaddpd zmm13, zmm10, zmm9, zmm27			
+	yfnmaddpd zmm20, zmm17, zmm16, zmm27			
+	yfnmaddpd zmm27, zmm24, zmm23, zmm27			
+	vsubpd	zmm5, zmm5, zmm29				
+	vsubpd	zmm12, zmm12, zmm29				
+	vsubpd	zmm19, zmm19, zmm29				
+	vsubpd	zmm26, zmm26, zmm29				
+	yfnmaddpd zmm1, zmm4, zmm0, zmm29			
+	yfnmaddpd zmm8, zmm11, zmm7, zmm29			
+	yfnmaddpd zmm15, zmm18, zmm14, zmm29			
+	yfnmaddpd zmm22, zmm25, zmm21, zmm29			
+	vaddpd	zmm6, zmm6, zmm5				
+	vaddpd	zmm13, zmm13, zmm12				
+	vaddpd	zmm20, zmm20, zmm19				
+	vaddpd	zmm27, zmm27, zmm26				
+	yfnmsubpd zmm3, zmm3, zmm0, zmm5			
+	yfnmsubpd zmm10, zmm10, zmm7, zmm12			
+	yfnmsubpd zmm17, zmm17, zmm14, zmm19			
+	yfnmsubpd zmm24, zmm24, zmm21, zmm26			
+	vsubpd	zmm1, zmm1, zmm29				
+	vsubpd	zmm8, zmm8, zmm29				
+	vsubpd	zmm15, zmm15, zmm29				
+	vsubpd	zmm22, zmm22, zmm29				
+	yfnmaddpd zmm5, zmm4, zmm2, zmm28			
+	yfnmaddpd zmm12, zmm11, zmm9, zmm28			
+	yfnmaddpd zmm19, zmm18, zmm16, zmm28			
+	yfnmaddpd zmm26, zmm25, zmm23, zmm28			
+	yfnmsubpd zmm4, zmm4, zmm0, zmm1			
+	yfnmsubpd zmm11, zmm11, zmm7, zmm8			
+	yfnmsubpd zmm18, zmm18, zmm14, zmm15			
+	yfnmsubpd zmm25, zmm25, zmm21, zmm22			
+	vaddpd	zmm5, zmm5, zmm1				
+	vaddpd	zmm12, zmm12, zmm8				
+	vaddpd	zmm19, zmm19, zmm15				
+	vaddpd	zmm26, zmm26, zmm22				
+
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HI, zmm6	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HIa, zmm13	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HIb, zmm20	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HIc, zmm27	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LO, zmm3	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LOa, zmm10	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LOb, zmm17	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LOc, zmm24	
+
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW2_MODF_HI, zmm5	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW2_MODF_HIa, zmm12	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW2_MODF_HIb, zmm19	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW2_MODF_HIc, zmm26	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW2_MODF_LO, zmm4	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW2_MODF_LOa, zmm11	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW2_MODF_LOb, zmm18	
+	vmovapd	ZMMWORD PTR ZMM_FMA_TWOPOW2_MODF_LOc, zmm25	
+
+	cmp	FMA_INITVAL_TYPE, 0
+	jl	small_initial_value
+	je	short large_initial_value
+
+	vbroadcastsd zmm28, QWORD PTR ZMM_FMA_TWOPOW_SPLIT	
+	cmp	FMA_INITVAL_TYPE, 1
+	je	short equals_split
+	vmulpd	zmm2, zmm28, zmm5				
+	vmulpd	zmm3, zmm28, zmm4
+	vmulpd	zmm9, zmm28, zmm12				
+	vmulpd	zmm10, zmm28, zmm11
+	vmulpd	zmm16, zmm28, zmm19				
+	vmulpd	zmm17, zmm28, zmm18
+	vmulpd	zmm23, zmm28, zmm26				
+	vmulpd	zmm24, zmm28, zmm25
+	jmp	done
+
+equals_split:
+	vmulpd	zmm2, zmm28, zmm6				
+	vmulpd	zmm3, zmm28, zmm3
+	vmulpd	zmm9, zmm28, zmm13				
+	vmulpd	zmm10, zmm28, zmm10
+	vmulpd	zmm16, zmm28, zmm20				
+	vmulpd	zmm17, zmm28, zmm17
+	vmulpd	zmm23, zmm28, zmm27				
+	vmulpd	zmm24, zmm28, zmm24
+	jmp	done
+
+large_initial_value:
+
+	vbroadcastsd zmm28, QWORD PTR ZMM_FMA_INITVAL		
+	vbroadcastsd zmm29, QWORD PTR ZMM_FMA_RND_CONST1	
+	yfmaddpd zmm3, zmm28, zmm5, zmm29			
+	yfmaddpd zmm10, zmm28, zmm12, zmm29			
+	yfmaddpd zmm17, zmm28, zmm19, zmm29			
+	yfmaddpd zmm24, zmm28, zmm26, zmm29			
+
+	yfmaddpd zmm6, zmm28, zmm4, zmm30			
+	yfmaddpd zmm13, zmm28, zmm11, zmm30			
+	yfmaddpd zmm20, zmm28, zmm18, zmm30			
+	yfmaddpd zmm27, zmm28, zmm25, zmm30			
+
+	vsubpd	zmm3, zmm3, zmm29				
+	vsubpd	zmm10, zmm10, zmm29				
+	vsubpd	zmm17, zmm17, zmm29				
+	vsubpd	zmm24, zmm24, zmm29				
+
+	vsubpd	zmm6, zmm6, zmm30				
+	vsubpd	zmm13, zmm13, zmm30				
+	vsubpd	zmm20, zmm20, zmm30				
+	vsubpd	zmm27, zmm27, zmm30				
+
+	yfmaddpd zmm1, zmm3, ZMMWORD PTR ZMM_FMA_INVFAC, zmm31	
+	yfmaddpd zmm8, zmm10, ZMMWORD PTR ZMM_FMA_INVFACa, zmm31
+	yfmaddpd zmm15, zmm17, ZMMWORD PTR ZMM_FMA_INVFACb, zmm31
+	yfmaddpd zmm22, zmm24, ZMMWORD PTR ZMM_FMA_INVFACc, zmm31
+
+	yfmsubpd zmm5, zmm28, zmm5, zmm3			
+	yfmsubpd zmm12, zmm28, zmm12, zmm10			
+	yfmsubpd zmm19, zmm28, zmm19, zmm17			
+	yfmsubpd zmm26, zmm28, zmm26, zmm24			
+
+	vsubpd	zmm1, zmm1, zmm31				
+	vsubpd	zmm8, zmm8, zmm31				
+	vsubpd	zmm15, zmm15, zmm31				
+	vsubpd	zmm22, zmm22, zmm31				
+
+	yfmsubpd zmm4, zmm28, zmm4, zmm6			
+	yfmsubpd zmm11, zmm28, zmm11, zmm13			
+	yfmsubpd zmm18, zmm28, zmm18, zmm20			
+	yfmsubpd zmm25, zmm28, zmm25, zmm27			
+
+	yfnmaddpd zmm2, zmm1, zmm2, zmm3			
+	yfnmaddpd zmm9, zmm8, zmm9, zmm10			
+	yfnmaddpd zmm16, zmm15, zmm16, zmm17			
+	yfnmaddpd zmm23, zmm22, zmm23, zmm24			
+
+	yfnmaddpd zmm3, zmm1, zmm0, zmm30			
+	yfnmaddpd zmm10, zmm8, zmm7, zmm30			
+	yfnmaddpd zmm17, zmm15, zmm14, zmm30			
+	yfnmaddpd zmm24, zmm22, zmm21, zmm30			
+
+	vaddpd	zmm5, zmm5, zmm6				
+	vaddpd	zmm12, zmm12, zmm13				
+	vaddpd	zmm19, zmm19, zmm20				
+	vaddpd	zmm26, zmm26, zmm27				
+
+	vsubpd	zmm3, zmm3, zmm30				
+	vsubpd	zmm10, zmm10, zmm30				
+	vsubpd	zmm17, zmm17, zmm30				
+	vsubpd	zmm24, zmm24, zmm30				
+
+	vaddpd	zmm2, zmm5, zmm2				
+	vaddpd	zmm9, zmm12, zmm9				
+	vaddpd	zmm16, zmm19, zmm16				
+	vaddpd	zmm23, zmm26, zmm23				
+
+	yfnmsubpd zmm0, zmm1, zmm0, zmm3			
+	yfnmsubpd zmm7, zmm8, zmm7, zmm10			
+	yfnmsubpd zmm14, zmm15, zmm14, zmm17			
+	yfnmsubpd zmm21, zmm22, zmm21, zmm24			
+
+	vaddpd	zmm2, zmm2, zmm3				
+	vaddpd	zmm9, zmm9, zmm10				
+	vaddpd	zmm16, zmm16, zmm17				
+	vaddpd	zmm23, zmm23, zmm24				
+
+	vaddpd	zmm3, zmm4, zmm0				
+	vaddpd	zmm10, zmm11, zmm7				
+	vaddpd	zmm17, zmm18, zmm14				
+	vaddpd	zmm24, zmm25, zmm21				
+	jmp	done
+
+small_initial_value:
+	vbroadcastsd zmm28, QWORD PTR ZMM_FMA_INITVAL		
+	yfmaddpd zmm3, zmm28, ZMMWORD PTR ZMM_FMA_INVFAC, zmm31	
+	yfmaddpd zmm10, zmm28, ZMMWORD PTR ZMM_FMA_INVFACa, zmm31
+	yfmaddpd zmm17, zmm28, ZMMWORD PTR ZMM_FMA_INVFACb, zmm31
+	yfmaddpd zmm24, zmm28, ZMMWORD PTR ZMM_FMA_INVFACc, zmm31
+	vsubpd	zmm3, zmm3, zmm31				
+	vsubpd	zmm10, zmm10, zmm31				
+	vsubpd	zmm17, zmm17, zmm31				
+	vsubpd	zmm24, zmm24, zmm31				
+	yfnmaddpd zmm4, zmm3, zmm0, zmm30			
+	yfnmaddpd zmm11, zmm10, zmm7, zmm30			
+	yfnmaddpd zmm18, zmm17, zmm14, zmm30			
+	yfnmaddpd zmm25, zmm24, zmm21, zmm30			
+	yfnmaddpd zmm2, zmm3, zmm2, zmm28			
+	yfnmaddpd zmm9, zmm10, zmm9, zmm28			
+	yfnmaddpd zmm16, zmm17, zmm16, zmm28			
+	yfnmaddpd zmm23, zmm24, zmm23, zmm28			
+	vsubpd	zmm4, zmm4, zmm30				
+	vsubpd	zmm11, zmm11, zmm30				
+	vsubpd	zmm18, zmm18, zmm30				
+	vsubpd	zmm25, zmm25, zmm30				
+	vaddpd	zmm2, zmm2, zmm4				
+	vaddpd	zmm9, zmm9, zmm11				
+	vaddpd	zmm16, zmm16, zmm18				
+	vaddpd	zmm23, zmm23, zmm25				
+	yfnmsubpd zmm3, zmm3, zmm0, zmm4			
+	yfnmsubpd zmm10, zmm10, zmm7, zmm11			
+	yfnmsubpd zmm17, zmm17, zmm14, zmm18			
+	yfnmsubpd zmm24, zmm24, zmm21, zmm25			
+
+done:
+	ENDM
+
+avx512_fma_fac MACRO fac_size
+
+	vbroadcastsd zmm28, QWORD PTR ZMM_FMA_RND_CONST0	
+	yfmaddpd zmm0, zmm2, zmm2, zmm28			
+	yfmaddpd zmm7, zmm9, zmm9, zmm28			
+	yfmaddpd zmm14, zmm16, zmm16, zmm28			
+	yfmaddpd zmm21, zmm23, zmm23, zmm28			
+
+	vbroadcastsd zmm29, QWORD PTR ZMM_FMA_RND_CONST1	
+	yfmaddpd zmm1, zmm2, zmm3, zmm29			
+	yfmaddpd zmm8, zmm9, zmm10, zmm29			
+	yfmaddpd zmm15, zmm16, zmm17, zmm29			
+	yfmaddpd zmm22, zmm23, zmm24, zmm29			
+
+	vsubpd	zmm0, zmm0, zmm28				
+	vsubpd	zmm7, zmm7, zmm28				
+	vsubpd	zmm14, zmm14, zmm28				
+	vsubpd	zmm21, zmm21, zmm28				
+
+	vsubpd	zmm1, zmm1, zmm29				
+	vsubpd	zmm8, zmm8, zmm29				
+	vsubpd	zmm15, zmm15, zmm29				
+	vsubpd	zmm22, zmm22, zmm29				
+
+	yfmsubpd zmm4, zmm2, zmm2, zmm0				
+	yfmsubpd zmm11, zmm9, zmm9, zmm7			
+	yfmsubpd zmm18, zmm16, zmm16, zmm14			
+	yfmsubpd zmm25, zmm23, zmm23, zmm21			
+
+	mov	edx, FMA_SHIFTER[rdi*4-4]			
+
+	yfmaddpd zmm5, zmm0, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HI[rdx], zmm29
+								
+	yfmaddpd zmm12, zmm7, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HIa[rdx], zmm29
+								
+	yfmaddpd zmm19, zmm14, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HIb[rdx], zmm29
+								
+	yfmaddpd zmm26, zmm21, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HIc[rdx], zmm29
+								
+	vmovapd	zmm28, ZMMWORD PTR ZMM_FMA_TWO
+	yfmaddpd zmm4, zmm28, zmm1, zmm4			
+	yfmaddpd zmm11, zmm28, zmm8, zmm11			
+	yfmaddpd zmm18, zmm28, zmm15, zmm18			
+	yfmaddpd zmm25, zmm28, zmm22, zmm25			
+
+	vsubpd	zmm5, zmm5, zmm29				
+	vsubpd	zmm12, zmm12, zmm29				
+	vsubpd	zmm19, zmm19, zmm29				
+	vsubpd	zmm26, zmm26, zmm29				
+
+	yfmsubpd zmm2, zmm2, zmm3, zmm1				
+	yfmsubpd zmm9, zmm9, zmm10, zmm8			
+	yfmsubpd zmm16, zmm16, zmm17, zmm15			
+	yfmsubpd zmm23, zmm23, zmm24, zmm22			
+
+	vmovapd zmm29, ZMMWORD PTR [r13][rdx]			
+	yfmaddpd zmm4, zmm29, zmm4, zmm5			
+	yfmaddpd zmm11, zmm29, zmm11, zmm12			
+	yfmaddpd zmm18, zmm29, zmm18, zmm19			
+	yfmaddpd zmm25, zmm29, zmm25, zmm26			
+
+	yfmaddpd zmm1, zmm3, zmm3, zmm30			
+	yfmaddpd zmm8, zmm10, zmm10, zmm30			
+	yfmaddpd zmm15, zmm17, zmm17, zmm30			
+	yfmaddpd zmm22, zmm24, zmm24, zmm30			
+
+	yfmaddpd zmm6, zmm4, ZMMWORD PTR ZMM_FMA_INVFAC, zmm31	
+	yfmaddpd zmm13, zmm11, ZMMWORD PTR ZMM_FMA_INVFACa, zmm31
+	yfmaddpd zmm20, zmm18, ZMMWORD PTR ZMM_FMA_INVFACb, zmm31
+	yfmaddpd zmm27, zmm25, ZMMWORD PTR ZMM_FMA_INVFACc, zmm31
+
+	vsubpd	zmm1, zmm1, zmm30				
+	vsubpd	zmm8, zmm8, zmm30				
+	vsubpd	zmm15, zmm15, zmm30				
+	vsubpd	zmm22, zmm22, zmm30				
+
+	yfmsubpd zmm5, zmm0, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HI[rdx], zmm5
+								
+	yfmsubpd zmm12, zmm7, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HIa[rdx], zmm12
+								
+	yfmsubpd zmm19, zmm14, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HIb[rdx], zmm19
+								
+	yfmsubpd zmm26, zmm21, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_HIc[rdx], zmm26
+								
+	vsubpd	zmm6, zmm6, zmm31				
+	vsubpd	zmm13, zmm13, zmm31				
+	vsubpd	zmm20, zmm20, zmm31				
+	vsubpd	zmm27, zmm27, zmm31				
+
+	yfmsubpd zmm3, zmm3, zmm3, zmm1				
+	yfmsubpd zmm10, zmm10, zmm10, zmm8			
+	yfmsubpd zmm17, zmm17, zmm17, zmm15			
+	yfmsubpd zmm24, zmm24, zmm24, zmm22			
+
+	yfmaddpd zmm2, zmm28, zmm2, zmm1			
+	yfmaddpd zmm9, zmm28, zmm9, zmm8			
+	yfmaddpd zmm16, zmm28, zmm16, zmm15			
+	yfmaddpd zmm23, zmm28, zmm23, zmm22			
+
+	yfnmaddpd zmm4, zmm6, ZMMWORD PTR ZMM_FMA_FAC_HI, zmm4	
+	yfnmaddpd zmm11, zmm13, ZMMWORD PTR ZMM_FMA_FAC_HIa, zmm11
+	yfnmaddpd zmm18, zmm20, ZMMWORD PTR ZMM_FMA_FAC_HIb, zmm18
+	yfnmaddpd zmm25, zmm27, ZMMWORD PTR ZMM_FMA_FAC_HIc, zmm25
+
+	yfmaddpd zmm1, zmm0, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LO[rdx], zmm30 
+	yfmaddpd zmm8, zmm7, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LOa[rdx], zmm30
+	yfmaddpd zmm15, zmm14, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LOb[rdx], zmm30
+	yfmaddpd zmm22, zmm21, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LOc[rdx], zmm30
+
+	yfmaddpd zmm2, zmm29, zmm2, zmm5			
+	yfmaddpd zmm9, zmm29, zmm9, zmm12			
+	yfmaddpd zmm16, zmm29, zmm16, zmm19			
+	yfmaddpd zmm23, zmm29, zmm23, zmm26			
+
+	yfnmaddpd zmm5, zmm6, ZMMWORD PTR ZMM_FMA_FAC_LO, zmm30
+	yfnmaddpd zmm12, zmm13, ZMMWORD PTR ZMM_FMA_FAC_LOa, zmm30
+	yfnmaddpd zmm19, zmm20, ZMMWORD PTR ZMM_FMA_FAC_LOb, zmm30
+	yfnmaddpd zmm26, zmm27, ZMMWORD PTR ZMM_FMA_FAC_LOc, zmm30
+
+	vsubpd	zmm1, zmm1, zmm30				
+	vsubpd	zmm8, zmm8, zmm30				
+	vsubpd	zmm15, zmm15, zmm30				
+	vsubpd	zmm22, zmm22, zmm30				
+
+ 	vaddpd	zmm2, zmm2, zmm4				
+ 	vaddpd	zmm9, zmm9, zmm11				
+ 	vaddpd	zmm16, zmm16, zmm18				
+ 	vaddpd	zmm23, zmm23, zmm25				
+
+	yfmsubpd zmm0, zmm0, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LO[rdx], zmm1
+	yfmsubpd zmm7, zmm7, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LOa[rdx], zmm8
+	yfmsubpd zmm14, zmm14, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LOb[rdx], zmm15
+	yfmsubpd zmm21, zmm21, ZMMWORD PTR ZMM_FMA_TWOPOW1_MODF_LOc[rdx], zmm22
+
+	vsubpd	zmm5, zmm5, zmm30				
+	vsubpd	zmm12, zmm12, zmm30				
+	vsubpd	zmm19, zmm19, zmm30				
+	vsubpd	zmm26, zmm26, zmm30				
+
+	vaddpd	zmm2, zmm2, zmm1				
+	vaddpd	zmm9, zmm9, zmm8				
+	vaddpd	zmm16, zmm16, zmm15				
+	vaddpd	zmm23, zmm23, zmm22				
+
+	yfmaddpd zmm3, zmm29, zmm3, zmm0			
+	yfmaddpd zmm10, zmm29, zmm10, zmm7			
+	yfmaddpd zmm17, zmm29, zmm17, zmm14			
+	yfmaddpd zmm24, zmm29, zmm24, zmm21			
+
+	yfnmsubpd zmm6, zmm6, ZMMWORD PTR ZMM_FMA_FAC_LO, zmm5	
+	yfnmsubpd zmm13, zmm13, ZMMWORD PTR ZMM_FMA_FAC_LOa, zmm12
+	yfnmsubpd zmm20, zmm20, ZMMWORD PTR ZMM_FMA_FAC_LOb, zmm19
+	yfnmsubpd zmm27, zmm27, ZMMWORD PTR ZMM_FMA_FAC_LOc, zmm26
+
+	vaddpd	zmm2, zmm2, zmm5				
+	vaddpd	zmm9, zmm9, zmm12				
+	vaddpd	zmm16, zmm16, zmm19				
+	vaddpd	zmm23, zmm23, zmm26				
+
+	vaddpd	zmm3, zmm3, zmm6				
+	vaddpd	zmm10, zmm10, zmm13				
+	vaddpd	zmm17, zmm17, zmm20				
+	vaddpd	zmm24, zmm24, zmm27				
+	ENDM
+
+avx512_fma_compare MACRO
+	vaddpd	zmm2, zmm2, zmm3				
+	vaddpd	zmm9, zmm9, zmm10
+	vaddpd	zmm16, zmm16, zmm17
+	vaddpd	zmm23, zmm23, zmm24
+	ENDM
+

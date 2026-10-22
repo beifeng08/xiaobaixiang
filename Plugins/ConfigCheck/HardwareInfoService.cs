@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 using Microsoft.Win32;
 using System.Management;
 using System.Text;
@@ -5,17 +8,12 @@ using YanJi.PluginSdk.Services;
 
 namespace YanJi.Plugin.ConfigCheck;
 
-/// <summary>硬件配置采集：优先 LibreHardwareMonitor（开源，源码项目引用），
-/// 它拿不到的字段退回 WMI（System.Management，Windows 自带）/ 注册表 / EDID 补充。
-/// 采集较耗时，调用方应放后台线程（Task.Run）；分组独立容错，保留可用结果并在明细标记来源失败。</summary>
 public static class HardwareInfoService
 {
-    const string Cimv2 = @"root\cimv2";
+    const string Cimv2 = @root\cimv2";
 
-    /// <summary>采集进度（Step 从 0 起，Total 为总阶段数）。</summary>
     public record CollectProgress(int Step, int Total, string Stage);
 
-    /// <summary>采集整机硬件信息；在阶段边界协作取消，不能中断正在执行的 Windows 原生调用。</summary>
     public static HardwareReport Collect(IProgress<CollectProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
@@ -30,7 +28,6 @@ public static class HardwareInfoService
             cancellationToken.ThrowIfCancellationRequested();
         }
 
-        // LibreHardwareMonitor 整体只 Open 一次，快照分给各分组用
         BeginStage(0, "处理器（CPU）");
         var lhm = LhmService.Collect(cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
@@ -70,7 +67,6 @@ public static class HardwareInfoService
         return report;
     }
 
-    /// <summary>分组独立容错，保留已取得的数据；取消异常继续向调用方传播。</summary>
     static InfoGroup SafeGroup(string title, Action<InfoGroup> fill)
     {
         var g = new InfoGroup(title);
@@ -84,13 +80,10 @@ public static class HardwareInfoService
         return g;
     }
 
-    /// <summary>多子项分隔：第 2 个及以后的子项前插一个空行。</summary>
     static void Separator(InfoGroup g, int index)
     {
         if (index > 0) g.Add("", "");
     }
-
-    // ═══ 固件 / 整机 / 主板 ═══
 
     static void CollectBios(InfoGroup g, LhmService.Snapshot lhm)
     {
@@ -125,8 +118,6 @@ public static class HardwareInfoService
         AddText(g, "版本", board.Version);
         AddText(g, "序列号", board.SerialNumber);
     }
-
-    // ═══ CPU ═══
 
     static void CollectCpu(InfoGroup g, LhmService.Snapshot lhm)
     {
@@ -178,14 +169,12 @@ public static class HardwareInfoService
             }
     }
 
-    // ═══ GPU ═══
-
     static void CollectGpu(InfoGroup g, LhmService.Snapshot lhm)
     {
         g.AddDetail("数据来源", "型号/驱动为 Win32_VideoController；显存依次用名称匹配的 LHM GPU Memory Total（NVIDIA NVAPI、AMD ADL、Intel D3D）、注册表 qwMemorySize、WMI AdapterRAM（32 位，仅估算）。名称相等或互含仅作启发式匹配，LHM 原记录独立保留；WMI 无记录或失败时仍显示 LHM 型号/显存。");
         var gpus = WmiQuery(Cimv2,
             "SELECT Name, AdapterRAM, PNPDeviceID, DriverVersion FROM Win32_VideoController", g);
-        // 显存精度优先级：LHM「GPU Memory Total」（NVAPI/ADL 直读）> 注册表 qwMemorySize > WMI AdapterRAM（uint32，>4GB 溢出，仅兜底）
+        
         var regVram = ReadRegistryVram();
         for (int i = 0; i < gpus.Count; i++)
         {
@@ -215,7 +204,7 @@ public static class HardwareInfoService
             string drv = CleanText(GetStr(mo, "DriverVersion"));
             if (drv.Length > 0) g.Add("驱动版本" + tag, drv);
         }
-        // 独立保留 LHM 记录，WMI 枚举中途失败或名称未匹配也不会遮蔽已取得的 GPU
+        
         for (int i = 0; i < lhm.Gpus.Count; i++)
         {
             var lg = lhm.Gpus[i];
@@ -233,7 +222,6 @@ public static class HardwareInfoService
         }
     }
 
-    /// <summary>显卡类注册表项里的准确显存（HardwareInformation.qwMemorySize，REG_QWORD）。</summary>
     record VramEntry(string MatchingDeviceId, string DriverDesc, long Bytes);
 
     static List<VramEntry> ReadRegistryVram()
@@ -242,7 +230,7 @@ public static class HardwareInfoService
         try
         {
             using var klass = Registry.LocalMachine.OpenSubKey(
-                @"SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}");
+                @SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}");
             if (klass == null) return list;
             foreach (var sub in klass.GetSubKeyNames())
             {
@@ -255,28 +243,26 @@ public static class HardwareInfoService
                         ((key.GetValue("MatchingDeviceId") as string) ?? "").ToLowerInvariant(),
                         (key.GetValue("DriverDesc") as string) ?? "", bytes));
                 }
-                catch (Exception ex) when (ex is not OperationCanceledException) { /* 单个子键失败跳过 */ }
+                catch (Exception ex) when (ex is not OperationCanceledException) {  }
             }
         }
-        catch (Exception ex) when (ex is not OperationCanceledException) { /* 无权限/键不存在 → 退回 WMI 估算 */ }
+        catch (Exception ex) when (ex is not OperationCanceledException) {  }
         return list;
     }
 
     static long? MatchRegistryVram(List<VramEntry> entries, string name, string pnpId)
     {
-        // 先按 PNPDeviceID 包含 MatchingDeviceId 匹配（如 pci\ven_10de&dev_2520）
+        
         string pnp = pnpId.ToLowerInvariant();
         foreach (var e in entries)
             if (e.MatchingDeviceId.Length > 0 && pnp.Contains(e.MatchingDeviceId))
                 return e.Bytes;
-        // 再按驱动描述 == WMI 名称
+        
         foreach (var e in entries)
             if (e.DriverDesc.Length > 0 && e.DriverDesc.Equals(name, StringComparison.OrdinalIgnoreCase))
                 return e.Bytes;
         return null;
     }
-
-    // ═══ 内存 ═══
 
     static void CollectMemory(InfoGroup g, LhmService.Snapshot lhm)
     {
@@ -286,7 +272,6 @@ public static class HardwareInfoService
             "SELECT Capacity, Speed, ConfiguredClockSpeed, Manufacturer, PartNumber, DeviceLocator FROM Win32_PhysicalMemory", g);
         var installed = sticks.Where(mo => KnownNumber(GetU64(mo, "Capacity"))).ToList();
 
-        // 总容量：LHM Windows 物理内存总量优先，退回 WMI 求和
         if (lhm.MemoryTotalGB is double totalGB && KnownCapacity(totalGB))
             g.Add("总容量", FormatSize((long)(totalGB * 1073741824.0)));
         else
@@ -296,14 +281,12 @@ public static class HardwareInfoService
             if (total > 0) g.Add("总容量", FormatSize((long)total));
         }
 
-        // ConfiguredClockSpeed 是 WMI 报告的配置速度，不是实时频率
         var actual = installed.Select(mo => GetU32(mo, "ConfiguredClockSpeed"))
             .Where(v => KnownNumber(v)).Distinct().ToList();
         g.Add("配置速度（WMI）", actual.Count > 0
             ? string.Join(" / ", actual.Select(v => $"{v} MT/s"))
             : "无法读取");
 
-        // ── 详细信息（折叠区，默认收起）：各来源单独列出 ──
         int slots = QueryTotalSlots(g);
         int spdCount = lhm.Dimms.Count(d => KnownCapacity(d.CapacityGB));
         int stickCount = spdCount > 0 ? spdCount : installed.Count;
@@ -321,7 +304,6 @@ public static class HardwareInfoService
             g.AddDetail($"SPD 记录 {i + 1}", cap + (name.Length > 0 ? "　" + name : ""));
         }
 
-        // SPD 有结果时也保留 WMI 每条记录的有效明细
         g.AddDetail("WMI 来源", "Win32_PhysicalMemory：容量、最大速度 Speed、配置速度 ConfiguredClockSpeed、厂商、料号、DeviceLocator；非直接 SPD 读数。");
         for (int i = 0; i < sticks.Count; i++)
         {
@@ -360,7 +342,6 @@ public static class HardwareInfoService
             }
     }
 
-    /// <summary>内存插槽总数（Win32_PhysicalMemoryArray.MemoryDevices 求和）；查询失败保留已取得的结果。</summary>
     static int QueryTotalSlots(InfoGroup g)
     {
         int sum = 0;
@@ -372,17 +353,13 @@ public static class HardwareInfoService
         return sum;
     }
 
-    // ═══ 硬盘 ═══
-
     static void CollectDisks(InfoGroup g, LhmService.Snapshot lhm)
     {
         g.AddDetail("数据来源", "LHM StorageDevice / DiskInfoToolkit 提供型号、容量和 SMART；不可用时退回 Win32_DiskDrive，WMI 无 SMART 则保持未知。盘符仍按物理盘号 Index / StorageDeviceNumber 经 WMI 分区关联。");
-        // 每块盘四行：容量　(盘符)　型号（一行；盘符可多个，无盘符不显示括号）+ 健康度 + 通电时间
-        // + 0E 介质与数据完整性错误（SMART，拿不到显示「未知」）；盘变多行后恢复盘间空行（与 GPU/屏幕一致）
+        
         if (lhm.Disks.Count > 0)
         {
-            // 盘符按物理盘号关联：LHM StorageDeviceNumber = Windows 物理盘号 = Win32_DiskDrive.Index；
-            // 对应不上（DeviceNumber 缺失或 WMI 无记录）就不显示括号，不报错
+            
             var letters = QueryDiskLetters(g);
             for (int i = 0; i < lhm.Disks.Count; i++)
             {
@@ -400,8 +377,6 @@ public static class HardwareInfoService
             return;
         }
 
-        // WMI 兜底通道没有 SMART：容量/型号照列，健康度/通电时间/0E「未知」（不强行反推）；
-        // 本通道本来就有 Win32_DiskDrive.Index，直接关联盘符
         var disks = WmiQuery(Cimv2, "SELECT Model, Size, Index FROM Win32_DiskDrive", g);
         var wmiLetters = QueryDiskLetters(g);
         for (int i = 0; i < disks.Count; i++)
@@ -420,24 +395,19 @@ public static class HardwareInfoService
         }
     }
 
-    /// <summary>盘符列表 → 「　(C: D:)」片段；null 或空列表返回空串（不显示括号）。</summary>
     static string FormatLetters(List<string>? letters) =>
         letters is { Count: > 0 } ? $"　({string.Join(" ", letters)})" : "";
 
-    /// <summary>物理盘 Index → 盘符列表（如 0 → [C:];同一盘多盘符都收）。关联链：
-    /// Win32_DiskDrive → Win32_DiskDriveToDiskPartition → Win32_LogicalDiskToPartition → Win32_LogicalDisk；
-    /// 任何一步失败返回已有结果（最坏空表，调用方不显示括号）。</summary>
     static Dictionary<int, List<string>> QueryDiskLetters(InfoGroup g)
     {
         var map = new Dictionary<int, List<string>>();
         try
         {
-            // 物理盘 DeviceID（\\.\PHYSICALDRIVE0）→ Index
+            
             var diskIdToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             foreach (var mo in WmiQuery(Cimv2, "SELECT DeviceID, Index FROM Win32_DiskDrive"))
                 diskIdToIndex[GetStr(mo, "DeviceID")] = (int)GetU32(mo, "Index");
 
-            // 分区 DeviceID（Disk #0, Partition #1）→ 物理盘 Index
             var partToDisk = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             foreach (var mo in WmiQuery(Cimv2, "SELECT Antecedent, Dependent FROM Win32_DiskDriveToDiskPartition"))
             {
@@ -447,7 +417,6 @@ public static class HardwareInfoService
                     partToDisk[partId] = idx;
             }
 
-            // 分区 → 逻辑盘符（C:）
             foreach (var mo in WmiQuery(Cimv2, "SELECT Antecedent, Dependent FROM Win32_LogicalDiskToPartition"))
             {
                 string letter = ExtractPathDeviceId(GetStr(mo, "Dependent"));
@@ -467,8 +436,6 @@ public static class HardwareInfoService
         return map;
     }
 
-    /// <summary>从 WMI 对象路径（形如 \\机器\root\cimv2:Win32_DiskDrive.DeviceID="\\\\.\\PHYSICALDRIVE0"）
-    /// 取出 DeviceID 原值（去 \\ 转义）；取不到返回空串。</summary>
     static string ExtractPathDeviceId(string objectPath)
     {
         const string marker = "DeviceID=\"";
@@ -479,16 +446,13 @@ public static class HardwareInfoService
         return j < 0 ? "" : objectPath[i..j].Replace("\\\\", "\\");
     }
 
-    /// <summary>通电时间：「N 小时」，≥24 小时附约天数。</summary>
     static string FormatHours(long? hours) =>
         hours is not > 0 ? "未知" : hours >= 24 ? $"{hours} 小时（约 {hours / 24} 天）" : $"{hours} 小时";
-
-    // ═══ 网卡 ═══
 
     static void CollectNics(InfoGroup g)
     {
         g.AddDetail("数据来源", "Win32_NetworkAdapter，PhysicalAdapter=True；包含未连接的物理网卡，名称保持 Windows 原值。");
-        // 全部物理网卡（含未连接），口径与设备管理器一致；名称不做清洗，原样显示
+        
         var nics = WmiQuery(Cimv2,
             "SELECT Name FROM Win32_NetworkAdapter WHERE PhysicalAdapter = True", g);
         for (int i = 0; i < nics.Count; i++)
@@ -498,8 +462,6 @@ public static class HardwareInfoService
             g.Add("网卡" + tag, name.Length > 0 ? name : "未知型号");
         }
     }
-
-    // ═══ 屏幕 ═══
 
     static void CollectDisplays(InfoGroup g)
     {
@@ -523,17 +485,13 @@ public static class HardwareInfoService
                 ? (mfgProd.Length > 0 ? $"{e.PanelName}（{mfgProd}）" : e.PanelName)
                 : "无法读取");
 
-            // 注意：由 EDID 色度坐标算的是色域「容积比」而非覆盖率（顶点可超出标准色域，比值可 >100%）
             g.Add("色域" + tag, e is { SrgbVolume: > 0 }
                 ? $"≈ {e.SrgbVolume:0}% sRGB / {e.P3Volume:0}% DCI-P3（EDID 容积比）"
                 : "无法读取");
         }
     }
 
-    // ═══ 电池 ═══
-
-    /// <summary>root\WMI：电池类驱动注册的 WMI 类所在命名空间（BatteryStaticData 等）。</summary>
-    const string WmiRoot = @"root\WMI";
+    const string WmiRoot = @root\WMI";
 
     static void CollectBattery(InfoGroup g, LhmService.Snapshot lhm)
     {
@@ -589,7 +547,6 @@ public static class HardwareInfoService
             g.Add("电池", wmiBatteries.Count > 0 ? "已检测到，容量无法读取" : "未取得电池信息（可能无电池或来源不可用）");
     }
 
-    /// <summary>root\WMI 电池类按 InstanceName 取属性；失败在分组明细标记，并保留已取记录。</summary>
     static Dictionary<string, uint> QueryRootWmiBattery(InfoGroup g, string className, string prop)
     {
         var values = new Dictionary<string, uint>(StringComparer.OrdinalIgnoreCase);
@@ -612,9 +569,6 @@ public static class HardwareInfoService
         return values;
     }
 
-    // ═══ 通用辅助 ═══
-
-    /// <summary>在 (名称, 对象) 序列里按名称匹配（相等或互相包含，忽略大小写）。</summary>
     static (string Name, T Obj)? FindByName<T>(IEnumerable<(string Name, T Obj)> items, string name)
     {
         if (CleanText(name).Length == 0) return null;
@@ -694,7 +648,6 @@ public static class HardwareInfoService
         catch (Exception ex) when (ex is not OperationCanceledException) { return 0; }
     }
 
-    /// <summary>字节数 → GB/TB（1024 进制，与 Windows 口径一致）。</summary>
     static string FormatSize(long bytes)
     {
         double gb = bytes / 1073741824.0;

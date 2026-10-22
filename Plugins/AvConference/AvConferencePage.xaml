@@ -1,3 +1,7 @@
+<!-- Copyright (c) 2026 beifeng08 -->
+<!-- Licensed under the MIT License. See LICENSE in the project root. -->
+
+
 <UserControl x:Class="YanJi.Plugin.AvConference.AvConferencePage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,7 +14,7 @@
                     <TextBlock Text="BIBA YANJI / AUDIO &amp; VIDEO" Style="{DynamicResource PageEyebrow}"
                                FontSize="12" Foreground="{DynamicResource SecondaryAccentBrush}"/>
                     <TextBlock Text="影音设备检查" FontSize="22" FontWeight="SemiBold" Margin="0,6,0,10"/>
-                    <!-- 状态行：通过后变绿 -->
+                    
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="测试状态：" FontWeight="SemiBold"/>
                         <TextBlock x:Name="StatusText" Text="待测试" Margin="8,0,0,0"
@@ -19,7 +23,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- ═══ 摄像头 ═══ -->
             <Border Style="{StaticResource CardBorder}" CornerRadius="0" Width="Auto" Margin="0" Padding="18">
                 <StackPanel>
                     <TextBlock Text="摄像头" Style="{DynamicResource SectionTitle}" FontWeight="SemiBold" FontSize="14"/>
@@ -48,7 +51,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- ═══ 麦克风 ═══ -->
             <Border Style="{StaticResource CardBorder}" CornerRadius="0" Width="Auto" Margin="0,16,0,0" Padding="18">
                 <StackPanel>
                     <TextBlock Text="麦克风" Style="{DynamicResource SectionTitle}" FontWeight="SemiBold" FontSize="14"/>
@@ -74,7 +76,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- ═══ 扬声器 ═══ -->
             <Border Style="{StaticResource CardBorder}" CornerRadius="0" Width="Auto" Margin="0,16,0,0" Padding="18">
                 <StackPanel>
                     <TextBlock Text="扬声器" Style="{DynamicResource SectionTitle}" FontWeight="SemiBold" FontSize="14"/>
@@ -99,7 +100,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- 通过按钮 -->
             <Border Style="{StaticResource CardBorder}" CornerRadius="0" Margin="0,16,0,0" Padding="18"
                     Background="{DynamicResource AccentSoftBrush}">
                 <StackPanel>

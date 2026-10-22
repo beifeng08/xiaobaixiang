@@ -1,9 +1,11 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 using System.Windows.Controls;
 using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.AvConference;
 
-/// <summary>「影音会议」插件入口：摄像头预览 / 麦克风电平+录放 / 扬声器试音。</summary>
 public class AvConferencePlugin : IYanJiPlugin
 {
     public PluginInfo Info => new("av", "影音会议", "1.0.0", 40, false);

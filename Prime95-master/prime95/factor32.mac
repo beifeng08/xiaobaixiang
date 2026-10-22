@@ -1,0 +1,299 @@
+; Copyright (c) 2026 beifeng08
+; Licensed under the MIT License. See LICENSE in the project root.
+
+sse2_fac MACRO fac_size
+
+	IF fac_size GE 75
+	movdqa	xmm3, xmm0		
+	movdqa	xmm4, xmm0		
+	pmuludq	xmm0, xmm0		
+	movdqa	xmm5, xmm1		
+	pmuludq	xmm1, xmm1		
+	pmuludq	xmm3, xmm2		
+	pmuludq	xmm4, xmm5		
+	pmuludq	xmm5, xmm2		
+	movdqa	xmm6, xmm0		
+	psrlq	xmm0, 30		
+	movdqa	xmm7, XMMWORD PTR XMM_TWO_120_MODF2
+	pmuludq	xmm7, xmm0		
+	paddq	xmm1, xmm7		
+	movdqa	xmm7, XMMWORD PTR XMM_TWO_120_MODF1
+	pmuludq	xmm7, xmm0		
+	psllq	xmm3, 1			
+	pmuludq	xmm0, XMMWORD PTR XMM_TWO_120_MODF3
+					
+	psllq	xmm4, 1			
+	pmuludq	xmm2, xmm2		
+	psllq	xmm5, 1			
+	pand	xmm6, XMMWORD PTR XMM_BITS30
+					
+	paddq	xmm4, xmm7		
+	paddq	xmm5, xmm0		
+	paddq	xmm1, xmm3		
+					
+	movdqa	xmm0, xmm1		
+	psrlq	xmm1, 30		
+	paddq	xmm4, xmm1		
+	pand	xmm0, XMMWORD PTR XMM_BITS30
+					
+	movdqa	xmm3, xmm4		
+	psrlq	xmm4, 30		
+	paddd	xmm6, xmm4		
+					
+	movdqa	xmm7, XMMWORD PTR XMM_TWO_120_MODF2
+	pmuludq	xmm7, xmm6		
+	pand	xmm3, XMMWORD PTR XMM_BITS30
+					
+	movdqa	xmm1, XMMWORD PTR XMM_TWO_120_MODF1
+	pmuludq	xmm1, xmm6		
+	psllq	xmm3, 30		
+	pmuludq	xmm6, XMMWORD PTR XMM_TWO_120_MODF3
+					
+	por	xmm0, xmm3		
+	paddq	xmm5, xmm7		
+	paddq	xmm0, xmm1		
+	paddq	xmm2, xmm6		
+					
+	movdqa	xmm7, XMMWORD PTR XMM_BITS30
+	pand	xmm7, xmm5		
+	psrlq	xmm5, 30		
+	paddq	xmm0, xmm5		
+	psllq	xmm7, 30		
+	paddq	xmm7, xmm2		
+					
+	ENDIF
+
+	IF fac_size LT 75
+	movdqa	xmm3, xmm0		
+	movdqa	xmm4, xmm0		
+	pmuludq	xmm0, xmm2		
+	movdqa	xmm5, xmm1		
+	pmuludq	xmm1, xmm1		
+	pmuludq	xmm3, xmm3		
+	pmuludq	xmm4, xmm5		
+	psllq	xmm0, 1			
+	pmuludq	xmm5, xmm2		
+	paddq	xmm1, xmm0		
+	pmuludq	xmm2, xmm2		
+	psllq	xmm4, 1			
+	psllq	xmm5, 1			
+					
+	movdqa	xmm0, xmm1		
+	psrlq	xmm1, 30		
+	paddq	xmm4, xmm1		
+	pand	xmm0, XMMWORD PTR XMM_BITS30
+					
+	movdqa	xmm6, xmm4		
+	psrlq	xmm4, 30		
+	paddd	xmm3, xmm4		
+					
+	movdqa	xmm7, XMMWORD PTR XMM_TWO_120_MODF2
+	pmuludq	xmm7, xmm3		
+	pand	xmm6, XMMWORD PTR XMM_BITS30
+					
+	movdqa	xmm1, XMMWORD PTR XMM_TWO_120_MODF1
+	pmuludq	xmm1, xmm3		
+	psllq	xmm6, 30		
+	pmuludq	xmm3, XMMWORD PTR XMM_TWO_120_MODF3
+					
+	por	xmm0, xmm6		
+	paddq	xmm5, xmm7		
+	paddq	xmm0, xmm1		
+	paddq	xmm2, xmm3		
+					
+	movdqa	xmm7, XMMWORD PTR XMMWORD PTR XMM_BITS30
+	pand	xmm7, xmm5		
+	psrlq	xmm5, 30		
+	paddq	xmm0, xmm5		
+	psllq	xmm7, 30		
+	paddq	xmm7, xmm2		
+					
+	ENDIF
+
+	movdqa	xmm6, xmm0		
+
+	psrlq	xmm0, 30		
+	movdqa	xmm1, XMMWORD PTR XMM_I2
+	pmuludq	xmm1, xmm0		
+	movdqa	xmm3, XMMWORD PTR XMM_I1
+	pmuludq	xmm0, xmm3		
+	pand	xmm6, XMMWORD PTR XMM_BITS30
+					
+	pmuludq	xmm3, xmm6		
+	paddq	xmm1, xmm3		
+	psrlq	xmm1, 30		
+	paddq	xmm0, xmm1		
+
+	movd	xmm2, XMM_BS
+	psrlq	xmm0, xmm2		
+	movdqa	xmm1, XMMWORD PTR XMM_BITS30
+	pand	xmm1, xmm0		
+	psrlq	xmm0, 30		
+
+	movdqa	xmm3, XMMWORD PTR XMM_F2
+	pmuludq	xmm3, xmm1		
+	movdqa	xmm4, XMMWORD PTR XMM_F3
+	pmuludq	xmm4, xmm0		
+	movdqa	xmm5, XMMWORD PTR XMM_F1
+	pmuludq	xmm5, xmm1		
+	pmuludq	xmm0, XMMWORD PTR XMM_F2
+	pmuludq	xmm1, XMMWORD PTR XMM_F3
+	paddq	xmm3, xmm4		
+	paddd	xmm5, xmm0		
+	movdqa	xmm2, XMMWORD PTR XMM_BITS30
+	pand	xmm2, xmm3		
+	psllq	xmm2, 30		
+	paddq	xmm1, xmm2		
+	psrlq	xmm3, 30		
+	paddd	xmm5, xmm3		
+
+	psubq	xmm7, xmm1		
+	psubd	xmm6, xmm5		
+
+	movd	xmm1, XMM_SHIFTER[ecx*8]
+	psllq	xmm6, xmm1		
+	psllq	xmm7, xmm1		
+
+	movdqa	xmm1, XMMWORD PTR XMM_BITS30	
+	movdqa	xmm2, xmm7		
+	psrlq	xmm7, 30		
+	pand	xmm1, xmm7		
+	psrlq	xmm7, 2			
+	psrad	xmm7, 28		
+	paddd	xmm6, xmm7		
+	pand	xmm2, XMMWORD PTR XMM_BITS30
+					
+	movdqa	xmm0, XMMWORD PTR XMM_BITS28	
+	pand	xmm0, xmm6		
+	ENDM
+
+sse2_fac_initval MACRO
+	LOCAL	retry, ok1, ok2
+
+retry:	movdqa	xmm7, XMMWORD PTR XMM_INVFAC 
+	psrlq	xmm7, 3			
+	movdqa	xmm6, XMMWORD PTR XMM_BITS30
+	pand	xmm6, xmm7		
+	psrlq	xmm7, 30		
+	movdqa	XMMWORD PTR XMM_I2, xmm6
+	movdqa	XMMWORD PTR XMM_I1, xmm7
+
+	movdqa	xmm3, XMMWORD PTR XMM_F2
+	pmuludq	xmm3, xmm6		
+	movdqa	xmm4, XMMWORD PTR XMM_F3
+	pmuludq	xmm4, xmm7		
+	movdqa	xmm5, XMMWORD PTR XMM_F1
+	pmuludq	xmm5, xmm6		
+	pmuludq	xmm7, XMMWORD PTR XMM_F2
+	pmuludq	xmm6, XMMWORD PTR XMM_F3
+	paddq	xmm3, xmm4		
+	paddd	xmm5, xmm7		
+	movdqa	xmm2, XMMWORD PTR XMM_BITS30
+	pand	xmm2, xmm3		
+	psllq	xmm2, 30		
+	paddq	xmm6, xmm2		
+	psrlq	xmm3, 30		
+	paddd	xmm5, xmm3		
+
+	psrlq	xmm6, 60
+	paddd	xmm5, xmm6		
+
+	psllq	xmm5, 4			
+	pmovmskb ebx, xmm5
+	test	ebx, 0008h		
+	jnz	short ok1		
+	movdqa	xmm7, XMMWORD PTR XMM_INVFAC 
+	psubq	xmm7, XMMWORD PTR XMM_LOWONE
+	movdqa	XMMWORD PTR XMM_INVFAC, xmm7
+	jmp	retry			
+ok1:	test	ebx, 0800h		
+	jnz	short ok2		
+	movdqa	xmm7, XMMWORD PTR XMM_INVFAC 
+	psubq	xmm7, XMMWORD PTR XMM_HIGHONE
+	movdqa	XMMWORD PTR XMM_INVFAC, xmm7
+	jmp	retry			
+ok2:
+
+	movdqa	xmm7, XMMWORD PTR XMM_INVFAC 
+	movd	xmm0, XMM_INIT120BS
+	psrlq	xmm7, xmm0		
+	movdqa	xmm6, XMMWORD PTR XMM_BITS30
+	pand	xmm6, xmm7		
+	psrlq	xmm7, 30		
+
+	movdqa	xmm3, XMMWORD PTR XMM_F2
+	pmuludq	xmm3, xmm6		
+	movdqa	xmm4, XMMWORD PTR XMM_F3
+	pmuludq	xmm4, xmm7		
+	movdqa	xmm5, XMMWORD PTR XMM_F1
+	pmuludq	xmm5, xmm6		
+	pmuludq	xmm7, XMMWORD PTR XMM_F2
+	pmuludq	xmm6, XMMWORD PTR XMM_F3
+	paddq	xmm3, xmm4		
+	paddd	xmm5, xmm7		
+	movdqa	xmm2, XMMWORD PTR XMM_BITS30
+	pand	xmm2, xmm3		
+	psllq	xmm2, 30		
+	paddq	xmm6, xmm2		
+	psrlq	xmm3, 30		
+	paddd	xmm5, xmm3		
+
+	pxor	xmm1, xmm1
+	pxor	xmm0, xmm0
+	psubq	xmm1, xmm6		
+	psubd	xmm0, xmm5		
+
+	movdqa	xmm4, XMMWORD PTR XMM_BITS30	
+	movdqa	xmm5, xmm1		
+	psrlq	xmm1, 30		
+	pand	xmm4, xmm1		
+	psrlq	xmm1, 2			
+	psrad	xmm1, 28		
+	paddd	xmm0, xmm1		
+	pand	xmm5, XMMWORD PTR XMM_BITS30	
+	pand	xmm0, XMMWORD PTR XMM_BITS28	
+	movdqa	XMMWORD PTR XMM_TWO_120_MODF2, xmm4
+	movdqa	XMMWORD PTR XMM_TWO_120_MODF3, xmm5
+	movdqa	XMMWORD PTR XMM_TWO_120_MODF1, xmm0
+
+	movdqa	xmm0, XMMWORD PTR XMM_INVFAC	
+	movd	xmm1, XMM_INITBS
+	psrlq	xmm0, xmm1		
+	movdqa	xmm1, XMMWORD PTR XMM_BITS30
+	pand	xmm1, xmm0		
+	psrlq	xmm0, 30		
+
+	movdqa	xmm6, XMMWORD PTR XMM_INITVAL	
+	pxor	xmm7, xmm7		
+
+	movdqa	xmm3, XMMWORD PTR XMM_F2
+	pmuludq	xmm3, xmm1		
+	movdqa	xmm4, XMMWORD PTR XMM_F3
+	pmuludq	xmm4, xmm0		
+	movdqa	xmm5, XMMWORD PTR XMM_F1
+	pmuludq	xmm5, xmm1		
+	pmuludq	xmm0, XMMWORD PTR XMM_F2
+	pmuludq	xmm1, XMMWORD PTR XMM_F3
+	paddq	xmm3, xmm4		
+	paddd	xmm5, xmm0		
+	movdqa	xmm2, XMMWORD PTR XMM_BITS30
+	pand	xmm2, xmm3		
+	psllq	xmm2, 30		
+	paddq	xmm1, xmm2		
+	psrlq	xmm3, 30		
+	paddd	xmm5, xmm3		
+
+	psubq	xmm7, xmm1		
+	psubd	xmm6, xmm5		
+
+	movdqa	xmm1, XMMWORD PTR XMM_BITS30	
+	movdqa	xmm2, xmm7		
+	psrlq	xmm7, 30		
+	pand	xmm1, xmm7		
+	psrlq	xmm7, 2			
+	psrad	xmm7, 28		
+	paddd	xmm6, xmm7		
+	pand	xmm2, XMMWORD PTR XMM_BITS30	
+	movdqa	xmm0, XMMWORD PTR XMM_BITS28	
+	pand	xmm0, xmm6		
+	ENDM

@@ -1,9 +1,11 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 using System.Windows.Controls;
 using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.ConfigCheck;
 
-/// <summary>「配置核对」插件入口：进页自动采集 CPU/显卡/内存/硬盘/网卡/屏幕，人工对照订单核对。</summary>
 public class ConfigCheckPlugin : IYanJiPlugin, IPluginShutdown
 {
     ConfigCheckPage? _page;

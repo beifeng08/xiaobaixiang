@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 (function () {
   "use strict";
 
@@ -11,65 +14,65 @@
   let isSample = false;
 
   // ── DOM 工具：数据一律走 textContent，载入的 JSON 不能注入标记 ──
-  function h(tag, attrs, ...kids) {
-    const el = document.createElement(tag);
-    setAttrs(el, attrs);
-    append(el, kids);
-    return el;
+  function h(tag, attributes, ...children) {
+    const element = document.createElement(tag);
+    setAttrs(element, attributes);
+    append(element, children);
+    return element;
   }
-  function svg(tag, attrs, ...kids) {
-    const el = document.createElementNS(SVGNS, tag);
-    setAttrs(el, attrs);
-    append(el, kids);
-    return el;
+  function svg(tag, attributes, ...children) {
+    const element = document.createElementNS(SVGNS, tag);
+    setAttrs(element, attributes);
+    append(element, children);
+    return element;
   }
-  function setAttrs(el, attrs) {
-    for (const [k, v] of Object.entries(attrs || {})) {
-      if (v == null || v === false) continue;
-      if (k === "class") el.setAttribute("class", v);
-      else if (k === "dataset") Object.assign(el.dataset, v);
-      else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
-      else el.setAttribute(k, v === true ? "" : v);
+  function setAttrs(element, attributes) {
+    for (const [name, value] of Object.entries(attributes || {})) {
+      if (value == null || value === false) continue;
+      if (name === "class") element.setAttribute("class", value);
+      else if (name === "dataset") Object.assign(element.dataset, value);
+      else if (name.startsWith("on")) element.addEventListener(name.slice(2), value);
+      else element.setAttribute(name, value === true ? "" : value);
     }
   }
-  function append(el, kids) {
-    for (const k of kids.flat(Infinity)) {
-      if (k == null || k === false) continue;
-      el.append(k instanceof Node ? k : String(k));
+  function append(element, children) {
+    for (const child of children.flat(Infinity)) {
+      if (child == null || child === false) continue;
+      element.append(child instanceof Node ? child : String(child));
     }
   }
-  function fill(id, ...kids) {
-    const el = $(id);
-    el.replaceChildren();
-    append(el, kids);
-    return el;
+  function fill(id, ...children) {
+    const element = $(id);
+    element.replaceChildren();
+    append(element, children);
+    return element;
   }
 
   // ── 格式化 ──
   // 按字符串里写的墙钟时间显示，避免浏览器时区把北京时间换算走
-  function fmtTime(s) {
-    if (!s) return "未记录";
-    const m = /^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2}(?::\d{2})?)/.exec(s);
-    return m ? `${m[1]} ${m[2]}` : String(s);
+  function fmtTime(value) {
+    if (!value) return "未记录";
+    const match = /^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2}(?::\d{2})?)/.exec(value);
+    return match ? `${match[1]} ${match[2]}` : String(value);
   }
-  function fmtDur(sec) {
-    if (!Number.isFinite(sec)) return "超出显示范围";
-    sec = Math.max(0, Math.round(sec));
-    const hh = Math.floor(sec / 3600), mm = Math.floor((sec % 3600) / 60), ss = sec % 60;
-    const p = (n) => String(n).padStart(2, "0");
-    return hh > 0 ? `${hh}:${p(mm)}:${p(ss)}` : `${p(mm)}:${p(ss)}`;
+  function fmtDur(seconds) {
+    if (!Number.isFinite(seconds)) return "超出显示范围";
+    seconds = Math.max(0, Math.round(seconds));
+    const hours = Math.floor(seconds / 3600), minutes = Math.floor((seconds % 3600) / 60), remainingSeconds = seconds % 60;
+    const pad = (value) => String(value).padStart(2, "0");
+    return hours > 0 ? `${hours}:${pad(minutes)}:${pad(remainingSeconds)}` : `${pad(minutes)}:${pad(remainingSeconds)}`;
   }
-  const fmtNum = (v, d = 1) => (typeof v !== "number" || !Number.isFinite(v) ? "空" : v.toFixed(d));
-  const isRecord = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+  const fmtNum = (value, decimals = 1) => (typeof value !== "number" || !Number.isFinite(value) ? "空" : value.toFixed(decimals));
+  const isRecord = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
   function niceStep(raw) {
-    const p = Math.pow(10, Math.floor(Math.log10(raw)));
-    const f = raw / p;
-    return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(raw)));
+    const fraction = raw / magnitude;
+    return (fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10) * magnitude;
   }
-  const niceCeil = (v) => { const st = niceStep(v / 5); return Math.ceil(v / st) * st; };
-  function fmtAxis(v, step) {
+  const niceCeil = (value) => { const step = niceStep(value / 5); return Math.ceil(value / step) * step; };
+  function fmtAxis(value, step) {
     const places = Math.max(0, Math.min(4, Math.ceil(-Math.log10(step))));
-    return Number(v.toFixed(places)).toString();
+    return Number(value.toFixed(places)).toString();
   }
 
   const textField = { type: "string" }, nullableText = { type: ["string", "null"] };

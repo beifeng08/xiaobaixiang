@@ -1,3 +1,6 @@
+<!-- Copyright (c) 2026 beifeng08 -->
+<!-- Licensed under the MIT License. See LICENSE in the project root. -->
+
 <UserControl x:Class="YanJi.Plugin.ScreenDeadPixel.DeadPixelPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,7 +13,7 @@
                     <TextBlock Text="BIBA YANJI / DISPLAY" Style="{DynamicResource PageEyebrow}"
                                FontSize="12" Foreground="{DynamicResource SecondaryAccentBrush}"/>
                     <TextBlock Text="屏幕坏点检测" FontSize="22" FontWeight="SemiBold" Margin="0,6,0,10"/>
-                    <!-- 状态行：通过后变绿 -->
+                    
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="测试状态：" FontWeight="SemiBold"/>
                         <TextBlock x:Name="StatusText" Text="待测试" Margin="8,0,0,0"
@@ -22,7 +25,7 @@
             <Border Style="{StaticResource CardBorder}" CornerRadius="0" Margin="0,0,0,16" Padding="18">
                 <StackPanel>
                     <TextBlock Text="选择检测屏幕" Style="{DynamicResource SectionTitle}" FontSize="14" FontWeight="SemiBold"/>
-                    <!-- 显示器选择与操作分行，避免窄窗口挤压 -->
+                    
                     <Grid Margin="0,10,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -49,7 +52,7 @@
                     Background="{DynamicResource AccentSoftBrush}">
                 <StackPanel>
                     <TextBlock Text="全屏检测 · 操作指南" Style="{DynamicResource SectionTitle}" FontSize="14" FontWeight="SemiBold"/>
-                    <!-- 使用说明（操作方式以这里为准：任意键/单击切换，Esc 退出） -->
+                    
                     <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" LineHeight="22" Margin="0,10,0,0">
 操作方式：点「开始测试」后，所选屏幕进入全屏纯色检测模式（白 → 红 → 绿 → 蓝 → 黑 循环）。
 按任意键或单击鼠标左键 = 切换下一种颜色；Esc = 退出全屏回到本页面。

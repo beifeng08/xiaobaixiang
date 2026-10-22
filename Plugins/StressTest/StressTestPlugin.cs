@@ -1,10 +1,11 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 using System.Windows.Controls;
 using YanJi.PluginSdk;
 
 namespace YanJi.Plugin.StressTest;
 
-/// <summary>「散热测试」插件入口：CPU 单烤 prime95 / GPU 单烤 FurMark / 双烤 + 四路传感器监控。
-/// 实现 IPluginShutdown：程序关闭时兜底停掉烤机进程。</summary>
 public class StressTestPlugin : IYanJiPlugin, IPluginShutdown
 {
     public PluginInfo Info => new("stress", "散热测试", "1.0.0", 50, false);

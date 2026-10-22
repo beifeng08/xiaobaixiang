@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 笔吧验机 · prime95 叠加构建工程（只保留 Release|x64）。
-     由来：集成开源项目代码\Prime95-master\prime95\prime95.vcxproj 的忠实路径变换版——
+     由来：Prime95-master\prime95\prime95.vcxproj 的忠实路径变换版——
      原工程不变（ vendored 源码目录保持原样），本工程以相对路径引用其全部源文件，
      差异仅：① 依赖（curl/hwloc/gmp/boost）指向 prime95-build\deps\（获取方式见交接文档）；
      ② PCH/PDB/输出目录改到本目录 out\ 下（原工程写死 c:\temp）；
@@ -33,8 +33,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <P95Src>..\集成开源项目代码\Prime95-master</P95Src>
-    <P95Gui>..\集成开源项目代码\Prime95-master\prime95</P95Gui>
+    <P95Src>..\Prime95-master</P95Src>
+    <P95Gui>..\Prime95-master\prime95</P95Gui>
     <OutDir>$(MSBuildProjectDirectory)\out\</OutDir>
     <IntDir>$(MSBuildProjectDirectory)\out\int\</IntDir>
     <LinkIncremental>false</LinkIncremental>
