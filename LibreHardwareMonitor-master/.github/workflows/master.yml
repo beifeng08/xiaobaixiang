@@ -1,4 +1,4 @@
-name: master
+﻿name: master
 
 on:
   push:
@@ -34,71 +34,71 @@ jobs:
           } | Set-Content Directory.Build.props
 
       - name: Restore application packages
-        run: dotnet restore LibreHardwareMonitor.Windows.Forms\LibreHardwareMonitor.Windows.Forms.csproj 
+        run: dotnet restore XiaobaiHardwareMonitor.Windows.Forms\XiaobaiHardwareMonitor.Windows.Forms.csproj 
 
       - name: Build application
-        run: dotnet build LibreHardwareMonitor.Windows.Forms\LibreHardwareMonitor.Windows.Forms.csproj -c Release --no-restore -p:Platform=x64
+        run: dotnet build XiaobaiHardwareMonitor.Windows.Forms\XiaobaiHardwareMonitor.Windows.Forms.csproj -c Release --no-restore -p:Platform=x64
 
       - name: Publish net472 application
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # 7.0.1
         with:
-          name: LibreHardwareMonitor.Windows.Forms
+          name: XiaobaiHardwareMonitor.Windows.Forms
           path: |
             bin/Release/net472
 
       - name: Publish net10.0 application
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # 7.0.1
         with:
-          name: LibreHardwareMonitor.Windows.Forms (.NET 10)
+          name: XiaobaiHardwareMonitor.Windows.Forms (.NET 10)
           path: |
             bin/Release/net10.0-windows
 
       - name: Restore library packages
-        run: dotnet restore LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj 
+        run: dotnet restore XiaobaiHardwareMonitorLib\XiaobaiHardwareMonitorLib.csproj 
 
       - name: Build x64 libraries
-        run: dotnet build LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj -c Release --no-restore -p:Platform=x64
+        run: dotnet build XiaobaiHardwareMonitorLib\XiaobaiHardwareMonitorLib.csproj -c Release --no-restore -p:Platform=x64
 
       - name: Publish x64 libraries
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # 7.0.1
         with:
-          name: LibreHardwareMonitorLib (x64)
+          name: XiaobaiHardwareMonitorLib (x64)
           path: |
             bin/Release/x64
 
       - name: Build x86 libraries
-        run: dotnet build LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj -c Release --no-restore -p:Platform=x86
+        run: dotnet build XiaobaiHardwareMonitorLib\XiaobaiHardwareMonitorLib.csproj -c Release --no-restore -p:Platform=x86
 
       - name: Publish x86 libraries
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # 7.0.1
         with:
-          name: LibreHardwareMonitorLib (x86)
+          name: XiaobaiHardwareMonitorLib (x86)
           path: |
             bin/Release/x86
 
       - name: Build ARM64 libraries
-        run: dotnet build LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj -c Release --no-restore -p:Platform=ARM64
+        run: dotnet build XiaobaiHardwareMonitorLib\XiaobaiHardwareMonitorLib.csproj -c Release --no-restore -p:Platform=ARM64
 
       - name: Publish ARM64 libraries
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # 7.0.1
         with:
-          name: LibreHardwareMonitorLib (ARM64)
+          name: XiaobaiHardwareMonitorLib (ARM64)
           path: |
             bin/Release/ARM64
 
       - name: Build reference libraries
-        run: dotnet build LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj -c Release --no-restore -p:BuildOnlyRefs=true
+        run: dotnet build XiaobaiHardwareMonitorLib\XiaobaiHardwareMonitorLib.csproj -c Release --no-restore -p:BuildOnlyRefs=true
 
       - name: Pack main nupkg
-        run: dotnet pack LibreHardwareMonitorLib\LibreHardwareMonitorLib.csproj -c Release -p:PackMainNuget=true --no-build --output bin\Release
+        run: dotnet pack XiaobaiHardwareMonitorLib\XiaobaiHardwareMonitorLib.csproj -c Release -p:PackMainNuget=true --no-build --output bin\Release
 
       - name: Publish nupkg
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # 7.0.1
         with:
-          name: LibreHardwareMonitorLib-nupkg
+          name: XiaobaiHardwareMonitorLib-nupkg
           path: |
-            bin/Release/LibreHardwareMonitorLib.*.nupkg
+            bin/Release/XiaobaiHardwareMonitorLib.*.nupkg
 
       - name: Publish to NuGet
         if: github.repository == 'LibreHardwareMonitor/LibreHardwareMonitor'
-        run: nuget push bin\Release\LibreHardwareMonitorLib.*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
+        run: nuget push bin\Release\XiaobaiHardwareMonitorLib.*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
