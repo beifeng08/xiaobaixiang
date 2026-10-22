@@ -1,17 +1,19 @@
-################################################################
-# Install:
-# * python.exe -m pip install pypiwin32
-# * python.exe -m pip install wmi
-#
-# Usage:
-# * !! Make sure librehardwaremonitor is running !!
-# * python basicwmi.py
-################################################################
+"""WMI sensor enumeration example.
+
+Install:
+    python.exe -m pip install pypiwin32
+    python.exe -m pip install wmi
+
+Usage:
+    !! Make sure LibreHardwareMonitor is running !!
+    python basicwmi.py
+"""
 
 import wmi
 
-hwmon = wmi.WMI(namespace="root\LibreHardwareMonitor")
+
+hwmon = wmi.WMI(namespace=r"root\LibreHardwareMonitor")
 sensors = hwmon.Sensor(SensorType="Control")
 
-for s in sensors:
-	print s
+for sensor in sensors:
+    print(sensor)

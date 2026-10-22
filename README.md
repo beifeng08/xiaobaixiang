@@ -42,7 +42,26 @@
 
 ## 开源协议
 
-本项目开源，各集成组件协议详见 `AGENTS.md` 致谢表（MPL-2.0 / MIT / Ms-PL / GPL-2.0带例外 / GIMPS freeware）。试音曲使用已经著作权人同意，见 `AUDIO-LICENSE.md`。
+本项目自身代码按 **MIT 协议**开源，全文见根目录 [`LICENSE`](LICENSE)：
+
+```
+MIT License
+
+Copyright (c) 2025-2026 beifeng08
+```
+
+你可以自由使用、复制、修改、合并、发布、分发、再许可和销售本项目代码，唯一条件是在副本或实质部分中保留上述版权声明与许可声明；软件按「原样」提供，不附带任何明示或暗示担保。
+
+**第三方组件不在此 MIT 授权范围内**，各自沿用原有许可：
+
+| 组件 | 位置 | 许可 |
+|---|---|---|
+| LibreHardwareMonitor | `LibreHardwareMonitor-master/` | MPL-2.0，见该目录 `LICENSE` |
+| prime95 | `Prime95-master/`（源码）、`验机软件/Tools/prime95/`（随包） | GIMPS 最终用户许可，见随包 `license.txt`；Mersenne Research, Inc. 保留版权，允许随本工具原样分发 |
+| FurMark 负载（C#/OpenTK 重实现） | `FurMark/` | 见 `Assets/LICENSE.FurMark.txt`（MIT） |
+| 试音曲 | 影音会议插件 | 使用已获著作权人同意，授权说明随插件随附（安装包 `plugins/av/AUDIO-LICENSE.md`） |
+
+换句话说：复用本项目的采集与测试代码，按 MIT 走即可；若要把上表中的第三方组件集成进自己的产品，请遵守它们各自的许可条款。各插件实际用到的组件与素材，会在程序内「插件管理 → 致谢」里逐项列出。完整致谢表与工程约定见 `AGENTS.md`。
 
 ---
 
