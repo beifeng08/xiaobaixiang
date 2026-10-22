@@ -1,16 +1,14 @@
 # 来源与许可边界
 
-本仓库包含两份上游源码的改名衍生副本。两者都**只改标识符与目录归属，不改算法与逻辑**；
-原文凭据一律保留在各自目录内，供核对与合规审计。
+本仓库包含两份上游源码的改名衍生副本。两者都**只改标识符与目录归属，不改算法与逻辑**。
 
 ## XiaobaiHardwareMonitor（源自 LibreHardwareMonitor）
 
 | 项 | 值 |
 |---|---|
 | 上游 | https://github.com/LibreHardwareMonitor/LibreHardwareMonitor |
-| 许可 | MPL-2.0，原文见 `white-toolkit/LICENSE` |
-| 上游说明 | `white-toolkit/README.upstream.md`（原样保留，未改一字） |
-| 上游 CI 与社区文件 | `white-toolkit/.github/`（原样保留；GitHub 只读仓库根 `.github/`，此副本不触发任何流程） |
+| 许可 | MPL-2.0（许可证原文与上游说明不随本仓库分发，见上游仓库） |
+| 上游 CI 与社区文件 | `white-toolkit/.github/`（原样副本；GitHub 只读仓库根 `.github/`，此副本不触发任何流程） |
 | 改名映射 | `docs/review/refactor-mapping.md` |
 | 全量 diff | `docs/review/refactor-full.diff` |
 
@@ -25,8 +23,7 @@ csproj 的 `PackageLicense` 指向、上游 CI 的 `github.repository` 发布门
 | 项 | 值 |
 |---|---|
 | 上游 | GIMPS / Mersenne Research, Inc.（George Woltman） |
-| 许可 | GIMPS 最终用户许可，原文见 `prime95/license.txt` |
-| 上游说明 | `prime95/README.upstream.md`（原样保留） |
+| 许可 | GIMPS 最终用户许可，随包原文见 `验机软件/Tools/xiaobaiprime/license.txt` |
 | 叠加构建工程 | `prime95-build/xiaobaiprime.yanji.vcxproj`（依赖指向 `prime95-build/deps/`） |
 
 改动范围：MFC 工程名、类名（`CPrime95App` / `CPrime95Doc` / `CPrime95View`）、

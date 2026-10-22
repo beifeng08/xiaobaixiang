@@ -108,8 +108,8 @@
 - 宿主 csproj 里 `System.Management` 的 PackageReference **勿删**（插件运行时靠宿主解析真身）
 - 试音曲署名（AvConference 页面）是用户给定原文，**不得改动**
 - 新增内置插件需同步 3 处：slnx + 宿主 BuildPlugins/CopyPlugins 两个 target + `installer/setup.iss` 的 [Components]/[Files]
-- 临时探针工程（`.*-probe/`）用完即删；`white-toolkit/` 已是改名后的衍生副本，不再对其中的
-  `README.upstream.md`、`LICENSE` 等上游原文做二次改写（保留原文即来源凭据）
+- 临时探针工程（`.*-probe/`）用完即删；`white-toolkit/` 已是改名后的衍生副本，其中保留的
+  上游原文副本（如 `.github/`）保持原样，不做二次改写
 
 ### UI 约定
 
