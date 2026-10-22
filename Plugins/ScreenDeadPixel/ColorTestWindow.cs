@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;

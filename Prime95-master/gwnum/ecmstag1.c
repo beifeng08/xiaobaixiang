@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 /* ECM stage 1 using GWNUM -- for use by GMP-ECM
 
   Copyright 1996-2024 Mersenne Research, Inc.

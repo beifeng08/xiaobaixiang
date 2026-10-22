@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 /*----------------------------------------------------------------------
 | This file contains routines and global variables that are common for
 | all operating systems the program has been ported to.  It is included

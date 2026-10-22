@@ -1,3 +1,5 @@
+<!-- Copyright (c) 2026 beifeng08 -->
+<!-- Licensed under the MIT License. See LICENSE in the project root. -->
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!-- 硬盘跑分插件（独立分发，不入主仓库 slnx）：CrystalDiskMark 9.0.3（MIT）源码集成——

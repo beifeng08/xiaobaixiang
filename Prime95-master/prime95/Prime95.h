@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 // Prime95.h : main header file for the PRIME95 application
 // 
 //  Copyright 1995-2021 Mersenne Research, Inc.  All rights reserved.

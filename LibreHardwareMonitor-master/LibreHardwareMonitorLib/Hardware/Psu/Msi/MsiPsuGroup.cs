@@ -1,4 +1,7 @@
-﻿// This Source Code Form is subject to the terms of the GNU Public License, v. 2.0.
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+// This Source Code Form is subject to the terms of the GNU Public License, v. 2.0.
 // Copyright (C) 2024 demorfi<demorfi@gmail.com>
 // Copyright (C) LibreHardwareMonitor and Contributors.
 // All Rights Reserved.

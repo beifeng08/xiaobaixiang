@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 namespace YanJi.Plugin.ConfigCheck;
 
 /// <summary>一条「项目 = 值」展示行。</summary>

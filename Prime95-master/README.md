@@ -1,3 +1,6 @@
+<!-- Copyright (c) 2026 beifeng08 -->
+<!-- Licensed under the MIT License. See LICENSE in the project root. -->
+
 ### Great Internet Mersenne Prime Search (GIMPS)
 
 > Prime95, also distributed as a command-line utility mprime under FreeBSD and Linux, is a freeware application written by George Woltman. It is used by Great Internet Mersenne Prime Search (GIMPS), a distributed computing project dedicated to Mersenne prime hunting. In overclocking circles, its also commonly used for stability testing.

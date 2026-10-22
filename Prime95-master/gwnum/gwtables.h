@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 /*----------------------------------------------------------------------
 | This file contains various utility routines that may be used by gwnum setup.
 |

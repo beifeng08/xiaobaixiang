@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 // MainFrm.h : interface of the CMainFrame class
 // Copyright 1995-2020 Mersenne Research, Inc.  All rights reserved
 //

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 //
 // Copyright 1995-2023 Mersenne Research, Inc.  All rights reserved
 //

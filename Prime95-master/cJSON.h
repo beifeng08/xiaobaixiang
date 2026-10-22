@@ -1,3 +1,6 @@
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
 /*
   Copyright (c) 2009-2017 Dave Gamble and cJSON contributors
 
