@@ -43,13 +43,13 @@
 
 - **.NET 10**（目标框架 `net10.0-windows10.0.19041.0`），SDK 10.0.400
 - **WPF**（Windows Presentation Foundation）桌面 UI，无 MVVM 框架，UserControl + code-behind
-- **x64 平台**：`LibreHardwareMonitorLib` 的 CsWin32 源生成器要求固定 x64，不可改回 AnyCPU
+- **x64 平台**：`XiaobaiHardwareMonitorLib` 的 CsWin32 源生成器要求固定 x64，不可改回 AnyCPU
 
 ### 硬件采集（核心）
 
 | 组件 | 用途 | 协议 |
 |---|---|---|
-| LibreHardwareMonitorLib（源码引用） | CPU/GPU/内存/硬盘/传感器采集 | MPL-2.0 |
+| XiaobaiHardwareMonitorLib（源码引用，源自 LibreHardwareMonitor） | CPU/GPU/内存/硬盘/传感器采集 | MPL-2.0 |
 | System.Management (WMI) | 网卡、电池、部分硬件信息 | — |
 | 注册表 EDID + Win32 显示 API | 屏幕信息、色域估算 | — |
 | PawnIO 内核驱动（官方签名安装器） | CPU/主板传感器 Ring0 访问 | GPL-2.0（带例外） |
@@ -61,7 +61,7 @@
 | NAudio 2.2.1 | 麦克风/扬声器（WASAPI） | Ms-PL |
 | CrystalDiskMark 9.0.3（源码编译为 CdmHost） | 硬盘跑分引擎 | MIT |
 | diskspd 2.0.20a（微软，CDM 定制 fork） | 硬盘测速子进程 | MIT |
-| prime95（GIMPS 源码编译） | CPU 烤机 | GIMPS freeware |
+| XiaobaiPrime（GIMPS Prime95 源码编译） | CPU 烤机 | GIMPS freeware |
 | FurMark（C#/OpenTK 重实现） | GPU 烤机 | MIT（原型） |
 | OpenTK 4.x | FurMark 的 OpenGL 绑定 | MIT |
 | StbImageSharp | FurMark 贴图解码 | 公有领域 |
@@ -102,13 +102,14 @@
 
 ### 硬性约束（违反即返工）
 
-- 禁闭源商业软件（HWiNFO 等）；采集只用 LHM 源码 + Windows 自带接口
+- 禁闭源商业软件（HWiNFO 等）；采集只用 LHM 衍生源码（`white-toolkit/`）+ Windows 自带接口
 - 插件引用 `YanJi.PluginSdk` 必须 `Private="false"`
-- `LibreHardwareMonitorLib` 引用必须带 `SetPlatform="Platform=x64"`
+- `XiaobaiHardwareMonitorLib` 引用必须带 `SetPlatform="Platform=x64"`
 - 宿主 csproj 里 `System.Management` 的 PackageReference **勿删**（插件运行时靠宿主解析真身）
 - 试音曲署名（AvConference 页面）是用户给定原文，**不得改动**
 - 新增内置插件需同步 3 处：slnx + 宿主 BuildPlugins/CopyPlugins 两个 target + `installer/setup.iss` 的 [Components]/[Files]
-- 临时探针工程（`.*-probe/`）用完即删；LHM 上游源码不批量转码/改动
+- 临时探针工程（`.*-probe/`）用完即删；`white-toolkit/` 已是改名后的衍生副本，不再对其中的
+  `README.upstream.md`、`LICENSE` 等上游原文做二次改写（保留原文即来源凭据）
 
 ### UI 约定
 

@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Loader;
 using System.Text.Json;
 using System.Windows.Controls;
@@ -106,7 +106,7 @@ public static class PluginLoader
         return list;
     }
 
-    /// <summary>插件依赖（如 NAudio.dll、LibreHardwareMonitorLib.dll）在插件目录里，默认加载上下文
+    /// <summary>插件依赖（如 NAudio.dll、XiaobaiHardwareMonitorLib.dll）在插件目录里，默认加载上下文
     /// 只探测 exe 目录与 TPA——解析失败时到各插件目录找同名 dll 兜底（按名去重，先加载者胜出）。
     /// 兼容 RID 专属托管资产（如 LHM 传递依赖 Mono.Posix.NETStandard，NuGet 只放在
     /// runtimes/win-x64/lib/ 下：插件的 deps.json 不会被处理，必须兜底找到，否则 LHM

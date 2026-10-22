@@ -56,8 +56,8 @@ Copyright (c) 2025-2026 beifeng08
 
 | 组件 | 位置 | 许可 |
 |---|---|---|
-| LibreHardwareMonitor | `LibreHardwareMonitor-master/` | MPL-2.0，见该目录 `LICENSE` |
-| prime95 | `Prime95-master/`（源码）、`验机软件/Tools/prime95/`（随包） | GIMPS 最终用户许可，见随包 `license.txt`；Mersenne Research, Inc. 保留版权，允许随本工具原样分发 |
+| LibreHardwareMonitor（本项目内改名 XiaobaiHardwareMonitor） | `white-toolkit/` | MPL-2.0，见该目录 `LICENSE` |
+| prime95（本项目内改名 XiaobaiPrime） | `prime95/`（源码）、`验机软件/Tools/xiaobaiprime/`（随包） | GIMPS 最终用户许可，见随包 `license.txt`；Mersenne Research, Inc. 保留版权，允许随本工具原样分发 |
 | FurMark 负载（C#/OpenTK 重实现） | `FurMark/` | 见 `Assets/LICENSE.FurMark.txt`（MIT） |
 | 试音曲 | 影音会议插件 | 使用已获著作权人同意，授权说明随插件随附（安装包 `plugins/av/AUDIO-LICENSE.md`） |
 

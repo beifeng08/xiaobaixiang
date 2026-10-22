@@ -1,11 +1,11 @@
-; 笔吧验机 安装向导脚本（Inno Setup 6，中文界面）
+﻿; 笔吧验机 安装向导脚本（Inno Setup 6，中文界面）
 ; 构建："%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" installer\setup.iss
 ; 源 = publish\ 整目录（self-contained 便携包）；产物 = installer\笔吧验机Setup-v0.0.4.exe
 ; 注意：OutputBaseFilename 不能含多余的点（"Setup-0.0.2" 的 ".0" 会被 Inno 当扩展名剥掉），用 v0.0.2 形式
 ;
 ; 插件化结构：主程序 = 验机软件.exe + 运行时 + YanJi.PluginSdk.dll（组件 main，固定必装）；
 ; 每个验机模块 = publish\plugins\<id>\ 目录（一个可选组件，默认全勾，自定义安装可取消）；
-; Tools\（prime95 + FurMark 自包含 + PawnIO，约 130MB）只有散热测试用，随 stress 组件安装。
+; Tools\（XiaobaiPrime + FurMark 自包含 + PawnIO，约 130MB）只有散热测试用，随 stress 组件安装。
 ; 0.0.2：新增 disk 组件（硬盘跑分，开源）；附加任务新增「安装 PawnIO 驱动」（默认勾选，
 ; 安装末尾静默执行 Tools\pawnio\PawnIO_setup.exe -install -silent（用户零点击，无需重启；
 ; 未装散热组件或系统已装 PawnIO 时自动跳过）。
@@ -91,7 +91,7 @@ Name: "config"; Description: "配置核对（CPU/显卡/内存/硬盘/网卡/屏
 Name: "keyboard"; Description: "键盘测试（104 键可视化）"; Types: full
 Name: "screen"; Description: "屏幕坏点（全屏纯色检测）"; Types: full
 Name: "av"; Description: "影音会议（摄像头/麦克风/扬声器）"; Types: full
-Name: "stress"; Description: "散热测试（CPU/GPU/双烤 + 传感器监控，含 prime95/FurMark 工具）"; Types: full
+Name: "stress"; Description: "散热测试（CPU/GPU/双烤 + 传感器监控，含 XiaobaiPrime/FurMark 工具）"; Types: full
 Name: "disk"; Description: "硬盘跑分（CrystalDiskMark 源码集成，SEQ1M/RND4K 四项）"; Types: full
 
 ; 附加任务默认都勾选（用户可取消）：桌面快捷方式 / 开始菜单项 / PawnIO 驱动

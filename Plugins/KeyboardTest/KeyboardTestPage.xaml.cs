@@ -1,4 +1,4 @@
-// Copyright (c) 2026 beifeng08
+﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
 using System.Windows;
@@ -167,7 +167,7 @@ public partial class KeyboardTestPage : UserControl, YanJi.PluginSdk.IModulePage
 
         Row(caps, 2.5, 0, ("Tab", Key.Tab, 1.5), ("Q", Key.Q, 1), ("W", Key.W, 1), ("E", Key.E, 1), ("R", Key.R, 1),
             ("T", Key.T, 1), ("Y", Key.Y, 1), ("U", Key.U, 1), ("I", Key.I, 1), ("O", Key.O, 1), ("P", Key.P, 1),
-            ("[{", Key.OemOpenBrackets, 1), ("]}", Key.OemCloseBrackets, 1), (@\|", Key.OemPipe, 1.5));
+            ("[{", Key.OemOpenBrackets, 1), ("]}", Key.OemCloseBrackets, 1), (@"\|", Key.OemPipe, 1.5));
         Row(caps, 2.5, 15.5, ("Del", Key.Delete, 1), ("End", Key.End, 1), ("PgDn", Key.PageDown, 1));
         Row(caps, 2.5, 19, ("7", Key.NumPad7, 1), ("8", Key.NumPad8, 1), ("9", Key.NumPad9, 1));
         caps.Add(new KeyCap("+", Key.Add, 22, 2.5, 1, 2));

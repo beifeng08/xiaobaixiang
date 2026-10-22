@@ -10,7 +10,7 @@ $output = [IO.Path]::GetFullPath($OutputDirectory)
 $publish = Join-Path $repo "publish"
 $hostDirectory = Get-ChildItem $repo -Directory | Where-Object { Test-Path (Join-Path $_.FullName "app.manifest") } | Select-Object -First 1
 $hostName = $hostDirectory.Name
-$libraryDirectory = Join-Path $repo "LibreHardwareMonitor-master"
+$libraryDirectory = Join-Path $repo "white-toolkit"
 $dotnet = (Get-Command dotnet -ErrorAction Stop).Source
 if (!(Test-Path $IsccPath -PathType Leaf)) { throw "ISCC.exe not found: $IsccPath" }
 if (Test-Path $output) { throw "Output directory must be new to avoid stale files: $output" }

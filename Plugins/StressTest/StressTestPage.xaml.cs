@@ -1,4 +1,4 @@
-// Copyright (c) 2026 beifeng08
+﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
 using System.Windows;
@@ -76,7 +76,7 @@ public partial class StressTestPage : UserControl, YanJi.PluginSdk.IModulePage, 
         try
         {
             StressTestService.Start(mode,
-                new StressTestService.Prime95Settings(threads, fft, P95ShowUiCheck.IsChecked == true),
+                new StressTestService.XiaobaiPrimeSettings(threads, fft, P95ShowUiCheck.IsChecked == true),
                 new StressTestService.FurMarkSettings(w, h, FullscreenCheck.IsChecked == true, msaa,
                     FurShowUiCheck.IsChecked == true));
         }

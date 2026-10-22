@@ -1,9 +1,9 @@
-// Copyright (c) 2026 beifeng08
+﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
 using System.Diagnostics;
 using System.IO;
-using LibreHardwareMonitor.Hardware;
+using XiaobaiHardwareMonitor.Hardware;
 using YanJi.Hardware;
 
 namespace YanJi.Plugin.StressTest;
@@ -230,7 +230,7 @@ public static class SensorMonitorService
         try
         {
             using var key = Microsoft.Win32.Registry.LocalMachine
-                .OpenSubKey(@SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PawnIO");
+                .OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PawnIO");
             return key?.GetValue("DisplayVersion") != null;
         }
         catch { return false; }

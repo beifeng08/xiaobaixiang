@@ -1,7 +1,7 @@
-// Copyright (c) 2026 beifeng08
+﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-using LibreHardwareMonitor.Hardware;
+using XiaobaiHardwareMonitor.Hardware;
 using YanJi.Hardware;
 
 namespace YanJi.Plugin.ConfigCheck;
@@ -131,7 +131,7 @@ public static class LhmService
     static void CollectStorage(IHardware hw, Snapshot snap)
     {
         
-        if (hw is LibreHardwareMonitor.Hardware.Storage.StorageDevice dev)
+        if (hw is XiaobaiHardwareMonitor.Hardware.Storage.StorageDevice dev)
         {
             var s = dev.Storage;
             snap.Disks.Add(new LhmDisk(

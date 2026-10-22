@@ -1,4 +1,4 @@
-// Copyright (c) 2026 beifeng08
+﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
 using System.Windows.Controls;
@@ -12,7 +12,7 @@ public class StressTestPlugin : IYanJiPlugin, IPluginShutdown
 
     public IReadOnlyList<PluginCredit> Credits =>
     [
-        new("Prime95（GIMPS, George Woltman）", "CPU 烤机（按公开源码编译，见 prime95-build/）", "GIMPS freeware（随附 license.txt）"),
+        new("XiaobaiPrime（基于 GIMPS Prime95, George Woltman）", "CPU 烤机（按公开源码编译，见 prime95-build/）", "GIMPS freeware（随附 license.txt）"),
         new("FurMark（Python 版, StanislavPetrovV）", "GPU 烤机渲染原型（C# / OpenTK 重实现，着色器与贴图随附其许可）", "MIT"),
         new("OpenTK 4.x", "GPU 烤机的 OpenGL 窗口（GLFW）与绑定", "MIT"),
         new("StbImageSharp", "GPU 烤机贴图解码（stb_image 的 C# 移植）", "公有领域"),

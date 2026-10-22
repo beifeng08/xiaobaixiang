@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -107,7 +107,7 @@
 
   <ItemGroup>
     <Resource Include="app.ico" />
-    <!-- 烤机工具负载：Tools/prime95/（手工放入的 prime95.exe）与 Tools/furmark/（FurMark 工程构建后自动拷贝）
+    <!-- 烤机工具负载：Tools/xiaobaiprime/（手工放入的 xiaobaiprime.exe）与 Tools/furmark/（FurMark 工程构建后自动拷贝）
          与 Tools/pawnio/，整体随输出拷贝到 exe 同级 Tools/ 下（散热测试插件按 AppContext.BaseDirectory 定位） -->
     <None Update="Tools\**\*" CopyToOutputDirectory="PreserveNewest" />
     <!-- 验机报告网页：导出时复制到数据目录 report-web\ 并附带 report-data.js 打开（file:// 不能 fetch） -->

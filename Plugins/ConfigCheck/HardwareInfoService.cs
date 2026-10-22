@@ -1,4 +1,4 @@
-// Copyright (c) 2026 beifeng08
+﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
 using Microsoft.Win32;
@@ -10,7 +10,7 @@ namespace YanJi.Plugin.ConfigCheck;
 
 public static class HardwareInfoService
 {
-    const string Cimv2 = @root\cimv2";
+    const string Cimv2 = @"root\cimv2";
 
     public record CollectProgress(int Step, int Total, string Stage);
 
@@ -230,7 +230,7 @@ public static class HardwareInfoService
         try
         {
             using var klass = Registry.LocalMachine.OpenSubKey(
-                @SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}");
+                @"SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}");
             if (klass == null) return list;
             foreach (var sub in klass.GetSubKeyNames())
             {
@@ -491,7 +491,7 @@ public static class HardwareInfoService
         }
     }
 
-    const string WmiRoot = @root\WMI";
+    const string WmiRoot = @"root\WMI";
 
     static void CollectBattery(InfoGroup g, LhmService.Snapshot lhm)
     {

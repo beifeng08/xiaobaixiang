@@ -1,4 +1,4 @@
-// Copyright (c) 2026 beifeng08
+﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
 using System.Diagnostics;
@@ -18,12 +18,12 @@ public static class StressTestService
 
     public record FurMarkSettings(int Width, int Height, bool Fullscreen, int Msaa, bool ShowWindow = true);
 
-    public record Prime95Settings(int Threads, FftPreset Fft, bool ShowWindow = true);
+    public record XiaobaiPrimeSettings(int Threads, FftPreset Fft, bool ShowWindow = true);
 
     static readonly object _gate = new();
-    static Process? _prime95;
+    static Process? _xiaobaiprime;
     static Process? _furmark;
-    static DateTime? _prime95Started, _furmarkStarted; 
+    static DateTime? _xiaobaiprimeStarted, _furmarkStarted; 
     static bool _stopping;      
     static IntPtr _job; 
     static bool _exitHooked;
@@ -32,7 +32,7 @@ public static class StressTestService
 
     public static bool IsRunning
     {
-        get { lock (_gate) return Alive(_prime95) || Alive(_furmark); }
+        get { lock (_gate) return Alive(_xiaobaiprime) || Alive(_furmark); }
     }
 
     public static event Action? StateChanged;
@@ -44,9 +44,9 @@ public static class StressTestService
         try { Logged?.Invoke($"{DateTime.Now:HH:mm:ss}  {msg}"); } catch {  }
     }
 
-    public static string Prime95Exe => Path.Combine(AppContext.BaseDirectory, "Tools", "prime95", "prime95.exe");
+    public static string XiaobaiPrimeExe => Path.Combine(AppContext.BaseDirectory, "Tools", "xiaobaiprime", "xiaobaiprime.exe");
     public static string FurMarkExe => Path.Combine(AppContext.BaseDirectory, "Tools", "furmark", "FurMark.exe");
-    public static bool HasPrime95 => File.Exists(Prime95Exe);
+    public static bool HasXiaobaiPrime => File.Exists(XiaobaiPrimeExe);
     public static bool HasFurMark => File.Exists(FurMarkExe);
 
     static (int Physical, int Logical)? _cores;
@@ -60,7 +60,7 @@ public static class StressTestService
                 int phys = 0, logical = 0;
                 try
                 {
-                    using var searcher = new ManagementObjectSearcher(@root\cimv2",
+                    using var searcher = new ManagementObjectSearcher(@"root\cimv2",
                         "SELECT NumberOfCores, NumberOfLogicalProcessors FROM Win32_Processor");
                     foreach (ManagementObject mo in searcher.Get())
                     {
@@ -82,7 +82,7 @@ public static class StressTestService
         {
             try
             {
-                using var searcher = new ManagementObjectSearcher(@root\cimv2",
+                using var searcher = new ManagementObjectSearcher(@"root\cimv2",
                     "SELECT TotalPhysicalMemory FROM Win32_ComputerSystem");
                 foreach (ManagementObject mo in searcher.Get())
                     return Convert.ToInt64(mo["TotalPhysicalMemory"]) / 1048576;
@@ -92,9 +92,9 @@ public static class StressTestService
         }
     }
 
-    public static void Start(StressMode mode, Prime95Settings p95, FurMarkSettings fm)
+    public static void Start(StressMode mode, XiaobaiPrimeSettings p95, FurMarkSettings fm)
     {
-        if (mode is StressMode.Cpu or StressMode.Both) EnsureTool(Prime95Exe);
+        if (mode is StressMode.Cpu or StressMode.Both) EnsureTool(XiaobaiPrimeExe);
         if (mode is StressMode.Gpu or StressMode.Both) EnsureTool(FurMarkExe);
 
         lock (_gate)
@@ -106,8 +106,8 @@ public static class StressTestService
             Log($"开始烤机：{ModeName(mode)}");
             if (mode is StressMode.Cpu or StressMode.Both)
             {
-                _prime95 = WatchExit(StartPrime95(p95), "Prime95");
-                _prime95Started = DateTime.Now;
+                _xiaobaiprime = WatchExit(StartXiaobaiPrime(p95), "XiaobaiPrime");
+                _xiaobaiprimeStarted = DateTime.Now;
                 Log($"Prime95 已启动（{p95.Threads} 线程，{FftName(p95.Fft)}，界面{(p95.ShowWindow ? "显示" : "隐藏")}）");
             }
             if (mode is StressMode.Gpu or StressMode.Both)
@@ -152,9 +152,9 @@ public static class StressTestService
         _stopping = true; 
         try
         {
-            KillTree(ref _prime95, "Prime95", _prime95Started);
+            KillTree(ref _xiaobaiprime, "XiaobaiPrime", _xiaobaiprimeStarted);
             KillTree(ref _furmark, "FurMark", _furmarkStarted);
-            _prime95Started = _furmarkStarted = null;
+            _xiaobaiprimeStarted = _furmarkStarted = null;
         }
         finally { _stopping = false; }
     }
@@ -188,9 +188,9 @@ public static class StressTestService
         lock (_gate)
         {
             expected = _stopping;
-            if (ReferenceEquals(_prime95, p)) { _prime95 = null; _prime95Started = null; }
+            if (ReferenceEquals(_xiaobaiprime, p)) { _xiaobaiprime = null; _xiaobaiprimeStarted = null; }
             else if (ReferenceEquals(_furmark, p)) { _furmark = null; _furmarkStarted = null; }
-            if (!expected && !Alive(_prime95) && !Alive(_furmark)) StartedAt = null;
+            if (!expected && !Alive(_xiaobaiprime) && !Alive(_furmark)) StartedAt = null;
         }
         if (!expected)
         {
@@ -216,13 +216,13 @@ public static class StressTestService
             throw new FileNotFoundException("烤机工具缺失：" + path, path);
     }
 
-    static Process StartPrime95(Prime95Settings settings)
+    static Process StartXiaobaiPrime(XiaobaiPrimeSettings settings)
     {
-        string dir = Path.GetDirectoryName(Prime95Exe)!;
+        string dir = Path.GetDirectoryName(XiaobaiPrimeExe)!;
         WritePrimeTxt(Path.Combine(dir, "prime.txt"), settings);
         var p = Process.Start(new ProcessStartInfo
         {
-            FileName = Prime95Exe,
+            FileName = XiaobaiPrimeExe,
             Arguments = "-t",
             WorkingDirectory = dir,
             UseShellExecute = false,
@@ -233,7 +233,7 @@ public static class StressTestService
         return p;
     }
 
-    static void WritePrimeTxt(string path, Prime95Settings settings)
+    static void WritePrimeTxt(string path, XiaobaiPrimeSettings settings)
     {
         var (phys, logical) = CoreCounts;
         int threads = Math.Clamp(settings.Threads, 1, logical);
@@ -251,7 +251,7 @@ public static class StressTestService
 
         File.WriteAllLines(path,
         [
-            "; 由「笔吧验机」散热测试模块生成（prime95 启动时读取，勿手工编辑）",
+            "; 由「笔吧验机」散热测试模块生成（xiaobaiprime 启动时读取，勿手工编辑）",
             "StressTester=1",
             "UsePrimenet=0",
             $"TortureCores={cores}",
@@ -323,7 +323,7 @@ public static class StressTestService
                 ref info, (uint)Marshal.SizeOf<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>());
         }
         
-        KillStaleByPath("prime95", Prime95Exe);
+        KillStaleByPath("xiaobaiprime", XiaobaiPrimeExe);
         KillStaleByPath("FurMark", FurMarkExe);
     }
 
