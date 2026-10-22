@@ -1,6 +1,6 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
     <Version>0.9.6</Version>
-    <Copyright>LibreHardwareMonitor</Copyright>
+    <Copyright>XiaobaiHardwareMonitor</Copyright>
   </PropertyGroup>
 </Project>
