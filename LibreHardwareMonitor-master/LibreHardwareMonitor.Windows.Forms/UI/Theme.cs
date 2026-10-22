@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -124,7 +127,7 @@ namespace LibreHardwareMonitor.Windows.Forms.UI.Themes
                 return false;
             }
 
-            if (Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme", -1) is int useLightTheme)
+            if (Registry.GetValue(@HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme", -1) is int useLightTheme)
             {
                 return useLightTheme != -1;
             }
@@ -138,7 +141,7 @@ namespace LibreHardwareMonitor.Windows.Forms.UI.Themes
                 return;
             }
 
-            if (Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme", 1) is int useLightTheme)
+            if (Registry.GetValue(@HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme", 1) is int useLightTheme)
             {
                 if (useLightTheme > 0)
                 {
@@ -151,7 +154,7 @@ namespace LibreHardwareMonitor.Windows.Forms.UI.Themes
             }
             else
             {
-                // Fallback incase registry fails
+                
                 Current = new LightTheme();
             }
         }
@@ -172,21 +175,18 @@ namespace LibreHardwareMonitor.Windows.Forms.UI.Themes
         public abstract Color SelectedBackgroundColor { get; }
         public abstract Color SelectedForegroundColor { get; }
 
-        // button
         public virtual Color ButtonBackgroundColor => BackgroundColor;
         public virtual Color ButtonBorderColor => ForegroundColor;
         public virtual Color ButtonHoverBackgroundColor => SelectedBackgroundColor;
         public virtual Color ButtonPressedBackgroundColor => LineColor;
         public virtual Color ButtonTextColor => ForegroundColor;
 
-        // menu
         public virtual Color MenuBackgroundColor => BackgroundColor;
         public virtual Color MenuBorderColor => StrongLineColor;
         public virtual Color MenuForegroundColor => ForegroundColor;
         public virtual Color MenuSelectedBackgroundColor => SelectedBackgroundColor;
         public virtual Color MenuSelectedForegroundColor => SelectedForegroundColor;
 
-        // plot
         public virtual Color PlotBackgroundColor => BackgroundColor;
         public virtual Color PlotBorderColor => ForegroundColor;
         public abstract Color[] PlotColorPalette { get; }
@@ -194,15 +194,12 @@ namespace LibreHardwareMonitor.Windows.Forms.UI.Themes
         public abstract Color PlotGridMinorColor { get; }
         public virtual Color PlotTextColor => ForegroundColor;
 
-        // scrollbar
         public virtual Color ScrollbarBackground => BackgroundColor;
         public virtual Color ScrollbarTrack => StrongLineColor;
 
-        // splitter
         public virtual Color SplitterColor => BackgroundColor;
         public virtual Color SplitterHoverColor => SelectedBackgroundColor;
 
-        // tree
         public virtual Color TreeBackgroundColor => BackgroundColor;
         public virtual Color TreeOutlineColor => ForegroundColor;
         public virtual Color TreeSelectedBackgroundColor => SelectedBackgroundColor;
@@ -210,7 +207,6 @@ namespace LibreHardwareMonitor.Windows.Forms.UI.Themes
         public virtual Color TreeSelectedTextColor => SelectedForegroundColor;
         public virtual Color TreeRowSepearatorColor => LineColor;
 
-        // window
         public virtual Color WindowTitlebarBackgroundColor => BackgroundColor;
         public abstract bool WindowTitlebarFallbackToImmersiveDarkMode { get; }
         public virtual Color WindowTitlebarForegroundColor => ForegroundColor;
@@ -219,7 +215,7 @@ namespace LibreHardwareMonitor.Windows.Forms.UI.Themes
         {
             if (IsWindows10OrGreater(22000))
             {
-                // Windows 11, Set the titlebar color based on theme
+                
                 int color = ColorTranslator.ToWin32(WindowTitlebarBackgroundColor);
                 DwmSetWindowAttribute(form.Handle, DWMWA_CAPTION_COLOR, ref color, sizeof(int));
                 color = ColorTranslator.ToWin32(WindowTitlebarForegroundColor);
@@ -227,11 +223,11 @@ namespace LibreHardwareMonitor.Windows.Forms.UI.Themes
             }
             else if (IsWindows10OrGreater(17763))
             {
-                // Windows 10, fallback to using "Immersive Dark Mode" instead
+                
                 var attribute = DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1;
                 if (IsWindows10OrGreater(18985))
                 {
-                    // Windows 10 20H1 or later
+                    
                     attribute = DWMWA_USE_IMMERSIVE_DARK_MODE;
                 }
                 int useImmersiveDarkMode = WindowTitlebarFallbackToImmersiveDarkMode ? 1 : 0;

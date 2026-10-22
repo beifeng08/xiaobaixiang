@@ -1,7 +1,5 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) Florian K. (Blacktempel)
-// All Rights Reserved.
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
 
 using System;
 using System.Collections.Generic;
@@ -16,24 +14,15 @@ using LibreHardwareMonitor.Interop.PowerMonitor;
 
 namespace LibreHardwareMonitor.Hardware.PowerMonitor;
 
-/// <summary>
-/// Thermal Grizzly WireView Pro II power monitor.
-/// </summary>
 public sealed class WireViewPro2 : Hardware, IPowerMonitor
 {
     public const string WelcomeMessage = "Thermal Grizzly WireView Pro II";
 
-    /// <summary>
-    /// Max RPM according to the8auer. This is a custom made fan.
-    /// </summary>
     private const int MaxFanRPM = 5000;
 
     private const byte VendorID = 0xEF;
     private const byte ProductID = 0x05;
 
-    /// <summary>
-    /// Time the fan needs to ramp up by 10%.
-    /// </summary>
     private static readonly TimeSpan FanRampupTime = TimeSpan.FromSeconds(3.5);
 
     private double _lastFanSpeedRpm;
@@ -76,7 +65,7 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
 
         if (!Software.OperatingSystem.IsWindows8OrGreater)
         {
-            return devices; //No Linux implementation yet
+            return devices; 
         }
 
         List<string> matches = Stm32PortFinder.FindMatchingComPorts(0x0483, 0x5740);
@@ -159,12 +148,11 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
         }
         catch (IOException)
         {
-            //"A device attached to the system is not functioning."
-            //Can happen rarely
+            
         }
         catch (InvalidOperationException)
         {
-            //Can happen sometimes if the device is disconnecting while reading
+            
         }
 
         if (sensorValues.HasValue && config.HasValue)
@@ -286,10 +274,10 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
         SendData(
             [
                 (byte)UsbCmd.CMD_NVM_CONFIG,
-                0x55, //Magic
-                0xAA, //Magic
-                0x55, //Magic
-                0xAA, //Magic
+                0x55, 
+                0xAA, 
+                0x55, 
+                0xAA, 
                 (byte)cmd
             ]);
     }
@@ -323,15 +311,13 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
 
     private void CreateSensors()
     {
-        //Onboard temperature sensors
+        
         AddSensor("Onboard Temperature In", 0, SensorType.Temperature, dd => (float)dd.OnboardTempInC);
         AddSensor("Onboard Temperature Out", 1, SensorType.Temperature, dd => (float)dd.OnboardTempOutC);
 
-        //External temperature sensors, requires shipped temperature sensors to be connected
         AddSensor("External Temperature 1", 2, SensorType.Temperature, dd => (float)dd.ExternalTemp1C);
         AddSensor("External Temperature 2", 3, SensorType.Temperature, dd => (float)dd.ExternalTemp2C);
 
-        //Pin voltages
         AddSensor("Pin 1 Voltage", 10, SensorType.Voltage, dd => (float)dd.PinVoltage[0]);
         AddSensor("Pin 2 Voltage", 11, SensorType.Voltage, dd => (float)dd.PinVoltage[1]);
         AddSensor("Pin 3 Voltage", 12, SensorType.Voltage, dd => (float)dd.PinVoltage[2]);
@@ -339,7 +325,6 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
         AddSensor("Pin 5 Voltage", 14, SensorType.Voltage, dd => (float)dd.PinVoltage[4]);
         AddSensor("Pin 6 Voltage", 15, SensorType.Voltage, dd => (float)dd.PinVoltage[5]);
 
-        //Pin currents
         AddSensor("Total Current", 20, SensorType.Current, dd => (float)dd.SumCurrentA);
         AddSensor("Pin 1 Current", 21, SensorType.Current, dd => (float)dd.PinCurrent[0]);
         AddSensor("Pin 2 Current", 22, SensorType.Current, dd => (float)dd.PinCurrent[1]);
@@ -348,10 +333,8 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
         AddSensor("Pin 5 Current", 25, SensorType.Current, dd => (float)dd.PinCurrent[4]);
         AddSensor("Pin 6 Current", 26, SensorType.Current, dd => (float)dd.PinCurrent[5]);
 
-        //Power
         AddSensor("Total Power", 30, SensorType.Power, dd => (float)dd.SumPowerW);
 
-        //Fan
         var fan = AddSensor("Fan", 40, SensorType.Fan, CalculateFanSpeed);
         var ctrl = new Control(fan, _settings, 0, 100);
 
@@ -359,7 +342,6 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
         ctrl.ControlModeChanged += OnFanControlModeChanged;
         ctrl.SoftwareControlValueChanged += OnSoftwareControlValueChanged;
 
-        //Control
         var fanControl = AddSensor($"{Name} ({_portName})", 50, SensorType.Control, GetFanSpeedInPercent);
         fanControl.Control = ctrl;
     }
@@ -400,7 +382,7 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
                 deviceData.Config.FanConfig.Mode = FanMode.FanModeFixed;
                 break;
             case ControlMode.Default:
-                //Set default values of TG Software
+                
                 deviceData.Config.FanConfig.Mode = FanMode.FanModeCurve;
                 deviceData.Config.FanConfig.TempSource = TempSource.TempSourceTmax;
 
@@ -482,10 +464,6 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
         return fanSpeedInPercent;
     }
 
-    /// <summary>
-    /// Fan speed for this device is an approximation based on the curve configuration and current temperatures.<br/>
-    /// The device itself does not report actual fan speed.
-    /// </summary>
     private float CalculateFanSpeed(DeviceData dd)
     {
         var fanConfig = dd.Config.FanConfig;
@@ -524,7 +502,7 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
             return _lastFanSpeedRpm;
         }
 
-        var maxPercentDeltaPerSecond = 0.1 / FanRampupTime.TotalSeconds; //10% per FanRampupTime
+        var maxPercentDeltaPerSecond = 0.1 / FanRampupTime.TotalSeconds; 
         var allowedPercentDelta = elapsed.TotalSeconds * maxPercentDeltaPerSecond;
 
         var rpmDelta = targetRpm - _lastFanSpeedRpm;
@@ -627,7 +605,7 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
                 }
                 catch
                 {
-                    //Ignore exceptions during cleanup
+                    
                 }
                 finally
                 {
@@ -815,7 +793,7 @@ public sealed class WireViewPro2 : Hardware, IPowerMonitor
             }
             catch (TimeoutException)
             {
-                //Ignore timeout exceptions and continue reading
+                
             }
         }
 

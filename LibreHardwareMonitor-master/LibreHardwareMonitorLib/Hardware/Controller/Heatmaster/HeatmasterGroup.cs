@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -25,7 +19,7 @@ internal class HeatmasterGroup : IGroup
 
     public HeatmasterGroup(ISettings settings)
     {
-        // No implementation for Heatmaster on Unix systems
+        
         if (Software.OperatingSystem.IsUnix)
             return;
 
@@ -188,7 +182,7 @@ internal class HeatmasterGroup : IGroup
         {
             foreach (string path in paths)
             {
-                RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Enum\USB\VID_10C4&PID_EA60" + path);
+                RegistryKey key = Registry.LocalMachine.OpenSubKey(@SYSTEM\CurrentControlSet\Enum\USB\VID_10C4&PID_EA60" + path);
                 if (key != null)
                 {
                     foreach (string subKeyName in key.GetSubKeyNames())

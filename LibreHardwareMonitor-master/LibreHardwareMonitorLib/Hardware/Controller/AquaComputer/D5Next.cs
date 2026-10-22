@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using HidSharp;
 
@@ -13,16 +8,7 @@ namespace LibreHardwareMonitor.Hardware.Controller.AquaComputer;
 
 internal sealed class D5Next : Hardware
 {
-    //Available Reports, found them by looking at the below methods
-    //var test = dev.GetRawReportDescriptor();
-    //var test2 = dev.GetReportDescriptor();
-
-    // ID 1; Length 158; INPUT
-    // ID 2; Length 11; OUTPUT
-    // ID 3; Length 1025; <-- works FEATURE
-    // ID 8; Length 1025; <-- works FEATURE
-    // ID 12; Length 1025; <-- 0xC FEATURE
-
+    
     private readonly byte[] _rawData = new byte[1025];
     private readonly Sensor[] _rpmSensors = new Sensor[2];
     private readonly HidStream _stream;
@@ -36,7 +22,7 @@ internal sealed class D5Next : Hardware
     {
         if (dev.TryOpen(out _stream))
         {
-            //Reading output report instead of feature report, as the measurements are in the output report
+            
             _stream.Read(_rawData);
 
             Name = "D5Next";
@@ -94,20 +80,20 @@ internal sealed class D5Next : Hardware
 
     public override void Update()
     {
-        //Reading output report instead of feature report, as the measurements are in the output report
+        
         _stream.Read(_rawData);
-        _temperatures[0].Value = (_rawData[88] | (_rawData[87] << 8)) / 100f; //Water Temp
-        _rpmSensors[0].Value = _rawData[117] | (_rawData[116] << 8); //Pump RPM
-        _rpmSensors[1].Value = ReadUInt16BE(_rawData, 103); //Fan RPM
-        _voltages[0].Value = ReadUInt16BE(_rawData, 97) / 100f; //Fan Voltage
-        _voltages[1].Value = ReadUInt16BE(_rawData, 110) / 100f; //Pump Voltage
-        _voltages[2].Value = ReadUInt16BE(_rawData, 57) / 100f; //+5V Voltage
-        _voltages[3].Value = ReadUInt16BE(_rawData, 55) / 100f; //+12V Voltage
-        _powers[0].Value = ReadUInt16BE(_rawData, 101) / 100f; //Fan Power Consumption
-        _powers[1].Value = ReadUInt16BE(_rawData, 114) / 100f; //Pump Power Consumption
-        _flows[0].Value = ReadUInt16BE(_rawData, 89) / 10f; // Viritual Flow
-        _fanControl[0].Value = ReadUInt16BE(_rawData, 95) / 100f; // Fan Control in % (0-100)
-        _fanControl[1].Value = ReadUInt16BE(_rawData, 108) / 100f; // Pump Control in % (0-100)
+        _temperatures[0].Value = (_rawData[88] | (_rawData[87] << 8)) / 100f; 
+        _rpmSensors[0].Value = _rawData[117] | (_rawData[116] << 8); 
+        _rpmSensors[1].Value = ReadUInt16BE(_rawData, 103); 
+        _voltages[0].Value = ReadUInt16BE(_rawData, 97) / 100f; 
+        _voltages[1].Value = ReadUInt16BE(_rawData, 110) / 100f; 
+        _voltages[2].Value = ReadUInt16BE(_rawData, 57) / 100f; 
+        _voltages[3].Value = ReadUInt16BE(_rawData, 55) / 100f; 
+        _powers[0].Value = ReadUInt16BE(_rawData, 101) / 100f; 
+        _powers[1].Value = ReadUInt16BE(_rawData, 114) / 100f; 
+        _flows[0].Value = ReadUInt16BE(_rawData, 89) / 10f; 
+        _fanControl[0].Value = ReadUInt16BE(_rawData, 95) / 100f; 
+        _fanControl[1].Value = ReadUInt16BE(_rawData, 108) / 100f; 
     }
 
     private ushort ReadUInt16BE(byte[] value, int startIndex)

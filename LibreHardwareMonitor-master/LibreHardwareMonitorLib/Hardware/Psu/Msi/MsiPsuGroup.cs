@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the GNU Public License, v. 2.0.
-// Copyright (C) 2024 demorfi<demorfi@gmail.com>
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +12,7 @@ public class MsiPsuGroup : IGroup
 {
     private static readonly int[] _productIds =
     {
-        0x56d4, // MEG Ai1300P
+        0x56d4, 
     };
 
     private static readonly ushort _vendorId = 0x0db0;

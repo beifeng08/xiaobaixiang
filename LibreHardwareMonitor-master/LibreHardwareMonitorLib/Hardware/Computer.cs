@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -33,9 +27,6 @@ using LibreHardwareMonitor.Hardware.Storage;
 
 namespace LibreHardwareMonitor.Hardware;
 
-/// <summary>
-/// Stores all hardware groups and decides which devices should be enabled and updated.
-/// </summary>
 public class Computer : IComputer
 {
     private readonly List<IGroup> _groups = new();
@@ -55,30 +46,20 @@ public class Computer : IComputer
     private SMBios _smbios;
     private bool _storageEnabled;
 
-    /// <summary>
-    /// Creates a new <see cref="IComputer" /> instance with basic initial <see cref="Settings" />.
-    /// </summary>
     public Computer()
     {
         _settings = new Settings();
     }
 
-    /// <summary>
-    /// Creates a new <see cref="IComputer" /> instance with additional <see cref="ISettings" />.
-    /// </summary>
-    /// <param name="settings">Computer settings that will be transferred to each <see cref="IHardware" />.</param>
     public Computer(ISettings settings)
     {
         _settings = settings ?? new Settings();
     }
 
-    /// <inheritdoc />
     public event HardwareEventHandler HardwareAdded;
 
-    /// <inheritdoc />
     public event HardwareEventHandler HardwareRemoved;
 
-    /// <inheritdoc />
     public IList<IHardware> Hardware
     {
         get
@@ -95,7 +76,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <inheritdoc />
     public bool IsBatteryEnabled
     {
         get { return _batteryEnabled; }
@@ -117,7 +97,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <inheritdoc />
     public bool IsControllerEnabled
     {
         get { return _controllerEnabled; }
@@ -153,7 +132,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <inheritdoc />
     public bool IsCpuEnabled
     {
         get { return _cpuEnabled; }
@@ -171,7 +149,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <inheritdoc />
     public bool IsGpuEnabled
     {
         get { return _gpuEnabled; }
@@ -199,7 +176,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <inheritdoc />
     public bool IsPowerMonitorEnabled
     {
         get { return _powerMonitorEnabled; }
@@ -217,7 +193,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <inheritdoc />
     public bool IsMemoryEnabled
     {
         get { return _memoryEnabled; }
@@ -235,7 +210,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <inheritdoc />
     public bool IsMotherboardEnabled
     {
         get { return _motherboardEnabled; }
@@ -253,7 +227,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <inheritdoc />
     public bool IsNetworkEnabled
     {
         get { return _networkEnabled; }
@@ -271,7 +244,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <inheritdoc />
     public bool IsPsuEnabled
     {
         get { return _psuEnabled; }
@@ -295,7 +267,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <inheritdoc />
     public bool IsStorageEnabled
     {
         get { return _storageEnabled; }
@@ -313,9 +284,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <summary>
-    /// Contains computer information table read in accordance with <see href="https://www.dmtf.org/standards/smbios">System Management BIOS (SMBIOS) Reference Specification</see>.
-    /// </summary>
     public SMBios SMBios
     {
         get
@@ -327,7 +295,6 @@ public class Computer : IComputer
         }
     }
 
-    //// <inheritdoc />
     public string GetReport()
     {
         lock (_lock)
@@ -395,10 +362,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <summary>
-    /// Triggers the <see cref="IVisitor.VisitComputer" /> method for the given observer.
-    /// </summary>
-    /// <param name="visitor">Observer who call to devices.</param>
     public void Accept(IVisitor visitor)
     {
         if (visitor == null)
@@ -407,15 +370,11 @@ public class Computer : IComputer
         visitor.VisitComputer(this);
     }
 
-    /// <summary>
-    /// Triggers the <see cref="IElement.Accept" /> method with the given visitor for each device in each group.
-    /// </summary>
-    /// <param name="visitor">Observer who call to devices.</param>
     public void Traverse(IVisitor visitor)
     {
         lock (_lock)
         {
-            // Use a for-loop instead of foreach to avoid a collection modified exception after sleep, even though everything is under a lock.
+            
             for (int i = 0; i < _groups.Count; i++)
             {
                 IGroup group = _groups[i];
@@ -504,10 +463,6 @@ public class Computer : IComputer
             Remove(group);
     }
 
-    /// <summary>
-    /// If hasn't been opened before, opens <see cref="SMBios" />, <see cref="OpCode" /> and triggers the private <see cref="AddGroups" /> method depending on which categories are
-    /// enabled.
-    /// </summary>
     public void Open()
     {
         if (_open)
@@ -650,9 +605,6 @@ public class Computer : IComputer
             ReportHardware(subHardware, w);
     }
 
-    /// <summary>
-    /// If opened before, removes all <see cref="IGroup" /> and triggers <see cref="OpCode.Close" />.
-    /// </summary>
     public void Close()
     {
         if (!_open)
@@ -674,9 +626,6 @@ public class Computer : IComputer
         _open = false;
     }
 
-    /// <summary>
-    /// If opened before, removes all <see cref="IGroup" /> and recreates it.
-    /// </summary>
     public void Reset()
     {
         if (!_open)
@@ -700,7 +649,7 @@ public class Computer : IComputer
 
     private List<IntelCpu> GetIntelCpus()
     {
-        // Create a temporary cpu group if one has not been added.
+        
         lock (_lock)
         {
             IGroup cpuGroup = _groups.Find(x => x is CpuGroup) ?? new CpuGroup(_settings);
@@ -708,9 +657,6 @@ public class Computer : IComputer
         }
     }
 
-    /// <summary>
-    /// <see cref="Computer" /> specific additional settings passed to its <see cref="IHardware" />.
-    /// </summary>
     private class Settings : ISettings
     {
         public bool Contains(string name)

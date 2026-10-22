@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -20,12 +14,9 @@ public class ShowDesktop : IDisposable
     private readonly System.Threading.Timer _timer;
     private bool _showDesktop;
 
-    /// <summary>
-    /// Prevents a default instance of the <see cref="ShowDesktop" /> class from being created.
-    /// </summary>
     private ShowDesktop()
     {
-        // Create a reference window to detect show desktop
+        
         _referenceWindow = new NativeWindow();
 
         CreateParams cp = new CreateParams { ExStyle = GadgetWindow.WS_EX_TOOLWINDOW, Caption = _referenceWindowCaption };
@@ -41,7 +32,6 @@ public class ShowDesktop : IDisposable
                                    GadgetWindow.SWP_NOACTIVATE |
                                    GadgetWindow.SWP_NOSENDCHANGING);
 
-        // start a repeated timer to detect "Show Desktop" events
         _timer = new System.Threading.Timer(OnTimer, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
     }
 
@@ -49,12 +39,11 @@ public class ShowDesktop : IDisposable
 
     private event ShowDesktopChangedEventHandler ShowDesktopChangedEvent;
 
-    // notify when the "show desktop" mode is changed
     public event ShowDesktopChangedEventHandler ShowDesktopChanged
     {
         add
         {
-            // start the monitor timer when someone is listening
+            
             if (ShowDesktopChangedEvent == null)
                 StartTimer();
 
@@ -63,7 +52,7 @@ public class ShowDesktop : IDisposable
         remove
         {
             ShowDesktopChangedEvent -= value;
-            // stop the monitor timer if nobody is interested
+            
             if (ShowDesktopChangedEvent == null)
                 StopTimer();
         }
@@ -71,7 +60,6 @@ public class ShowDesktop : IDisposable
 
     public static ShowDesktop Instance { get; } = new ShowDesktop();
 
-    /// <inheritdoc />
     public void Dispose()
     {
         _timer?.Dispose();
@@ -88,13 +76,11 @@ public class ShowDesktop : IDisposable
         _timer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
     }
 
-    // the desktop worker window (if available) can hide the reference window
     private IntPtr GetDesktopWorkerWindow()
     {
         IntPtr shellWindow = NativeMethods.GetShellWindow();
         if (shellWindow == IntPtr.Zero)
             return IntPtr.Zero;
-
 
         NativeMethods.GetWindowThreadProcessId(shellWindow, out int shellId);
 
@@ -124,13 +110,13 @@ public class ShowDesktop : IDisposable
         IntPtr workerWindow = GetDesktopWorkerWindow();
         if (workerWindow != IntPtr.Zero)
         {
-            // search if the reference window is behind the worker window
+            
             IntPtr reference = NativeMethods.FindWindowEx(IntPtr.Zero, workerWindow, null, _referenceWindowCaption);
             showDesktopDetected = reference != IntPtr.Zero;
         }
         else
         {
-            // if there is no worker window, then nothing can hide the reference
+            
             showDesktopDetected = false;
         }
 

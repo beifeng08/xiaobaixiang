@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -13,14 +8,10 @@ using HidSharp;
 
 namespace LibreHardwareMonitor.Hardware.Controller.Nzxt;
 
-/// <summary>
-/// Support for the NZXT GRID+ V3 devices.
-/// </summary>
 internal sealed class GridV3 : Hardware
 {
     private const int FANS_COUNT = 6;
 
-    // Some initialization messages to send to the controller. No visible effects but NZXT CAM send them.
     private static readonly byte[] _initialize1 = { 0x01, 0x5c };
     private static readonly byte[] _initialize2 = { 0x01, 0x5d };
     private static readonly byte[] _initialize3 = { 0x01, 0x59 };
@@ -64,7 +55,6 @@ internal sealed class GridV3 : Hardware
 
             Name = "NZXT GRID+ V3";
 
-            // Initialize all sensors and controls for all fans
             for (int i = 0; i < FANS_COUNT; i++)
             {
                 _rpmSensors[i] = new Sensor($"GRID Fan #{i + 1}", i, SensorType.Fan, this, Array.Empty<ParameterDescription>(), settings);
@@ -86,7 +76,6 @@ internal sealed class GridV3 : Hardware
                 ActivateSensor(_powers[i]);
                 ActivateSensor(_pwmControls[i]);
 
-                // NZXT GRID does not report current PWM value. So we need to initialize it with some value to keep GUI and device values in sync.
                 _fanControls[i].SetDefault();
             }
 
@@ -112,9 +101,8 @@ internal sealed class GridV3 : Hardware
         {
             case ControlMode.Software:
                 float value = control.SoftwareValue;
-                byte fanSpeed = (byte)(value > 100 ? 100 : value < 0 ? 0 : value); // Clamp the value, anything out of range will fail
+                byte fanSpeed = (byte)(value > 100 ? 100 : value < 0 ? 0 : value); 
 
-                //_controlling = true;
                 _setFanSpeedMsg[2] = (byte)control.Sensor.Index;
                 _setFanSpeedMsg[4] = fanSpeed;
 
@@ -123,7 +111,7 @@ internal sealed class GridV3 : Hardware
                 _pwmControls[control.Sensor.Index].Value = value;
                 break;
             case ControlMode.Default:
-                // There isn't a "default" mode, but let's say a safe setting is 40%
+                
                 _setFanSpeedMsg[2] = (byte)control.Sensor.Index;
                 _setFanSpeedMsg[4] = 40;
 
@@ -147,7 +135,7 @@ internal sealed class GridV3 : Hardware
         {
             try
             {
-                _stream.Read(buffer); // This is a blocking call, will wait for bytes to become available
+                _stream.Read(buffer); 
                 if (buffer[0] == 0x04)
                 {
                     lock (_rawData)
@@ -159,12 +147,12 @@ internal sealed class GridV3 : Hardware
             }
             catch (TimeoutException)
             {
-                // Don't care, just make sure the stream is still open
+                
                 Thread.Sleep(500);
             }
             catch (ObjectDisposedException)
             {
-                // Could be unplugged, or the app is stopping...
+                
                 return;
             }
         }
@@ -172,7 +160,7 @@ internal sealed class GridV3 : Hardware
 
     public override void Update()
     {
-        // The NZXT GRID+ V3 series sends updates periodically. We have to read it in a separate thread, this call just reads that data.
+        
         lock (_rawData)
         {
             for (int fanId = 0; fanId < FANS_COUNT; fanId++)

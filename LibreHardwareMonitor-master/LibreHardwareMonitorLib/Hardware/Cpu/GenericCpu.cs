@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -50,13 +44,10 @@ public class GenericCpu : Hardware
         _coreCount = cpuId.Length;
         _threadCount = cpuId.Sum(x => x.Length);
 
-        // Check if processor has MSRs.
         HasModelSpecificRegisters = cpuId[0][0].Data.GetLength(0) > 1 && (cpuId[0][0].Data[1, 3] & 0x20) != 0;
 
-        // Check if processor has a TSC.
         HasTimeStampCounter = cpuId[0][0].Data.GetLength(0) > 1 && (cpuId[0][0].Data[1, 3] & 0x10) != 0;
 
-        // Check if processor supports an invariant TSC.
         _isInvariantTimeStampCounter = cpuId[0][0].ExtData.GetLength(0) > 7 && (cpuId[0][0].ExtData[7, 3] & 0x100) != 0;
 
         _totalLoad = _coreCount > 1 ? new Sensor("CPU Total", 0, SensorType.Load, this, settings) : null;
@@ -73,7 +64,7 @@ public class GenericCpu : Hardware
                     int thread = cpuId[coreIdx][threadIdx].Thread;
                     if (thread < _threadLoads.Length)
                     {
-                        // Some cores may have 2 threads while others have only one (e.g. P-cores vs E-cores on Intel 12th gen).
+                        
                         string sensorName = CoreString(coreIdx) + (cpuId[coreIdx].Length > 1 ? $" Thread #{threadIdx + 1}" : string.Empty);
                         _threadLoads[thread] = new Sensor(sensorName, thread + 2, SensorType.Load, this, settings);
 
@@ -107,9 +98,6 @@ public class GenericCpu : Hardware
         TimeStampCounterFrequency = _estimatedTimeStampCounterFrequency;
     }
 
-    /// <summary>
-    /// Gets the CPUID.
-    /// </summary>
     public CpuId[][] CpuId => _cpuId;
 
     public override HardwareType HardwareType => HardwareType.Cpu;
@@ -118,9 +106,6 @@ public class GenericCpu : Hardware
 
     public bool HasTimeStampCounter { get; }
 
-    /// <summary>
-    /// Gets the CPU index.
-    /// </summary>
     public int Index { get; }
 
     public double TimeStampCounterFrequency { get; private set; }
@@ -147,11 +132,10 @@ public class GenericCpu : Hardware
 
     private static void EstimateTimeStampCounterFrequency(out double frequency, out double error)
     {
-        // preload the function
+        
         EstimateTimeStampCounterFrequency(0, out double f, out double e);
         EstimateTimeStampCounterFrequency(0, out f, out e);
 
-        // estimate the frequency
         error = double.MaxValue;
         frequency = 0;
         for (int i = 0; i < 5; i++)
@@ -195,7 +179,6 @@ public class GenericCpu : Hardware
         error = beginError + endError;
     }
 
-
     public override string GetReport()
     {
         StringBuilder r = new();
@@ -234,28 +217,24 @@ public class GenericCpu : Hardware
     {
         if (HasTimeStampCounter && _isInvariantTimeStampCounter)
         {
-            // make sure always the same thread is used
+            
             GroupAffinity previousAffinity = ThreadAffinity.Set(_cpuId[0][0].Affinity);
 
-            // read time before and after getting the TSC to estimate the error
             long firstTime = Stopwatch.GetTimestamp();
             ulong timeStampCount = OpCode.Rdtsc();
             long time = Stopwatch.GetTimestamp();
 
-            // restore the thread affinity mask
             ThreadAffinity.Set(previousAffinity);
 
             double delta = (double)(time - _lastTime) / Stopwatch.Frequency;
             double error = (double)(time - firstTime) / Stopwatch.Frequency;
 
-            // only use data if they are measured accurate enough (max 0.1ms delay)
             if (error < 0.0001)
             {
-                // ignore the first reading because there are no initial values
-                // ignore readings with too large or too small time window
+                
                 if (_lastTime != 0 && delta is > 0.5 and < 2)
                 {
-                    // update the TSC frequency with the new value
+                    
                     TimeStampCounterFrequency = (timeStampCount - _lastTimeStampCount) / (1e6 * delta);
                 }
 

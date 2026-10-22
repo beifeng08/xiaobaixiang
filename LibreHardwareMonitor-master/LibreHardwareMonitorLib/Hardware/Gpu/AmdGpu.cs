@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Globalization;
 using System.Linq;
@@ -263,7 +257,6 @@ internal sealed class AmdGpu : GenericGpu
 
     public int BusNumber { get; }
 
-    /// <inheritdoc />
     public override string DeviceId => _adapterInfo.PNPString;
 
     public int DeviceNumber { get; }
@@ -305,9 +298,6 @@ internal sealed class AmdGpu : GenericGpu
         }
     }
 
-    /// <summary>
-    /// Sets the default fan speed.
-    /// </summary>
     private void SetDefaultFanSpeed()
     {
         AtiAdlxx.ADL2_Overdrive5_FanSpeedToDefault_Set(_context, _adapterInfo.AdapterIndex, 0);
@@ -422,7 +412,6 @@ internal sealed class AmdGpu : GenericGpu
             GetAdlSensor(adlPMLogData, logDataOutput, AtiAdlxx.ADLPMLogSensors.ADL_PMLOG_TEMPERATURE_HOTSPOT, _temperatureHotSpot, reset: false);
             GetAdlSensor(adlPMLogData, logDataOutput, AtiAdlxx.ADLPMLogSensors.ADL_PMLOG_TEMPERATURE_SOC, _temperatureSoC);
 
-
             GetAdlSensor(adlPMLogData, logDataOutput, AtiAdlxx.ADLPMLogSensors.ADL_PMLOG_FAN_RPM, _fan, reset: false);
             GetAdlSensor(adlPMLogData, logDataOutput, AtiAdlxx.ADLPMLogSensors.ADL_PMLOG_FAN_PERCENTAGE, _controlSensor, reset: false);
 
@@ -459,17 +448,6 @@ internal sealed class AmdGpu : GenericGpu
         return false;
     }
 
-    /// <summary>
-    /// Gets a sensor value.
-    /// </summary>
-    ///
-    /// <param name="adlPMLogData">Current pmlog struct, used with pmlog-support/start.</param>
-    /// <param name="od8Log">Legacy pmlogdataoutput struct, used with ADL2_New_QueryPMLogData_Get.</param>
-    /// <param name="sensorType">Type of the sensor.</param>
-    /// <param name="sensor">The sensor.</param>
-    /// <param name="factor">The factor.</param>
-    /// <param name="reset">If set to <c>true</c>, resets the sensor value to <c>null</c>.</param>
-    /// <returns>true if sensor is supported, false otherwise</returns>
     private bool GetAdlSensor(AtiAdlxx.ADLPMLogData adlPMLogData, AtiAdlxx.ADLPMLogDataOutput od8Log,
                               AtiAdlxx.ADLPMLogSensors sensorType, Sensor sensor, float factor = 1.0f, bool reset = true)
     {
@@ -487,7 +465,7 @@ internal sealed class AmdGpu : GenericGpu
 
         if (_pmLogStarted)
         {
-            //check if ulLastUpdated is a valid number, avoid timezone issues with unspecified kind and 48h offset
+            
             DateTime now = new(DateTime.Now.Ticks, DateTimeKind.Unspecified);
             if (adlPMLogData.ulLastUpdated == 0 ||
                 adlPMLogData.ulActiveSampleRate < 0 ||
@@ -614,19 +592,9 @@ internal sealed class AmdGpu : GenericGpu
         }
     }
 
-    /// <summary>
-    /// Gets the OverdriveN temperature.
-    /// </summary>
-    /// <param name="type">The type.</param>
-    /// <param name="sensor">The sensor.</param>
-    /// <param name="minTemperature">The minimum temperature.</param>
-    /// <param name="scale">The scale.</param>
-    /// <param name="reset">If set to <c>true</c>, resets the sensor value to <c>null</c>.</param>
     private void GetODNTemperature(AtiAdlxx.ADLODNTemperatureType type, Sensor sensor, double minTemperature = -256, double scale = 1, bool reset = true)
     {
-        // If a sensor isn't available, some cards report 54000 degrees C.
-        // 110C is expected for Navi, so 256C should be enough to use as a maximum.
-
+        
         int maxTemperature = (int)(256 / scale);
         minTemperature = (int)(minTemperature / scale);
 
@@ -644,11 +612,6 @@ internal sealed class AmdGpu : GenericGpu
         }
     }
 
-    /// <summary>
-    /// Gets the Overdrive6 power.
-    /// </summary>
-    /// <param name="type">The type.</param>
-    /// <param name="sensor">The sensor.</param>
     private void GetOD6Power(AtiAdlxx.ADLODNCurrentPowerType type, Sensor sensor)
     {
         int powerOf8 = 0;

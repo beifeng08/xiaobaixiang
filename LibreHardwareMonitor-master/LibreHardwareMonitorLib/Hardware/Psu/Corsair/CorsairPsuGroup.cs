@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the GNU Public License, v. 2.0.
-// Copyright(C) 2020 Wilken Gottwalt<wilken.gottwalt@posteo.net>
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-// Implemented after the Linuix kernel driver corsair_psu by Wilken Gottwalt and contributers
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,22 +12,21 @@ public class CorsairPsuGroup : IGroup
 {
     private static readonly int[] _productIds =
     {
-        0x1c03, // HX550i
-        0x1c04, // HX650i
-        0x1c05, // HX750i
-        0x1c06, // HX850i
-        0x1c07, // HX1000i
-        0x1c1e, // HX1000i REV2
-        0x1c08, // HX1200i
-        0x1c1f, // HX1500i
+        0x1c03, 
+        0x1c04, 
+        0x1c05, 
+        0x1c06, 
+        0x1c07, 
+        0x1c1e, 
+        0x1c08, 
+        0x1c1f, 
 
-        0x1c09, // RM550i
-        0x1c0a, // RM650i
-        0x1c0b, // RM750i
-        0x1c0c, // RM850i
-        0x1c0d, // RM1000i
+        0x1c09, 
+        0x1c0a, 
+        0x1c0b, 
+        0x1c0c, 
+        0x1c0d, 
 
-        // 0x1c11, // AX1600i
     };
 
     private static readonly ushort _vendorId = 0x1b1c;

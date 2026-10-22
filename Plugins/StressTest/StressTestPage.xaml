@@ -1,5 +1,6 @@
 <!-- Copyright (c) 2026 beifeng08 -->
 <!-- Licensed under the MIT License. See LICENSE in the project root. -->
+
 <UserControl x:Class="YanJi.Plugin.StressTest.StressTestPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,7 +10,6 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Margin="20" MaxWidth="1160" HorizontalAlignment="Stretch">
 
-            <!-- 四路监控前置；标题、核对状态和 GPU 选择分行，避免长显卡名称挤压标题。 -->
             <Border Style="{StaticResource CardBorder}" Width="Auto" CornerRadius="0"
                     Background="{DynamicResource HeroBgBrush}" Margin="0,0,0,16" Padding="20">
                 <StackPanel>
@@ -49,7 +49,7 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="GPU" Margin="0,0,12,0" VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextSecondaryBrush}"/>
-                            <!-- LHM 枚举带温度/功耗传感器的显卡；默认选择和换绑仍由原业务代码处理。 -->
+                            
                             <ComboBox x:Name="GpuBox" Grid.Column="1" Margin="0" MinHeight="32"
                                       HorizontalAlignment="Stretch" SelectionChanged="GpuBox_Changed"
                                       Visibility="Collapsed"
@@ -66,7 +66,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <!-- CPU 两路保留驱动不可用叠层；图表只承载真实传感器数据。 -->
+                        
                         <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource CardBorder}"
                                 CornerRadius="0" Margin="0,0,7,7" Padding="12"
                                 Background="{DynamicResource SurfaceBgBrush}">
@@ -115,7 +115,6 @@
                         </Border>
                     </Grid>
 
-                    <!-- 每路保留「指标 ← 硬件 / 传感器」来源与不可用状态。 -->
                     <Border CornerRadius="0" Padding="14,10" Margin="0,14,0,0"
                             Background="{DynamicResource SubtleBgBrush}">
                         <TextBlock x:Name="SensorHintText" TextWrapping="Wrap" FontSize="12" LineHeight="19"
@@ -171,7 +170,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- 保留只读日志、自动滚底和 500 条上限；不改变原业务代码。 -->
             <Border Style="{StaticResource CardBorder}" Width="Auto" CornerRadius="0"
                     Margin="0,0,0,16" Padding="20">
                 <StackPanel>
@@ -188,7 +186,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- 设置纵向展开，避免窄窗口中的选项和说明被双列卡片挤压。 -->
             <Border Style="{StaticResource CardBorder}" Width="Auto" CornerRadius="0"
                     Margin="0,0,0,16" Padding="20">
                 <StackPanel>

@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.IO;
 using HidSharp;
@@ -96,7 +91,7 @@ internal sealed class MPS : Hardware
         _pumpFlow.Value = BitConverter.ToUInt16(_rawData, PumpFlow) / 10f;
 
         _externalTemperature = BitConverter.ToUInt16(_rawData, ExternalTemperature);
-        //sensor reading returns Int16.MaxValue (32767), when not connected
+        
         if (_externalTemperature != short.MaxValue)
         {
             _temperatures[0].Value = _externalTemperature / 100f;

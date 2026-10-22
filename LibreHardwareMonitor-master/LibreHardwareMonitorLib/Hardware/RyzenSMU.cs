@@ -1,12 +1,10 @@
-﻿// ported from: https://gitlab.com/leogx9r/ryzen_smu
-// and: https://github.com/irusanov/SMUDebugTool
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
 
 using System;
 using System.Collections.Generic;
 using System.Text;
 using LibreHardwareMonitor.PawnIo;
-
-// ReSharper disable InconsistentNaming
 
 namespace LibreHardwareMonitor.Hardware;
 
@@ -19,21 +17,15 @@ internal class RyzenSMU
     private readonly Dictionary<uint, Dictionary<uint, SmuSensorType>> _supportedPmTableVersions = new()
     {
         {
-            // Zen Raven Ridge APU.
+            
             0x001E0004, new Dictionary<uint, SmuSensorType>
             {
                 { 7, new SmuSensorType { Name = "TDC", Type = SensorType.Current, Scale = 1 } },
                 { 11, new SmuSensorType { Name = "EDC", Type = SensorType.Current, Scale = 1 } },
-                //{ 61, new SmuSensorType { Name = "Core", Type = SensorType.Voltage } },
-                //{ 62, new SmuSensorType { Name = "Core", Type = SensorType.Current, Scale = 1} },
-                //{ 63, new SmuSensorType { Name = "Core", Type = SensorType.Power, Scale = 1 } },
-                //{ 65, new SmuSensorType { Name = "SoC", Type = SensorType.Voltage } },
+                
                 { 66, new SmuSensorType { Name = "SoC", Type = SensorType.Current, Scale = 1 } },
                 { 67, new SmuSensorType { Name = "SoC", Type = SensorType.Power, Scale = 1 } },
-                //{ 96, new SmuSensorType { Name = "Core #1", Type = SensorType.Power } },
-                //{ 97, new SmuSensorType { Name = "Core #2", Type = SensorType.Power } },
-                //{ 98, new SmuSensorType { Name = "Core #3", Type = SensorType.Power } },
-                //{ 99, new SmuSensorType { Name = "Core #4", Type = SensorType.Power } },
+                
                 { 108, new SmuSensorType { Name = "Core #1", Type = SensorType.Temperature, Scale = 1 } },
                 { 109, new SmuSensorType { Name = "Core #2", Type = SensorType.Temperature, Scale = 1 } },
                 { 110, new SmuSensorType { Name = "Core #3", Type = SensorType.Temperature, Scale = 1 } },
@@ -49,7 +41,7 @@ internal class RyzenSMU
             }
         },
         {
-            // Zen 2.
+            
             0x00240903, new Dictionary<uint, SmuSensorType>
             {
                 { 15, new SmuSensorType { Name = "TDC", Type = SensorType.Current, Scale = 1 } },
@@ -58,49 +50,24 @@ internal class RyzenSMU
                 { 50, new SmuSensorType { Name = "Uncore", Type = SensorType.Clock, Scale = 1 } },
                 { 51, new SmuSensorType { Name = "Memory", Type = SensorType.Clock, Scale = 1 } },
                 { 115, new SmuSensorType { Name = "SoC", Type = SensorType.Temperature, Scale = 1 } }
-                //{ 66, new SmuSensorType { Name = "Bus Speed", Type = SensorType.Clock, Scale = 1 } },
-                //{ 188, new SmuSensorType { Name = "Core #1", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 189, new SmuSensorType { Name = "Core #2", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 190, new SmuSensorType { Name = "Core #3", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 191, new SmuSensorType { Name = "Core #4", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 192, new SmuSensorType { Name = "Core #5", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 193, new SmuSensorType { Name = "Core #6", Type = SensorType.Clock, Scale = 1000 } },
+                
             }
         },
         {
-            // Zen 3.
+            
             0x00380805, new Dictionary<uint, SmuSensorType>
             {
                 { 3, new SmuSensorType { Name = "TDC", Type = SensorType.Current, Scale = 1 } },
-                // TODO: requires some post-processing
-                // see: https://gitlab.com/leogx9r/ryzen_smu/-/blob/master/userspace/monitor_cpu.c#L577
-                // { 9, new SmuSensorType { Name = "EDC", Type = SensorType.Current, Scale = 1 } },
+                
                 { 48, new SmuSensorType { Name = "Fabric", Type = SensorType.Clock, Scale = 1 } },
                 { 50, new SmuSensorType { Name = "Uncore", Type = SensorType.Clock, Scale = 1 } },
                 { 51, new SmuSensorType { Name = "Memory", Type = SensorType.Clock, Scale = 1 } },
                 { 127, new SmuSensorType { Name = "SoC", Type = SensorType.Temperature, Scale = 1 } },
 
-                //Core effective clock is now calculated in Amd17Cpu/Core
-                //{ 268, new SmuSensorType { Name = "Core #1 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 269, new SmuSensorType { Name = "Core #2 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 270, new SmuSensorType { Name = "Core #3 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 271, new SmuSensorType { Name = "Core #4 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 272, new SmuSensorType { Name = "Core #5 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 273, new SmuSensorType { Name = "Core #6 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 274, new SmuSensorType { Name = "Core #7 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 275, new SmuSensorType { Name = "Core #8 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 276, new SmuSensorType { Name = "Core #9 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 277, new SmuSensorType { Name = "Core #10 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 278, new SmuSensorType { Name = "Core #11 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 279, new SmuSensorType { Name = "Core #12 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 280, new SmuSensorType { Name = "Core #13 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 281, new SmuSensorType { Name = "Core #14 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 282, new SmuSensorType { Name = "Core #15 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 283, new SmuSensorType { Name = "Core #16 (Effective)", Type = SensorType.Clock, Scale = 1000 } }
             }
         },
         {
-            // Zen 4.
+            
             0x00540004, new Dictionary<uint, SmuSensorType>
             {
                 { 3, new SmuSensorType { Name = "CPU PPT", Type = SensorType.Power, Scale = 1 } },
@@ -122,24 +89,6 @@ internal class RyzenSMU
                 { 540, new SmuSensorType { Name = "L3 (CCD2)", Type = SensorType.Temperature, Scale = 1 } },
                 { 268, new SmuSensorType { Name = "LDO VDD", Type = SensorType.Voltage, Scale = 1 } },
 
-                // This is not working, some cores can be deactivated with the core disabled map.
-                // When Core 2 is disabled and Core 3 is enabled, the name of Core 3 == "Core 2".
-                //{ 357, new SmuSensorType { Name = "Core #1 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 358, new SmuSensorType { Name = "Core #2 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 359, new SmuSensorType { Name = "Core #3 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 360, new SmuSensorType { Name = "Core #4 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 361, new SmuSensorType { Name = "Core #5 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 362, new SmuSensorType { Name = "Core #6 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 363, new SmuSensorType { Name = "Core #7 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 364, new SmuSensorType { Name = "Core #8 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 365, new SmuSensorType { Name = "Core #9 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 366, new SmuSensorType { Name = "Core #10 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 367, new SmuSensorType { Name = "Core #11 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 368, new SmuSensorType { Name = "Core #12 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 369, new SmuSensorType { Name = "Core #13 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 370, new SmuSensorType { Name = "Core #14 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 371, new SmuSensorType { Name = "Core #15 (Effective)", Type = SensorType.Clock, Scale = 1000 } },
-                //{ 372, new SmuSensorType { Name = "Core #16 (Effective)", Type = SensorType.Clock, Scale = 1000 } }
             }
         }
     };
@@ -242,7 +191,7 @@ internal class RyzenSMU
             }
             catch
             {
-                // ignored
+                
             }
 
             if (table is { Length: > 0 } && table[0] != 0)
@@ -391,7 +340,6 @@ internal class RyzenSMU
         public SensorType Type;
         public float Scale;
     }
-
 
     private enum CpuCodeName
     {

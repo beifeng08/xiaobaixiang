@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System.Threading;
 using LibreHardwareMonitor.PawnIo;
 
@@ -20,7 +14,6 @@ internal sealed class Amd0FCpu : AmdCpu
 
     private readonly AmdFamily0F _pawnModule;
 
-    /// <inheritdoc />
     public override void Close()
     {
         base.Close();
@@ -33,12 +26,10 @@ internal sealed class Amd0FCpu : AmdCpu
 
         float offset = -49.0f;
 
-        // AM2+ 65nm +21 offset
         uint model = cpuId[0][0].Model;
         if (model is >= 0x69 and not 0xc1 and not 0x6c and not 0x7c)
             offset += 21;
 
-        // check if processor supports a digital thermal sensor
         if (cpuId[0][0].ExtData.GetLength(0) > 7 && (cpuId[0][0].ExtData[7, 3] & 1) != 0)
         {
             _coreTemperatures = new Sensor[_coreCount];
@@ -106,8 +97,7 @@ internal sealed class Amd0FCpu : AmdCpu
 
                 if (_pawnModule.ReadMsr(FIDVID_STATUS, out uint eax, out uint _, _cpuId[i][0].Affinity))
                 {
-                    // CurrFID can be found in eax bits 0-5, MaxFID in 16-21
-                    // 8-13 hold StartFID, we don't use that here.
+                    
                     double curMp = 0.5 * ((eax & 0x3F) + 8);
                     double maxMp = 0.5 * ((eax >> 16 & 0x3F) + 8);
                     _coreClocks[i].Value = (float)(curMp * TimeStampCounterFrequency / maxMp);
@@ -115,7 +105,7 @@ internal sealed class Amd0FCpu : AmdCpu
                 }
                 else
                 {
-                    // Fail-safe value - if the code above fails, we'll use this instead
+                    
                     _coreClocks[i].Value = (float)TimeStampCounterFrequency;
                 }
             }
@@ -128,7 +118,6 @@ internal sealed class Amd0FCpu : AmdCpu
         }
     }
 
-    // ReSharper disable InconsistentNaming
     private const uint FIDVID_STATUS = 0xC0010042;
-    // ReSharper restore InconsistentNaming
+    
 }

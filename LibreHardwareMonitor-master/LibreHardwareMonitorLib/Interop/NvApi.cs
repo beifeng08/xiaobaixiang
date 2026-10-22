@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using Windows.Win32;
@@ -205,10 +208,10 @@ internal static class NvApi
 
     public enum NvUtilizationDomain
     {
-        Gpu, // Core
-        FrameBuffer, // Memory Controller
-        VideoEngine, // Video Engine
-        BusInterface // Bus
+        Gpu, 
+        FrameBuffer, 
+        VideoEngine, 
+        BusInterface 
     }
 
     public enum NvI2CSpeed : uint
@@ -633,7 +636,7 @@ internal static class NvApi
     {
         [FieldOffset(0x00)] public uint Version;
 
-        [FieldOffset(0x04)] public fixed uint _reserved[17]; //Unknown
+        [FieldOffset(0x04)] public fixed uint _reserved[17]; 
 
         [FieldOffset(0x28)] public uint CoreMicrovolts;
         [FieldOffset(0x2C)] public uint CoreMicrovoltsHigh;
@@ -662,7 +665,7 @@ internal static class NvApi
         Gpu,
         Memory,
         PowerSupply = 4,
-        All = 7 // This cooler cools all of the components related to its target gpu.
+        All = 7 
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]

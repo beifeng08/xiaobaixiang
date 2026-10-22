@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using System;
 using LibreHardwareMonitor.Hardware;
 
 namespace LibreHardwareMonitor.PawnIo;

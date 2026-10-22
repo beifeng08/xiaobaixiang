@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-// Ported from: https://github.com/processhacker/processhacker/blob/master/plugins/ExtendedTools/gpumon.c
-
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -43,11 +37,7 @@ internal static class D3DDisplayDevice
         if (string.IsNullOrEmpty(deviceIdentifier))
             return deviceIdentifier;
 
-        // For example:
-        // \\?\ROOT#BasicRender#0000#{1ca05180-a699-450a-9a0c-de4fbe3ddd89}  -->  ROOT\BasicRender\0000
-        // \\?\PCI#VEN_1002&DEV_731F&SUBSYS_57051682&REV_C4#6&e539058&0&00000019#{1ca05180-a699-450a-9a0c-de4fbe3ddd89}  -->  PCI\VEN_1002&DEV_731F&SUBSYS_57051682&REV_C4\6&e539058&0&00000019
-
-        if (deviceIdentifier.StartsWith(@"\\?\"))
+        if (deviceIdentifier.StartsWith(@\\?\"))
             deviceIdentifier = deviceIdentifier.Substring(4);
 
         if (deviceIdentifier.Length > 0 && deviceIdentifier[deviceIdentifier.Length - 1] == '}')

@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Globalization;
 using System.IO;
@@ -95,7 +89,6 @@ internal sealed class Heatmaster : Hardware, IDisposable
                 ActivateSensor(_relays[i]);
             }
 
-            // set the update rate to 2 Hz
             WriteInteger(0, 'L', 2);
             _available = true;
         }
@@ -151,7 +144,7 @@ internal sealed class Heatmaster : Hardware, IDisposable
         for (int i = 0; i < 5; i++)
         {
             string s = ReadLine(200);
-            Match match = Regex.Match(s, @"-\[0:" + device.ToString(CultureInfo.InvariantCulture) + @"\]R" + Regex.Escape(field.ToString(CultureInfo.InvariantCulture)) + ":(.*)");
+            Match match = Regex.Match(s, @-\[0:" + device.ToString(CultureInfo.InvariantCulture) + @\]R" + Regex.Escape(field.ToString(CultureInfo.InvariantCulture)) + ":(.*)");
             if (match.Success)
                 return match.Groups[1].Value;
         }
@@ -183,7 +176,7 @@ internal sealed class Heatmaster : Hardware, IDisposable
         for (int i = 0; i < 5; i++)
         {
             string s = ReadLine(200);
-            Match match = Regex.Match(s, @"-\[0:" + device.ToString(CultureInfo.InvariantCulture) + @"\]W" + Regex.Escape(field.ToString(CultureInfo.InvariantCulture)) + ":" + value);
+            Match match = Regex.Match(s, @-\[0:" + device.ToString(CultureInfo.InvariantCulture) + @\]W" + Regex.Escape(field.ToString(CultureInfo.InvariantCulture)) + ":" + value);
             if (match.Success)
                 return;
         }
@@ -196,7 +189,7 @@ internal sealed class Heatmaster : Hardware, IDisposable
 
     private void ProcessUpdateLine(string line)
     {
-        Match match = Regex.Match(line, @">\[0:(\d+)\]([0-9:\|-]+)");
+        Match match = Regex.Match(line, @>\[0:(\d+)\]([0-9:\|-]+)");
         if (match.Success && int.TryParse(match.Groups[1].Value, out int device))
         {
             foreach (string s in match.Groups[2].Value.Split('|'))

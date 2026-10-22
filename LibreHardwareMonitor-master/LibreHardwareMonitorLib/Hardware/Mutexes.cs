@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using System;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
@@ -13,9 +16,6 @@ internal static class Mutexes
     private static Mutex _razerMutex;
     private static Mutex _usbSensors;
 
-    /// <summary>
-    /// Opens the mutexes.
-    /// </summary>
     public static void Open()
     {
         _isaBusMutex = CreateOrOpenExistingMutex("Global\\Access_ISABUS.HTP.Method");
@@ -46,7 +46,7 @@ internal static class Mutexes
                 }
                 catch
                 {
-                    // Ignored.
+                    
                 }
             }
 
@@ -54,9 +54,6 @@ internal static class Mutexes
         }
     }
 
-    /// <summary>
-    /// Closes the mutexes.
-    /// </summary>
     public static void Close()
     {
         _isaBusMutex?.Close();

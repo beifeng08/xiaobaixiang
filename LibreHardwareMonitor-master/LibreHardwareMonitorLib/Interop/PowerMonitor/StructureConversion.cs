@@ -1,11 +1,13 @@
-﻿namespace LibreHardwareMonitor.Interop.PowerMonitor;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+namespace LibreHardwareMonitor.Interop.PowerMonitor;
 
 using WVP2C = WireViewPro2Constants;
 
 public static class StructureConversion
 {
-    //1 <-> 2
-
+    
     public static DeviceConfigStructV2 ConvertConfigV1ToV2(DeviceConfigStructV1 configV1)
     {
         DeviceConfigStructV2 configV2 = new DeviceConfigStructV2
@@ -27,7 +29,7 @@ public static class StructureConversion
             CurrentImbalanceFaultMinLoad = configV1.CurrentImbalanceFaultMinLoad,
             ShutdownWaitTime = configV1.ShutdownWaitTime,
             LoggingInterval = configV1.LoggingInterval,
-            Average = AVG.AVG_1417MS, // Default value
+            Average = AVG.AVG_1417MS, 
             Ui = configV1.Ui
         };
         return configV2;
@@ -59,8 +61,6 @@ public static class StructureConversion
         return configV1;
     }
 
-    //1 <-> 3
-
     public static DeviceConfigStructV3 ConvertConfigV1ToV3(DeviceConfigStructV1 configV1)
     {
         DeviceConfigStructV2 configV2 = ConvertConfigV1ToV2(configV1);
@@ -72,8 +72,6 @@ public static class StructureConversion
         DeviceConfigStructV2 configV2 = ConvertConfigV3ToV2(configV3);
         return ConvertConfigV2ToV1(configV2);
     }
-
-    //2 <-> 3
 
     public static DeviceConfigStructV3 ConvertConfigV2ToV3(DeviceConfigStructV2 configV2)
     {
@@ -113,7 +111,7 @@ public static class StructureConversion
                 BackgroundColor = configV2.Ui.Theme == Theme.ThemeTg1 ? WVP2C.THEME_BACKGROUND_COLOR_TG1 : configV2.Ui.Theme == Theme.ThemeTg2 ? WVP2C.THEME_BACKGROUND_COLOR_TG2 : WVP2C.THEME_BACKGROUND_COLOR_TG3,
                 BackgroundBitmapId = configV2.Ui.Theme == Theme.ThemeTg1 ? (byte)THEME_BACKGROUND.ThermalGrizzlyOrange : configV2.Ui.Theme == Theme.ThemeTg2 ? (byte)THEME_BACKGROUND.ThermalGrizzlyDark : (byte)THEME_BACKGROUND.Disabled,
                 FanBitmapId = configV2.Ui.Theme == Theme.ThemeTg1 ? (byte)THEME_FAN.ThermalGrizzlyOrange : configV2.Ui.Theme == Theme.ThemeTg2 ? (byte)THEME_FAN.ThermalGrizzlyDark : (byte)THEME_FAN.ThermalGrizzlyBlackWhite,
-                DisplayInversion = DISPLAY_INVERSION.DISPLAY_INVERSION_OFF // Default off
+                DisplayInversion = DISPLAY_INVERSION.DISPLAY_INVERSION_OFF 
             }
         };
         return configV3;
@@ -143,7 +141,7 @@ public static class StructureConversion
             Average = configV3.Average,
             Ui = new UiConfigStructV1
             {
-                Theme = configV3.Ui.BackgroundBitmapId == (int)THEME_BACKGROUND.ThermalGrizzlyOrange ? Theme.ThemeTg1 : configV3.Ui.BackgroundBitmapId == (int)THEME_BACKGROUND.ThermalGrizzlyDark ? Theme.ThemeTg2 : Theme.ThemeTg3, // Infer theme from bitmap (best effort)
+                Theme = configV3.Ui.BackgroundBitmapId == (int)THEME_BACKGROUND.ThermalGrizzlyOrange ? Theme.ThemeTg1 : configV3.Ui.BackgroundBitmapId == (int)THEME_BACKGROUND.ThermalGrizzlyDark ? Theme.ThemeTg2 : Theme.ThemeTg3, 
                 CurrentScale = configV3.Ui.CurrentScale,
                 PowerScale = configV3.Ui.PowerScale,
                 DisplayRotation = configV3.Ui.DisplayRotation,

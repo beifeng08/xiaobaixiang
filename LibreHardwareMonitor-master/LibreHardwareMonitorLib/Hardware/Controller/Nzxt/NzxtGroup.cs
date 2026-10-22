@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System.Collections.Generic;
 using System.Text;
 using HidSharp;
@@ -28,7 +23,7 @@ internal class NzxtGroup : IGroup
 
             switch (dev.ProductID)
             {
-                case 0x170E: // NZXT Kraken X (X42, X52, X62 or X72)
+                case 0x170E: 
                     var krakenV2 = new KrakenV2(dev, settings);
                     _report.AppendLine($"Device name: {productName}");
                     _report.AppendLine($"Firmware version: {krakenV2.FirmwareVersion}");
@@ -39,13 +34,13 @@ internal class NzxtGroup : IGroup
                         _hardware.Add(krakenV2);
 
                     break;
-                case 0x2007: // Kraken X3 original pid
-                case 0x2014: // Kraken X3 new pid
-                case 0x3008: // Kraken Z3
-                case 0x300C: // Kraken 2023 elite
-                case 0x300E: // Kraken 2023 standard
-                case 0x3012: // Kraken elite v2
-                    // NZXT KrakenV3 Devices
+                case 0x2007: 
+                case 0x2014: 
+                case 0x3008: 
+                case 0x300C: 
+                case 0x300E: 
+                case 0x3012: 
+                    
                     var krakenV3 = new KrakenV3(dev, settings);
                     _report.AppendLine($"Device name: {productName}");
                     _report.AppendLine($"Firmware version: {krakenV3.FirmwareVersion}");

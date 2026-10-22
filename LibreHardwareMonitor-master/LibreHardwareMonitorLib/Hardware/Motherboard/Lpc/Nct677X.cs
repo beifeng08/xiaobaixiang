@@ -1,14 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
-//#define NCT677X_DEBUG_LOG
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,12 +14,11 @@ namespace LibreHardwareMonitor.Hardware.Motherboard.Lpc;
 
 internal class Nct677X : ISuperIO
 {
-    // ReSharper disable InconsistentNaming
+    
     private const ushort ADDRESS_REGISTER_OFFSET = 0x05;
     private const byte BANK_SELECT_REGISTER = 0x4E;
     private const uint DATA_REGISTER_OFFSET = 0x06;
 
-    // NCT668X EC space
     private const uint EC_SPACE_PAGE_REGISTER_OFFSET = 0x04;
     private const uint EC_SPACE_INDEX_REGISTER_OFFSET = 0x05;
     private const uint EC_SPACE_DATA_REGISTER_OFFSET = 0x06;
@@ -35,7 +26,6 @@ internal class Nct677X : ISuperIO
 
     private const ushort NUVOTON_VENDOR_ID = 0x5CA3;
 
-    // NCT6687DR EC engine status register and flags (based on Linux nct6687d driver)
     private const ushort NCT6687DR_REG_FAN_ENGINE_STS = 0xCF8;
     private const byte NCT6687DR_FAN_CFG_LOCK = 1 << 6;
     private const byte NCT6687DR_FAN_CFG_PHASE = 1 << 3;
@@ -45,26 +35,20 @@ internal class Nct677X : ISuperIO
     private const byte NCT6687DR_FAN_CFG_DONE = 0x40;
     private const byte NCT6687DR_FAN_CFG_REQ_UPDATE_MASK = 0x7F;
     private const byte NCT6687DR_FAN_CFG_DONE_UPDATE_MASK = 0xBF;
-    // ReSharper restore InconsistentNaming
-
-    // Chip identity
+    
     private readonly LpcPort _lpcPort;
     private readonly ushort _port;
     private readonly byte _revision;
     private readonly bool _isNuvotonVendor;
 
-    // Fan registers (chip-specific, initialized in constructor)
-    // ReSharper disable InconsistentNaming
     private readonly ushort[] FAN_CONTROL_MODE_REG;
-    private readonly int[] FAN_CONTROL_MODE_BIT; // NCT6687DR only: maps array index → bit position in mode register
+    private readonly int[] FAN_CONTROL_MODE_BIT; 
     private readonly ushort[] FAN_PWM_COMMAND_REG;
     private readonly ushort[] FAN_PWM_OUT_REG;
     private readonly ushort[] FAN_PWM_REQUEST_REG;
     private readonly ushort VENDOR_ID_HIGH_REGISTER;
     private readonly ushort VENDOR_ID_LOW_REGISTER;
-    // ReSharper restore InconsistentNaming
-
-    // Sensor registers
+    
     private readonly ushort[] _fanCountRegister;
     private readonly ushort[] _fanRpmRegister;
     private readonly int _maxFanCount;
@@ -75,7 +59,6 @@ internal class Nct677X : ISuperIO
     private readonly ushort[] _voltageRegisters;
     private readonly ushort _voltageVBatRegister;
 
-    // Fan control state (save/restore)
     private readonly byte[] _initialFanControlMode = new byte[7];
     private readonly byte[] _initialFanPwmCommand = new byte[7];
     private readonly bool[] _restoreDefaultFanControlRequired = new bool[7];
@@ -99,46 +82,36 @@ internal class Nct677X : ISuperIO
             _vBatMonitorControlRegister = 0x0318;
         }
         else if (chip is Chip.NCT6683D or Chip.NCT6686D
-                 or Chip.NCT6687D) //These work on older NCT6687D boards, but only fans 0, 1 and 3 on newer (X870 and Z890) motherboards. Unsure of controls for "next pack of 8".
+                 or Chip.NCT6687D) 
         {
-            FAN_PWM_OUT_REG = [0x160, 0x161, 0x162, 0x163, 0x164, 0x165, 0x166, 0x167]; // Next 8 fans will be 0xE00, 0xE01, 0xE02, 0xE03, 0xE04, 0xE05, 0xE06, 0xE07
-            FAN_PWM_COMMAND_REG = [0xA28, 0xA29, 0xA2A, 0xA2B, 0xA2C, 0xA2D, 0xA2E, 0xA2F]; // Possibly 0X260, 0X261, 0X262, 0X263, 0X264, 0X265, 0X266, 0X267 but can't confirm
-            FAN_CONTROL_MODE_REG = [0xA00, 0xA00, 0xA00, 0xA00, 0xA00, 0xA00, 0xA00, 0xA00]; // Not sure of next 8, MSI won't provide info
-            FAN_PWM_REQUEST_REG = [0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01]; // Not sure of next 8, MSI won't provide info
+            FAN_PWM_OUT_REG = [0x160, 0x161, 0x162, 0x163, 0x164, 0x165, 0x166, 0x167]; 
+            FAN_PWM_COMMAND_REG = [0xA28, 0xA29, 0xA2A, 0xA2B, 0xA2C, 0xA2D, 0xA2E, 0xA2F]; 
+            FAN_CONTROL_MODE_REG = [0xA00, 0xA00, 0xA00, 0xA00, 0xA00, 0xA00, 0xA00, 0xA00]; 
+            FAN_PWM_REQUEST_REG = [0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01]; 
         }
-        else if (chip is Chip.NCT6687DR) // MSI AM5/LGA1851 Motherboards
+        else if (chip is Chip.NCT6687DR) 
         {
-            // Each index in the below arrays represents a fan header
-            // ARRAY_KEY = new ushort[] { CPU FAN, PUMP, CHIPSET, EZ-CONNECT FAN, null, null, null, null, null, SYSFAN7, SYSFAN1, SYSFAN2, SYSFAN3, SYSFAN4, SYSFAN5, SYSFAN6 };
-            FAN_PWM_OUT_REG = [0x160, 0x161, 0x162, 0x163, 0x164, 0x165, 0x166, 0x167, 0xFFF, 0xC93, 0xE05, 0xE04, 0xE03, 0xE02, 0xE01, 0xE00]; // Duty Cycle Sensors
-            // Direct PWM command registers ("pair 0" from extended unk_101E0 table in BIOS).
-            // CPU/Pump/Chipset/EZ-Connect: 0A:(28+ch).  SYSFAN7(ch9): 08:E9.  SYSFAN1-6(ch10-15): 02:(65..60).
-            // Setting the manual-mode bit in FAN_CONTROL_MODE_REG makes the EC use these for direct PWM,
-            // bypassing the SmartFAN curve engine and its inherent ~2%/sec smoothing.
+            
+            FAN_PWM_OUT_REG = [0x160, 0x161, 0x162, 0x163, 0x164, 0x165, 0x166, 0x167, 0xFFF, 0xC93, 0xE05, 0xE04, 0xE03, 0xE02, 0xE01, 0xE00]; 
+            
             FAN_PWM_COMMAND_REG = [0xA28, 0xA29, 0xA2A, 0xA2B, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0xFFF, 0x8E9, 0x265, 0x264, 0x263, 0x262, 0x261, 0x260];
-            // Manual-mode enable registers.  Ch 0-7 use 0A:00 (one bit each); ch 8-15 use 08:0F.
+            
             FAN_CONTROL_MODE_REG = [0xA00, 0xA00, 0xA00, 0xA00, 0xA00, 0xA00, 0xA00, 0xA00, 0xA00, 0x80F, 0x80F, 0x80F, 0x80F, 0x80F, 0x80F, 0x80F];
             FAN_PWM_REQUEST_REG = [0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01, 0xA01];
 
-            // Mapping from array index to bit position in the FAN_CONTROL_MODE_REG (0xA00) register.
-            // The EC firmware uses bits 0-7 for 8 fan channels; LHM's sparse array indices must map to the correct bit.
-            // Bit 0: CPU Fan, Bit 1: Pump, Bit 2: Chipset/SYSFAN1, Bit 3: EZ-Connect/SYSFAN2, etc.
-            // Based on the Linux nct6687d driver's msi_alt1 config: index 0=CPU, 1=Pump, 2-7=System fans.
-            // -1 means no valid mapping (unused index slots).
-            FAN_CONTROL_MODE_BIT = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]; // Defaults
-            FAN_CONTROL_MODE_BIT[0] = 0;   // CPU Fan    → bit 0 of 0A:00
-            FAN_CONTROL_MODE_BIT[1] = 1;   // Pump       → bit 1 of 0A:00
-            FAN_CONTROL_MODE_BIT[2] = 2;   // Chipset    → bit 2 of 0A:00
-            FAN_CONTROL_MODE_BIT[3] = 3;   // EZ-Connect → bit 3 of 0A:00
-            // System fans: manual-mode bits in 08:0F (derived from BIOS unk_104C0 entry[1]).
-            // EC channel mapping: LHM idx 9=ch9, 10=ch15, 11=ch14, 12=ch13, 13=ch12, 14=ch11, 15=ch10.
-            FAN_CONTROL_MODE_BIT[9]  = 1;  // SYSFAN7 (ch 9)  → bit 1 of 08:0F
-            FAN_CONTROL_MODE_BIT[10] = 7;  // SYSFAN1 (ch 15) → bit 7 of 08:0F
-            FAN_CONTROL_MODE_BIT[11] = 6;  // SYSFAN2 (ch 14) → bit 6 of 08:0F
-            FAN_CONTROL_MODE_BIT[12] = 5;  // SYSFAN3 (ch 13) → bit 5 of 08:0F
-            FAN_CONTROL_MODE_BIT[13] = 4;  // SYSFAN4 (ch 12) → bit 4 of 08:0F
-            FAN_CONTROL_MODE_BIT[14] = 3;  // SYSFAN5 (ch 11) → bit 3 of 08:0F
-            FAN_CONTROL_MODE_BIT[15] = 2;  // SYSFAN6 (ch 10) → bit 2 of 08:0F
+            FAN_CONTROL_MODE_BIT = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]; 
+            FAN_CONTROL_MODE_BIT[0] = 0;   
+            FAN_CONTROL_MODE_BIT[1] = 1;   
+            FAN_CONTROL_MODE_BIT[2] = 2;   
+            FAN_CONTROL_MODE_BIT[3] = 3;   
+            
+            FAN_CONTROL_MODE_BIT[9]  = 1;  
+            FAN_CONTROL_MODE_BIT[10] = 7;  
+            FAN_CONTROL_MODE_BIT[11] = 6;  
+            FAN_CONTROL_MODE_BIT[12] = 5;  
+            FAN_CONTROL_MODE_BIT[13] = 4;  
+            FAN_CONTROL_MODE_BIT[14] = 3;  
+            FAN_CONTROL_MODE_BIT[15] = 2;  
         }
         else
         {
@@ -168,14 +141,12 @@ internal class Nct677X : ISuperIO
                 {
                     Fans = new float?[4];
 
-                    // min value RPM value with 16-bit fan counter
                     _minFanRpm = (int)(1.35e6 / 0xFFFF);
                 }
                 else
                 {
                     Fans = new float?[5];
 
-                    // min value RPM value with 13-bit fan counter
                     _minFanRpm = (int)(1.35e6 / 0x1FFF);
                 }
 
@@ -204,14 +175,14 @@ internal class Nct677X : ISuperIO
                 Temperatures = new float?[4];
                 break;
 
-            case Chip.NCT6779D: // 15 voltages
-            case Chip.NCT6791D: // 15 voltages
+            case Chip.NCT6779D: 
+            case Chip.NCT6791D: 
             case Chip.NCT6792D:
             case Chip.NCT6792DA:
-            case Chip.NCT6793D: // 14 voltages
+            case Chip.NCT6793D: 
             case Chip.NCT6795D:
-            case Chip.NCT6796D: // 16 voltages
-            case Chip.NCT6796DR: // 16 voltages
+            case Chip.NCT6796D: 
+            case Chip.NCT6796DR: 
             case Chip.NCT6796DS:
             case Chip.NCT6797D:
             case Chip.NCT6798D:
@@ -244,10 +215,8 @@ internal class Nct677X : ISuperIO
 
                 _fanCountRegister = [0x4B0, 0x4B2, 0x4B4, 0x4B6, 0x4B8, 0x4BA, 0x4CC];
 
-                // max value for 13-bit fan counter
                 _maxFanCount = 0x1FFF;
 
-                // min value that could be transferred to 16-bit RPM registers
                 _minFanCount = 0x15;
 
                 Voltages = new float?[16];
@@ -260,91 +229,83 @@ internal class Nct677X : ISuperIO
                     case Chip.NCT6701D:
                         temperaturesSources.AddRange(new TemperatureSourceData[]
                         {
-                            new(SourceNct67Xxd.PECI_0, 0x073, sourceRegister: 0x100),                                          //  0: PECI_0
-                            new(SourceNct67Xxd.CPUTIN, 0x491),                                                                 //  1: CPUTIN
-                            new(SourceNct67Xxd.SYSTIN, 0x490),                                                                 //  2: SYSTIN
-                            new(SourceNct67Xxd.AUXTIN0, 0x492),                                                                //  3: AUXTIN0
-                            new(SourceNct67Xxd.AUXTIN1, 0x493),                                                                //  4: AUXTIN1
-                            new(SourceNct67Xxd.AUXTIN2, 0x494),                                                                //  5: AUXTIN2
-                            new(SourceNct67Xxd.AUXTIN3, 0x495),                                                                //  6: AUXTIN3
-                            new(SourceNct67Xxd.AUXTIN4, 0x027, sourceRegister: 0x621),                                         //  7: AUXTIN4
-                            new(SourceNct67Xxd.PECI_1, 0x672, sourceRegister: 0xC27),                                          //  8: PECI_1
-                            new(SourceNct67Xxd.PCH_CHIP_CPU_MAX_TEMP, 0x674, sourceRegister: 0xC28, alternateRegister: 0x400), //  9: PCH_CHIP_CPU_MAX_TEMP
-                            new(SourceNct67Xxd.PCH_CHIP_TEMP, 0x676, sourceRegister: 0xC29, alternateRegister: 0x401),         // 10: PCH_CHIP_TEMP
-                            new(SourceNct67Xxd.PCH_CPU_TEMP, 0x678, sourceRegister: 0xC2A, alternateRegister: 0x402),          // 11: PCH_CPU_TEMP
-                            new(SourceNct67Xxd.PCH_MCH_TEMP, 0x67A, sourceRegister: 0xC2B, alternateRegister: 0x404),          // 12: PCH_MCH_TEMP
-                            new(SourceNct67Xxd.AGENT0_DIMM0, 0x405),                                                           // 13: AGENT0_DIMM0
-                            new(SourceNct67Xxd.AGENT0_DIMM1, 0x406),                                                           // 14: AGENT0_DIMM1
-                            new(SourceNct67Xxd.AGENT1_DIMM0, 0x407),                                                           // 15: AGENT1_DIMM0
-                            new(SourceNct67Xxd.AGENT1_DIMM1, 0x408),                                                           // 16: AGENT1_DIMM1
-                            new(SourceNct67Xxd.SMBUSMASTER0, 0x150, sourceRegister: 0x622),                                    // 17: SMBUSMASTER0
-                            new(SourceNct67Xxd.SMBUSMASTER1, 0x670, sourceRegister: 0xC26),                                    // 18: SMBUSMASTER1
-                            new(SourceNct67Xxd.BYTE_TEMP0, 0x419),                                                             // 19: BYTE_TEMP0
-                            new(SourceNct67Xxd.BYTE_TEMP1, 0x41A),                                                             // 20: BYTE_TEMP1
-                            new(SourceNct67Xxd.PECI_0_CAL, 0x4F4),                                                             // 21: PECI_0_CAL
-                            new(SourceNct67Xxd.PECI_1_CAL, 0x4F5),                                                             // 22: PECI_1_CAL
-                            new(SourceNct67Xxd.VIRTUAL_TEMP, 0),                                                               // 23: VIRTUAL_TEMP
-                            new(SourceNct67Xxd.SPARE_TEMP, 0x07B, sourceRegister: 0x900),                                      // 24: SPARE_TEMP
-                            new(SourceNct67Xxd.SPARE_TEMP2, 0),                                                                // 25: SPARE_TEMP2
-                            new(null, 0x409),                                                                                  // 26: CPU PACKAGE
-                            new(null, 0x4A2),                                                                                  // 27: TEMP14
+                            new(SourceNct67Xxd.PECI_0, 0x073, sourceRegister: 0x100),                                          
+                            new(SourceNct67Xxd.CPUTIN, 0x491),                                                                 
+                            new(SourceNct67Xxd.SYSTIN, 0x490),                                                                 
+                            new(SourceNct67Xxd.AUXTIN0, 0x492),                                                                
+                            new(SourceNct67Xxd.AUXTIN1, 0x493),                                                                
+                            new(SourceNct67Xxd.AUXTIN2, 0x494),                                                                
+                            new(SourceNct67Xxd.AUXTIN3, 0x495),                                                                
+                            new(SourceNct67Xxd.AUXTIN4, 0x027, sourceRegister: 0x621),                                         
+                            new(SourceNct67Xxd.PECI_1, 0x672, sourceRegister: 0xC27),                                          
+                            new(SourceNct67Xxd.PCH_CHIP_CPU_MAX_TEMP, 0x674, sourceRegister: 0xC28, alternateRegister: 0x400), 
+                            new(SourceNct67Xxd.PCH_CHIP_TEMP, 0x676, sourceRegister: 0xC29, alternateRegister: 0x401),         
+                            new(SourceNct67Xxd.PCH_CPU_TEMP, 0x678, sourceRegister: 0xC2A, alternateRegister: 0x402),          
+                            new(SourceNct67Xxd.PCH_MCH_TEMP, 0x67A, sourceRegister: 0xC2B, alternateRegister: 0x404),          
+                            new(SourceNct67Xxd.AGENT0_DIMM0, 0x405),                                                           
+                            new(SourceNct67Xxd.AGENT0_DIMM1, 0x406),                                                           
+                            new(SourceNct67Xxd.AGENT1_DIMM0, 0x407),                                                           
+                            new(SourceNct67Xxd.AGENT1_DIMM1, 0x408),                                                           
+                            new(SourceNct67Xxd.SMBUSMASTER0, 0x150, sourceRegister: 0x622),                                    
+                            new(SourceNct67Xxd.SMBUSMASTER1, 0x670, sourceRegister: 0xC26),                                    
+                            new(SourceNct67Xxd.BYTE_TEMP0, 0x419),                                                             
+                            new(SourceNct67Xxd.BYTE_TEMP1, 0x41A),                                                             
+                            new(SourceNct67Xxd.PECI_0_CAL, 0x4F4),                                                             
+                            new(SourceNct67Xxd.PECI_1_CAL, 0x4F5),                                                             
+                            new(SourceNct67Xxd.VIRTUAL_TEMP, 0),                                                               
+                            new(SourceNct67Xxd.SPARE_TEMP, 0x07B, sourceRegister: 0x900),                                      
+                            new(SourceNct67Xxd.SPARE_TEMP2, 0),                                                                
+                            new(null, 0x409),                                                                                  
+                            new(null, 0x4A2),                                                                                  
                         });
                         break;
 
-                    // --- GROUP A: NCT6793D/6795D (Common features, separated from 6796/98 by AUXTIN4/TSENSOR) ---
                     case Chip.NCT6793D:
                     case Chip.NCT6795D:
-                    case Chip.NCT6791D: // Assuming 6791/92 use a similar core map but less features than 6795
+                    case Chip.NCT6791D: 
                     case Chip.NCT6792D:
                         temperaturesSources.AddRange(new TemperatureSourceData[]
                         {
-                            // Note: Linux labels start at index 1 (0 is empty).
-                            // Indices 1-6 are consistent (SYSTIN, CPUTIN, AUXTIN0-3)
-                            new(SourceNct67Xxd.PECI_0, 0x073, 0x074, 7, 0x100),         // Index 0 in your list / PECI_0 is often 0x73 or 0x027
-                            new(SourceNct67Xxd.CPUTIN, 0x075, 0x076, 7, 0x200, 0x491),  // Index 2 (CPUTIN)
-                            new(SourceNct67Xxd.SYSTIN, 0x077, 0x078, 7, 0x300, 0x490),  // Index 1 (SYSTIN)
-                            new(SourceNct67Xxd.AUXTIN0, 0x079, 0x07A, 7, 0x800, 0x492), // Index 3
-                            new(SourceNct67Xxd.AUXTIN1, 0x07B, 0x07C, 7, 0x900, 0x493), // Index 4
-                            new(SourceNct67Xxd.AUXTIN2, 0x07D, 0x07E, 7, 0xA00, 0x494), // Index 5
-                            new(SourceNct67Xxd.AUXTIN3, 0x4A0, 0x49E, 6, 0xB00, 0x495), // Index 6
+                            
+                            new(SourceNct67Xxd.PECI_0, 0x073, 0x074, 7, 0x100),         
+                            new(SourceNct67Xxd.CPUTIN, 0x075, 0x076, 7, 0x200, 0x491),  
+                            new(SourceNct67Xxd.SYSTIN, 0x077, 0x078, 7, 0x300, 0x490),  
+                            new(SourceNct67Xxd.AUXTIN0, 0x079, 0x07A, 7, 0x800, 0x492), 
+                            new(SourceNct67Xxd.AUXTIN1, 0x07B, 0x07C, 7, 0x900, 0x493), 
+                            new(SourceNct67Xxd.AUXTIN2, 0x07D, 0x07E, 7, 0xA00, 0x494), 
+                            new(SourceNct67Xxd.AUXTIN3, 0x4A0, 0x49E, 6, 0xB00, 0x495), 
                 
-                            // AUXTIN4 (AUXTIN4 is missing or unnamed in 6793/6795 label array)
-                            // Keeping AUXTIN4 here with original register mapping for compatibility, but moving down.
                             new(SourceNct67Xxd.AUXTIN4, 0x027, 0, -1, 0x621),
 
-                            // PECI / PCH Group (Indices 16-25 in Linux labels)
                             new(SourceNct67Xxd.PECI_1, 0x672, 0, -1, 0xC27),
-                            new(SourceNct67Xxd.PCH_CHIP_CPU_MAX_TEMP, 0x674, 0, -1, 0xC28, 0x400), // Index 18 (0x400 alt reg)
-                            new(SourceNct67Xxd.PCH_CHIP_TEMP, 0x676, 0, -1, 0xC29, 0x401),         // Index 19 (0x401 alt reg)
-                            new(SourceNct67Xxd.PCH_CPU_TEMP, 0x678, 0, -1, 0xC2A, 0x402),          // Index 20 (0x402 alt reg)
-                            new(SourceNct67Xxd.PCH_MCH_TEMP, 0x67A, 0, -1, 0xC2B, 0x404),          // Index 21 (0x404 alt reg)
-                            new(SourceNct67Xxd.AGENT0_DIMM0, 0x405, 0, -1),                        // Index 22 (0x405 alt reg)
-                            new(SourceNct67Xxd.AGENT0_DIMM1, 0x406, 0, -1),                        // Index 23 (0x406 alt reg)
-                            new(SourceNct67Xxd.AGENT1_DIMM0, 0x407, 0, -1),                        // Index 24 (0x407 alt reg)
-                            new(SourceNct67Xxd.AGENT1_DIMM1, 0x408, 0, -1),                        // Index 25 (0x408 alt reg)
+                            new(SourceNct67Xxd.PCH_CHIP_CPU_MAX_TEMP, 0x674, 0, -1, 0xC28, 0x400), 
+                            new(SourceNct67Xxd.PCH_CHIP_TEMP, 0x676, 0, -1, 0xC29, 0x401),         
+                            new(SourceNct67Xxd.PCH_CPU_TEMP, 0x678, 0, -1, 0xC2A, 0x402),          
+                            new(SourceNct67Xxd.PCH_MCH_TEMP, 0x67A, 0, -1, 0xC2B, 0x404),          
+                            new(SourceNct67Xxd.AGENT0_DIMM0, 0x405, 0, -1),                        
+                            new(SourceNct67Xxd.AGENT0_DIMM1, 0x406, 0, -1),                        
+                            new(SourceNct67Xxd.AGENT1_DIMM0, 0x407, 0, -1),                        
+                            new(SourceNct67Xxd.AGENT1_DIMM1, 0x408, 0, -1),                        
 
-                            // SMBUS Group (Indices 8-9 are consistent)
-                            new(SourceNct67Xxd.SMBUSMASTER0, 0x150, 0x151, 7, 0x622),              // Index 8
-                            new(SourceNct67Xxd.SMBUSMASTER1, 0x670, 0, -1, 0xC26),                 // Index 9
+                            new(SourceNct67Xxd.SMBUSMASTER0, 0x150, 0x151, 7, 0x622),              
+                            new(SourceNct67Xxd.SMBUSMASTER1, 0x670, 0, -1, 0xC26),                 
 
-                            // BYTE TEMP, CALIBRATION, and VIRTUAL (Indices 26-31)
-                            new(SourceNct67Xxd.BYTE_TEMP0, 0x419, 0, -1), // Index 26
-                            new(SourceNct67Xxd.BYTE_TEMP1, 0x41A, 0, -1), // Index 27
-                            new(SourceNct67Xxd.PECI_0_CAL, 0x4F4, 0, -1), // Index 28
-                            new(SourceNct67Xxd.PECI_1_CAL, 0x4F5, 0, -1), // Index 29
-                            new(SourceNct67Xxd.VIRTUAL_TEMP, 0),          // Index 31
+                            new(SourceNct67Xxd.BYTE_TEMP0, 0x419, 0, -1), 
+                            new(SourceNct67Xxd.BYTE_TEMP1, 0x41A, 0, -1), 
+                            new(SourceNct67Xxd.PECI_0_CAL, 0x4F4, 0, -1), 
+                            new(SourceNct67Xxd.PECI_1_CAL, 0x4F5, 0, -1), 
+                            new(SourceNct67Xxd.VIRTUAL_TEMP, 0),          
                             new(SourceNct67Xxd.SPARE_TEMP, 0),
                             new(SourceNct67Xxd.SPARE_TEMP2, 0)
                         });
                         break;
 
-                    // --- GROUP B: NCT6796D/6797D (Introduces AUXTIN4) ---
                     case Chip.NCT6796D:
                     case Chip.NCT6796DR:
                     case Chip.NCT6797D:
                         temperaturesSources.AddRange(new TemperatureSourceData[]
                         {
-                            // Indices 1-7 are consistent with 6796 labels (AUXTIN4 is Index 7)
+                            
                             new(SourceNct67Xxd.PECI_0, 0x073, 0x074, 7, 0x100),
                             new(SourceNct67Xxd.CPUTIN, 0x075, 0x076, 7, 0x200, 0x491),
                             new(SourceNct67Xxd.SYSTIN, 0x077, 0x078, 7, 0x300, 0x490),
@@ -352,13 +313,11 @@ internal class Nct677X : ISuperIO
                             new(SourceNct67Xxd.AUXTIN1, 0x07B, 0x07C, 7, 0x900, 0x493),
                             new(SourceNct67Xxd.AUXTIN2, 0x07D, 0x07E, 7, 0xA00, 0x494),
                             new(SourceNct67Xxd.AUXTIN3, 0x4A0, 0x49E, 6, 0xB00, 0x495),
-                            new(SourceNct67Xxd.AUXTIN4, 0x027, 0, -1, 0x621), // Index 7
+                            new(SourceNct67Xxd.AUXTIN4, 0x027, 0, -1, 0x621), 
 
-                            // SMBUS Group (Indices 8-9 are consistent)
                             new(SourceNct67Xxd.SMBUSMASTER0, 0x150, 0x151, 7, 0x622),
                             new(SourceNct67Xxd.SMBUSMASTER1, 0x670, 0, -1, 0xC26),
 
-                            // PECI / PCH / DIMM Group (Indices 16-25)
                             new(SourceNct67Xxd.PECI_1, 0x672, 0, -1, 0xC27),
                             new(SourceNct67Xxd.PCH_CHIP_CPU_MAX_TEMP, 0x674, 0, -1, 0xC28, 0x400),
                             new(SourceNct67Xxd.PCH_CHIP_TEMP, 0x676, 0, -1, 0xC29, 0x401),
@@ -369,7 +328,6 @@ internal class Nct677X : ISuperIO
                             new(SourceNct67Xxd.AGENT1_DIMM0, 0x407, 0, -1),
                             new(SourceNct67Xxd.AGENT1_DIMM1, 0x408, 0, -1),
 
-                            // BYTE TEMP, CALIBRATION, and VIRTUAL (Indices 26-31)
                             new(SourceNct67Xxd.BYTE_TEMP0, 0x419, 0, -1),
                             new(SourceNct67Xxd.BYTE_TEMP1, 0x41A, 0, -1),
                             new(SourceNct67Xxd.PECI_0_CAL, 0x4F4, 0, -1),
@@ -380,12 +338,11 @@ internal class Nct677X : ISuperIO
                         });
                         break;
 
-                    // --- GROUP D: NCT6798D/NCT6799D (Introduces AUXTIN5) ---
                     case Chip.NCT6798D:
                     case Chip.NCT6799D:
                         temperaturesSources.AddRange(new TemperatureSourceData[]
                         {
-                            // Indices 1-7 are consistent (SYSTIN through AUXTIN4)
+                            
                             new(SourceNct67Xxd.PECI_0, 0x073, 0x074, 7, 0x100),
                             new(SourceNct67Xxd.CPUTIN, 0x075, 0x076, 7, 0x200, 0x491),
                             new(SourceNct67Xxd.SYSTIN, 0x077, 0x078, 7, 0x300, 0x490),
@@ -393,15 +350,13 @@ internal class Nct677X : ISuperIO
                             new(SourceNct67Xxd.AUXTIN1, 0x07B, 0x07C, 7, 0x900, 0x493),
                             new(SourceNct67Xxd.AUXTIN2, 0x07D, 0x07E, 7, 0xA00, 0x494),
                             new(SourceNct67Xxd.AUXTIN3, 0x4A0, 0x49E, 6, 0xB00, 0x495),
-                            new(SourceNct67Xxd.AUXTIN4, 0x027, 0, -1, 0x621), // Index 7
+                            new(SourceNct67Xxd.AUXTIN4, 0x027, 0, -1, 0x621), 
 
                             new(SourceNct67Xxd.TSENSOR, 0x4A2, 0x4A1, 7, 0xC00, 0x496),
             
-                            // SMBUS Group (Indices 8-9 are consistent)
                             new(SourceNct67Xxd.SMBUSMASTER0, 0x150, 0x151, 7, 0x622),
                             new(SourceNct67Xxd.SMBUSMASTER1, 0x670, 0, -1, 0xC26),
             
-                            // PECI / PCH / DIMM Group (Indices 16-25)
                             new(SourceNct67Xxd.PECI_1, 0x672, 0, -1, 0xC27),
                             new(SourceNct67Xxd.PCH_CHIP_CPU_MAX_TEMP, 0x674, 0, -1, 0xC28, 0x400),
                             new(SourceNct67Xxd.PCH_CHIP_TEMP, 0x676, 0, -1, 0xC29, 0x401),
@@ -412,7 +367,6 @@ internal class Nct677X : ISuperIO
                             new(SourceNct67Xxd.AGENT1_DIMM0, 0x407, 0, -1),
                             new(SourceNct67Xxd.AGENT1_DIMM1, 0x408, 0, -1),
 
-                            // BYTE TEMP, CALIBRATION, and VIRTUAL (Indices 26-31)
                             new(SourceNct67Xxd.BYTE_TEMP0, 0x419, 0, -1),
                             new(SourceNct67Xxd.BYTE_TEMP1, 0x41A, 0, -1),
                             new(SourceNct67Xxd.PECI_0_CAL, 0x4F4, 0, -1),
@@ -426,7 +380,7 @@ internal class Nct677X : ISuperIO
                     case Chip.NCT6796DS:
                         temperaturesSources.AddRange(new TemperatureSourceData[]
                         {
-                            //https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/pull/2012
+                            
                             new(SourceNct67Xxd.CPUTIN, 0x073, 0x074, 7, 0x100, 0x491),
                             new(SourceNct67Xxd.SYSTIN, 0x075, 0x076, 7, 0x200, 0x490),
                             new(SourceNct67Xxd.AUXTIN0, 0x077, 0x078, 7, 0x300, 0x492),
@@ -480,7 +434,6 @@ internal class Nct677X : ISuperIO
                 for (int i = 0; i < _fanRpmRegister.Length; i++)
                     _fanRpmRegister[i] = (ushort)(0x030 + (i << 1));
 
-                // min value RPM value with 13-bit fan counter
                 _minFanRpm = (int)(1.35e6 / 0x1FFF);
 
                 Voltages = new float?[9];
@@ -508,17 +461,6 @@ internal class Nct677X : ISuperIO
                 Voltages = new float?[14];
                 Temperatures = new float?[11];
 
-                // CPU
-                // System
-                // MOS
-                // PCH
-                // CPU Socket
-                // PCIE_1
-                // M2_1
-                // PCIE_1
-                // PCIE_2
-                // M2_1
-                // M2_4
                 _temperaturesSource =
                 [
                     new TemperatureSourceData(null, 0x100),
@@ -534,53 +476,20 @@ internal class Nct677X : ISuperIO
                     new TemperatureSourceData(null, 0x114)
                 ];
 
-                // VIN0 +12V
-                // VIN1 +5V
-                // VIN2 VCore
-                // VIN3 SIO
-                // VIN4 DRAM
-                // VIN5 CPU IO
-                // VIN6 CPU SA
-                // VIN7 SIO
-                // 3VCC I/O +3.3
-                // SIO VTT
-                // SIO VREF
-                // SIO VSB
-                // SIO AVSB
-                // SIO VBAT
                 _voltageRegisters = [0x120, 0x122, 0x124, 0x126, 0x128, 0x12A, 0x12C, 0x12E, 0x130, 0x13A, 0x13E, 0x136, 0x138, 0x13C];
 
-                // CPU Fan
-                // PUMP Fan 1
-                // SYS Fan 1 on some older NCT6687Ds, Nil on others
-                // SYS Fan 2 on some older NCT6687Ds, EZConn on others
-                // SYS Fan 3 on some older NCT6687Ds
-                // SYS Fan 4 on some older NCT6687Ds
-                // SYS Fan 5 on some older NCT6687Ds
-                // SYS Fan 6 on some older NCT6687Ds
-                // SYS Fan 6 on newer NCT6687Ds - PUMP Fan 2 on some NCT6687Ds (e.g. Z790 GODLIKE MAX)
-                // SYS Fan 5 on newer NCT6687Ds - EZ-Connect Fan 1 (JAF) on some NCT6687Ds (e.g. Z790 GODLIKE MAX)
-                // SYS Fan 4 on newer NCT6687Ds
-                // SYS Fan 3 on newer NCT6687Ds
-                // SYS Fan 2 on newer NCT6687Ds
-                // SYS Fan 1 on newer NCT6687Ds
-                // SYS Fan 7 on some NCT6687Ds - 0x852 (e.g. Z790 GODLIKE MAX)
                 _fanRpmRegister = [0x140, 0x142, 0x144, 0x146, 0x148, 0x14A, 0x14C, 0x14E, 0x150, 0x152, 0x154, 0x156, 0x158, 0x15A, 0x15C, 0x15E, 0x852];
 
-                // On some boards, there will be SYS Fan 7 (e.g. MSI MEG Z790 GODLIKE MAX)
                 _fanCountRegister = [0x852];
 
-                // max value for 13-bit fan counter
                 _maxFanCount = 0x1FFF;
 
-                // min value that could be transferred to 16-bit RPM registers
                 _minFanCount = 0x15;
 
                 _restoreDefaultFanControlRequired = new bool[_fanRpmRegister.Length];
                 _initialFanControlMode = new byte[_fanRpmRegister.Length];
                 _initialFanPwmCommand = new byte[_fanRpmRegister.Length];
 
-                // initialize
                 const ushort initRegister = 0x180;
                 byte data = ReadByte(initRegister);
                 if ((data & 0x80) == 0)
@@ -588,7 +497,6 @@ internal class Nct677X : ISuperIO
                     WriteByte(initRegister, (byte)(data | 0x80));
                 }
 
-                // enable SIO voltage
                 WriteByte(0x1BB, 0x61);
                 WriteByte(0x1BC, 0x62);
                 WriteByte(0x1BD, 0x63);
@@ -604,54 +512,23 @@ internal class Nct677X : ISuperIO
 
                 _temperaturesSource =
                 [
-                    new TemperatureSourceData(null, 0x100), // CPU
-                    new TemperatureSourceData(null, 0x102), // System
-                    new TemperatureSourceData(null, 0x104), // MOS
-                    new TemperatureSourceData(null, 0x106), // PCH
-                    new TemperatureSourceData(null, 0x108), // CPU Socket
-                    new TemperatureSourceData(null, 0x10A), // PCIE_1
-                    new TemperatureSourceData(null, 0x10C)  // M2_1
+                    new TemperatureSourceData(null, 0x100), 
+                    new TemperatureSourceData(null, 0x102), 
+                    new TemperatureSourceData(null, 0x104), 
+                    new TemperatureSourceData(null, 0x106), 
+                    new TemperatureSourceData(null, 0x108), 
+                    new TemperatureSourceData(null, 0x10A), 
+                    new TemperatureSourceData(null, 0x10C)  
                 ];
 
-                // VIN0 +12V
-                // VIN1 +5V
-                // VIN2 VCore
-                // VIN3 SIO
-                // VIN4 DRAM
-                // VIN5 CPU IO
-                // VIN6 CPU SA
-                // VIN7 SIO
-                // 3VCC I/O +3.3
-                // SIO VTT
-                // SIO VREF
-                // SIO VSB
-                // SIO AVSB
-                // SIO VBAT
                 _voltageRegisters = [0x120, 0x122, 0x124, 0x126, 0x128, 0x12A, 0x12C, 0x12E, 0x130, 0x13A, 0x13E, 0x136, 0x138, 0x13C];
 
-                // CPU Fan 0x140
-                // PUMP Fan 0x142
-                // Chipset Fan 0x144
-                // EZ-Conn 0x146
-                // NOTHING
-                // NOTHING
-                // NOTHING
-                // NOTHING
-                // NOTHING
-                // SYS Fan 7 0x152
-                // SYS Fan 1 0x15E
-                // SYS Fan 2 0x15C
-                // SYS Fan 3 0x15A
-                // SYS Fan 4 0x158
-                // SYS Fan 5 0x156
-                // SYS Fan 6 0x154
                 _fanRpmRegister = [0x140, 0x142, 0x144, 0x146, 0x148, 0x14A, 0x14C, 0x14E, 0x150, 0x152, 0x15E, 0x15C, 0x15A, 0x158, 0x156, 0x154];
 
                 _restoreDefaultFanControlRequired = new bool[_fanRpmRegister.Length];
                 _initialFanControlMode = new byte[_fanRpmRegister.Length];
                 _initialFanPwmCommand = new byte[_fanRpmRegister.Length];
 
-                // initialize
                 const ushort initRegisterNct6687DR = 0x180;
                 byte dataNct6687DR = ReadByte(initRegisterNct6687DR);
                 if ((dataNct6687DR & 0x80) == 0)
@@ -659,7 +536,6 @@ internal class Nct677X : ISuperIO
                     WriteByte(initRegisterNct6687DR, (byte)(dataNct6687DR | 0x80));
                 }
 
-                // enable SIO voltage -- address, value
                 WriteByte(0x1BB, 0x61);
                 WriteByte(0x1BC, 0x62);
                 WriteByte(0x1BD, 0x63);
@@ -707,21 +583,17 @@ internal class Nct677X : ISuperIO
 
             if (Chip is not Chip.NCT6683D and not Chip.NCT6686D and not Chip.NCT6687D and not Chip.NCT6687DR)
             {
-                // set manual mode
+                
                 WriteByte(FAN_CONTROL_MODE_REG[index], 0);
 
-                // set output value
                 WriteByte(FAN_PWM_COMMAND_REG[index], value.Value);
             }
             else if (Chip is Chip.NCT6687DR)
             {
-                // NCT6687DR (MSI AM5/LGA1851): Direct PWM mode for all mapped fans.
-                // Set the manual-mode bit and the PWM command value in one BIOS-style
-                // fan-configuration phase so the EC cannot sample a half-updated state.
+                
                 int bitPos = FAN_CONTROL_MODE_BIT[index];
                 byte bitMask = (byte)(0x01 << bitPos);
 
-                // Retry up to 3 times if EC rejects the configuration (INVALID bit)
                 for (int attempt = 0; attempt < 3; attempt++)
                 {
                     if (!StartFanCfgUpdate(index))
@@ -736,17 +608,7 @@ internal class Nct677X : ISuperIO
             }
             else
             {
-                // NCT6683D / NCT6686D / NCT6687D (non-DR)
-                // Manual mode, bit(1 : set, 0 : unset)
-                // bit 0 : CPU Fan
-                // bit 1 : PUMP Fan
-                // bit 2 : SYS Fan 1
-                // bit 3 : SYS Fan 2
-                // bit 4 : SYS Fan 3
-                // bit 5 : SYS Fan 4
-                // bit 6 : SYS Fan 5
-                // bit 7 : SYS Fan 6
-
+                
                 WriteByte(FAN_PWM_REQUEST_REG[index], 0x80);
                 Thread.Sleep(50);
 
@@ -786,7 +648,6 @@ internal class Nct677X : ISuperIO
                 float value = 0.008f * ReadByte(_voltageRegisters[i]);
                 bool valid = value > 0;
 
-                // check if battery voltage monitor is enabled
                 if (valid && _voltageRegisters[i] == _voltageVBatRegister)
                     valid = (ReadByte(_vBatMonitorControlRegister) & 0x01) > 0;
 
@@ -798,11 +659,11 @@ internal class Nct677X : ISuperIO
 
                 Voltages[i] = i switch
                 {
-                    // 12V
+                    
                     0 => value * 12.0f,
-                    // 5V
+                    
                     1 => value * 5.0f,
-                    // DRAM
+                    
                     4 => value * 2.0f,
                     _ => value
                 };
@@ -911,7 +772,6 @@ internal class Nct677X : ISuperIO
                         Log("Temperature register {0} source register is 0, source set to: {1:G} ({1:D})", i, source);
                     }
 
-                    // Skip reading when already filled, because later values are without fractional
                     if ((temperatureSourceMask & (1L << (byte)source)) > 0)
                     {
                         Log("Temperature register {0} discarded, because source seen before.", i);
@@ -995,7 +855,7 @@ internal class Nct677X : ISuperIO
 
         void Update13BitFan(int i, byte low, byte high)
         {
-            // No fan plugged in OR fan is at 0 RPM
+            
             if (Chip is Chip.NCT6687D && high == 0xFF && low == 0xF8)
             {
                 Fans[i] = 0;
@@ -1047,7 +907,6 @@ internal class Nct677X : ISuperIO
                 byte high = ReadByte(_fanRpmRegister[i]);
                 byte low = ReadByte((ushort)(_fanRpmRegister[i] + 1));
 
-                //13-bit fan ?
                 if (fcrList.Contains(_fanRpmRegister[i]))
                 {
                     Update13BitFan(i, low, high);
@@ -1076,7 +935,6 @@ internal class Nct677X : ISuperIO
         Mutexes.ReleaseIsaBus();
     }
 
-    /// <inheritdoc />
     public void Close()
     {
         _lpcPort.Close();
@@ -1264,8 +1122,6 @@ internal class Nct677X : ISuperIO
         byte page = (byte)(address >> 8);
         byte index = (byte)(address & 0xFF);
 
-        //wait for access, access == EC_SPACE_PAGE_SELECT
-        //timeout: after 500ms, abort and force access
         byte access;
 
         Stopwatch timeout = Stopwatch.StartNew();
@@ -1280,7 +1136,7 @@ internal class Nct677X : ISuperIO
 
         if (access != EC_SPACE_PAGE_SELECT)
         {
-            // Failed to gain access: force register access
+            
             _lpcPort.WriteIoPort((ushort)(_port + EC_SPACE_PAGE_REGISTER_OFFSET), EC_SPACE_PAGE_SELECT);
         }
 
@@ -1288,7 +1144,6 @@ internal class Nct677X : ISuperIO
         _lpcPort.WriteIoPort((ushort)(_port + EC_SPACE_INDEX_REGISTER_OFFSET), index);
         byte result = _lpcPort.ReadIoPort((ushort)(_port + EC_SPACE_DATA_REGISTER_OFFSET));
 
-        //free access for other instances
         _lpcPort.WriteIoPort((ushort)(_port + EC_SPACE_PAGE_REGISTER_OFFSET), EC_SPACE_PAGE_SELECT);
 
         return result;
@@ -1310,8 +1165,6 @@ internal class Nct677X : ISuperIO
             byte page = (byte)(address >> 8);
             byte index = (byte)(address & 0xFF);
 
-            //wait for access, access == EC_SPACE_PAGE_SELECT
-            //timeout: after 500ms, abort and force access
             byte access;
 
             Stopwatch timeout = Stopwatch.StartNew();
@@ -1326,7 +1179,7 @@ internal class Nct677X : ISuperIO
 
             if (access != EC_SPACE_PAGE_SELECT)
             {
-                // Failed to gain access: force register access
+                
                 _lpcPort.WriteIoPort((ushort)(_port + EC_SPACE_PAGE_REGISTER_OFFSET), EC_SPACE_PAGE_SELECT);
             }
 
@@ -1334,7 +1187,6 @@ internal class Nct677X : ISuperIO
             _lpcPort.WriteIoPort((ushort)(_port + EC_SPACE_INDEX_REGISTER_OFFSET), index);
             _lpcPort.WriteIoPort((ushort)(_port + EC_SPACE_DATA_REGISTER_OFFSET), value);
 
-            //free access for other instances
             _lpcPort.WriteIoPort((ushort)(_port + EC_SPACE_PAGE_REGISTER_OFFSET), EC_SPACE_PAGE_SELECT);
         }
     }
@@ -1360,20 +1212,13 @@ internal class Nct677X : ISuperIO
                FAN_CONTROL_MODE_BIT[index] >= 0;
     }
 
-    /// <summary>
-    /// Request the EC to enter fan configuration phase and wait until registers are unlocked.
-    /// Based on the Linux nct6687d driver's start_fan_cfg_update() function.
-    /// </summary>
-    /// <returns>true if the EC entered config phase successfully; false on timeout.</returns>
     private bool StartFanCfgUpdate(int index)
     {
         byte engineSts = ReadByte(NCT6687DR_REG_FAN_ENGINE_STS);
 
-        // Already accessible
         if ((engineSts & NCT6687DR_FAN_CFG_LOCK) == 0 && (engineSts & NCT6687DR_FAN_CFG_PHASE) != 0)
             return true;
 
-        // Wait until any existing config phase is done and request flag is clear
         Stopwatch sw = Stopwatch.StartNew();
         while (sw.Elapsed < TimeSpan.FromSeconds(1))
         {
@@ -1388,12 +1233,9 @@ internal class Nct677X : ISuperIO
             Thread.Sleep(1);
         }
 
-        // Send config request. The BIOS uses read-modify-write on 0A:01,
-        // preserving unrelated status bits while setting CFG_REQ.
         UpdateByte(FAN_PWM_REQUEST_REG[index], NCT6687DR_FAN_CFG_REQ_UPDATE_MASK, NCT6687DR_FAN_CFG_REQ);
-        Thread.Sleep(10); // CC_Engine: fixed 10ms delay after request
+        Thread.Sleep(10); 
 
-        // Wait until EC enters config phase and unlocks registers
         sw.Restart();
         while (sw.Elapsed < TimeSpan.FromSeconds(1))
         {
@@ -1404,27 +1246,19 @@ internal class Nct677X : ISuperIO
             Thread.Sleep(1);
         }
 
-        return false; // Timeout: EC did not enter config phase
+        return false; 
     }
 
-    /// <summary>
-    /// Signal the EC that fan configuration is complete and wait for acknowledgment.
-    /// Returns false if the EC set the INVALID bit (configuration rejected).
-    /// </summary>
     private bool CompleteFanConfigUpdate(int index)
     {
         byte engineSts = ReadByte(NCT6687DR_REG_FAN_ENGINE_STS);
 
-        // Already not accessible
         if ((engineSts & NCT6687DR_FAN_CFG_LOCK) != 0 || (engineSts & NCT6687DR_FAN_CFG_PHASE) == 0)
             return false;
 
-        // Signal done. The BIOS uses read-modify-write on 0A:01,
-        // preserving CFG_REQ and unrelated bits while setting CFG_DONE.
         UpdateByte(FAN_PWM_REQUEST_REG[index], NCT6687DR_FAN_CFG_DONE_UPDATE_MASK, NCT6687DR_FAN_CFG_DONE);
-        Thread.Sleep(10); // CC_Engine: fixed 10ms delay after commit
+        Thread.Sleep(10); 
 
-        // Wait until EC checks the new configuration
         Stopwatch sw = Stopwatch.StartNew();
         while (sw.Elapsed < TimeSpan.FromSeconds(1))
         {
@@ -1435,14 +1269,10 @@ internal class Nct677X : ISuperIO
             Thread.Sleep(1);
         }
 
-        // Check if EC rejected the configuration (INVALID bit)
         engineSts = ReadByte(NCT6687DR_REG_FAN_ENGINE_STS);
         return (engineSts & NCT6687DR_FAN_CFG_INVALID) == 0;
     }
 
-    /// <summary>
-    /// Write fan control value for NCT6687DR.  All fans use direct PWM command registers.
-    /// </summary>
     private void Set6687DRControl(int index, byte value)
     {
         WriteByte(FAN_PWM_COMMAND_REG[index], value);
@@ -1458,7 +1288,7 @@ internal class Nct677X : ISuperIO
             }
             else if (Chip is Chip.NCT6687DR)
             {
-                // Use the correct bit position mapping for NCT6687DR
+                
                 int bitPos = FAN_CONTROL_MODE_BIT[index];
                 if (bitPos >= 0)
                 {
@@ -1491,9 +1321,7 @@ internal class Nct677X : ISuperIO
             }
             else if (Chip is Chip.NCT6687DR)
             {
-                // Restore the original manual-mode bit and PWM command value inside
-                // the same fan-configuration phase. Do not blindly clear the bit: BIOS
-                // defaults or firmware may have left a header in manual mode already.
+                
                 int bitPos = FAN_CONTROL_MODE_BIT[index];
                 byte bitMask = (byte)(0x01 << bitPos);
                 byte restoreBit = (byte)(_initialFanControlMode[index] & bitMask);
@@ -1512,7 +1340,7 @@ internal class Nct677X : ISuperIO
             }
             else
             {
-                // NCT6683D / NCT6686D / NCT6687D (non-DR)
+                
                 byte mode = ReadByte(FAN_CONTROL_MODE_REG[index]);
                 mode = (byte)(mode & ~_initialFanControlMode[index]);
                 WriteByte(FAN_CONTROL_MODE_REG[index], mode);
@@ -1549,7 +1377,6 @@ internal class Nct677X : ISuperIO
             return;
         }
 
-        // the lock is disabled already if the vendor ID can be read
         if (IsNuvotonVendor())
             return;
 

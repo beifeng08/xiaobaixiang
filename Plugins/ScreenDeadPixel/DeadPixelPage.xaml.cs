@@ -8,17 +8,13 @@ using YanJi.PluginSdk.Services;
 
 namespace YanJi.Plugin.ScreenDeadPixel;
 
-/// <summary>「屏幕坏点」页面：选显示器 → 全屏纯色（白/红/绿/蓝/黑）坏点检测。
-/// 通过约定同其它模块：确认无坏点 → PassChanged(true) → 导航圆点变绿 + 自动跳下一模块。</summary>
 public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
 {
     List<DisplayInfo> _monitors = [];
     ColorTestWindow? _testWindow;
 
-    /// <summary>核对完成状态变化（true = 已通过，false = 重新测试回到待测试）；MainWindow 据此同步导航圆点并自动跳转。</summary>
     public event Action<bool>? PassChanged;
 
-    /// <summary>当前是否已确认通过。</summary>
     public bool Passed { get; private set; }
 
     public DeadPixelPage()
@@ -28,7 +24,6 @@ public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
         Unloaded += (_, _) => _testWindow?.Close();
     }
 
-    /// <summary>枚举活动显示器填充下拉框（默认选主屏 = 坐标原点 (0,0) 的那台）。</summary>
     void RefreshMonitors()
     {
         try { _monitors = DisplayInfoService.GetDisplays(); }
@@ -51,7 +46,7 @@ public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
     {
         if (_testWindow != null || MonitorBox.SelectedIndex < 0 || MonitorBox.SelectedIndex >= _monitors.Count)
             return;
-        // 重新测试 = 回到待核对（与配置核对页「重新检测」同约定）
+        
         SetPassed(false);
         PassButton.IsEnabled = true;
 
@@ -77,7 +72,6 @@ public partial class DeadPixelPage : UserControl, YanJi.PluginSdk.IModulePage
         PassButton.IsEnabled = false;
     }
 
-    /// <summary>更新测试状态行（通过 = 绿色「✓ 已确认通过」）并通知导航圆点/自动跳转。</summary>
     void SetPassed(bool passed)
     {
         Passed = passed;

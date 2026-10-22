@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -22,8 +17,7 @@ internal sealed class RazerFanController : Hardware
     private const int DEVICE_READ_DELAY_MS = 5;
     private const int DEVICE_READ_TIMEOUT_MS = 500;
     private const int CHANNEL_COUNT = 8;
-    //private const int FORCE_WRITE_SPEEDS_INTERVAL_MS = 2500; // TODO: Add timer
-
+    
     private HidStream _stream;
     private readonly HidDevice _device;
     private readonly SequenceCounter _sequenceCounter = new();
@@ -69,17 +63,16 @@ internal sealed class RazerFanController : Hardware
 
             for (int i = 0; i < CHANNEL_COUNT; i++)
             {
-                // Fan Control
+                
                 _pwmControls[i] = new Sensor("Fan Control #" + (i + 1), i, SensorType.Control, this, Array.Empty<ParameterDescription>(), settings);
                 Control fanControl = new(_pwmControls[i], settings, PERCENT_MIN, PERCENT_MAX);
                 _pwmControls[i].Control = fanControl;
                 fanControl.ControlModeChanged += FanSoftwareControlValueChanged;
                 fanControl.SoftwareControlValueChanged += FanSoftwareControlValueChanged;
-                //fanControl.SetDefault();
+                
                 FanSoftwareControlValueChanged(fanControl);
                 ActivateSensor(_pwmControls[i]);
 
-                // Fan RPM
                 _rpmSensors[i] = new Sensor("Fan #" + (i + 1), i, SensorType.Fan, this, Array.Empty<ParameterDescription>(), settings);
                 ActivateSensor(_rpmSensors[i]);
             }
@@ -92,7 +85,7 @@ internal sealed class RazerFanController : Hardware
 
     public string Status => FirmwareVersion != "1.01.00" ? $"Status: Untested Firmware Version {FirmwareVersion}! Please consider Updating to Version 1.01.00" : "Status: OK";
 
-    private void FanSoftwareControlValueChanged(Control control) // TODO: Add timer here
+    private void FanSoftwareControlValueChanged(Control control) 
     {
         if (control.ControlMode == ControlMode.Undefined || !Mutexes.WaitRazer(250))
             return;
@@ -122,7 +115,7 @@ internal sealed class RazerFanController : Hardware
         }
         else if (control.ControlMode == ControlMode.Default)
         {
-            SetChannelModeToManual(control.Sensor.Index); // TODO: switch to auto mode here if it enabled before
+            SetChannelModeToManual(control.Sensor.Index); 
 
             var packet = new Packet
             {
@@ -230,7 +223,7 @@ internal sealed class RazerFanController : Hardware
                     }
                 }
             }
-            catch (IOException) // Unexpected device disconnect or fan plug/unplug
+            catch (IOException) 
             {
                 if (devTimeout <= 0)
                 {
@@ -244,7 +237,7 @@ internal sealed class RazerFanController : Hardware
                         devReconnectTimeout -= 500;
                     }
 
-                    if (devReconnectTimeout <= 0) // Device disconnected
+                    if (devReconnectTimeout <= 0) 
                     {
                         for (int i = 0; i < CHANNEL_COUNT; i++)
                         {

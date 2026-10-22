@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +11,9 @@ namespace LibreHardwareMonitor.Windows.Forms.Utilities
 {
     public enum LoggerFileRotation
     {
-        // Keep the same file for the entire record session
+        
         PerSession = 0,
 
-        // Create a new file every day
         Daily,
     }
 }

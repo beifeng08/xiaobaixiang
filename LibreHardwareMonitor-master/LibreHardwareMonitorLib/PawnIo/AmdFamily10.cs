@@ -1,4 +1,7 @@
-﻿using LibreHardwareMonitor.Hardware;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using LibreHardwareMonitor.Hardware;
 
 namespace LibreHardwareMonitor.PawnIo;
 
@@ -22,7 +25,7 @@ public class AmdFamily10
         }
         catch
         {
-            // ignored
+            
         }
 
         return false;

@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System.Diagnostics;
 using System.Text;
 using LibreHardwareMonitor.PawnIo;
@@ -50,7 +45,7 @@ public class ChromeOSEmbeddedControllerIO : IEmbeddedControllerIO
         try
         {
             byte[] resp = _pawnModule.EcCommand(0, EC_CMD_TEMP_SENSOR_GET_INFO, 1, 33, [index]);
-            //byte sensorType = resp[33];
+            
             return Encoding.ASCII.GetString(resp, 0, 32).TrimEnd('\0');
         }
         catch (System.Exception)

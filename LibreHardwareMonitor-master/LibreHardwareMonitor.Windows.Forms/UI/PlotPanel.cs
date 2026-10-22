@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -266,12 +260,12 @@ public class PlotPanel : UserControl
                 StrokeThickness = 2,
             };
 
-#pragma warning disable CS0618 //obsolete warning
+#pragma warning disable CS0618 
 
             axis.AxisChanged += (sender, args) => annotation.Y = axis.ActualMinimum;
             axis.TransformChanged += (sender, args) => annotation.Y = axis.ActualMinimum;
 
-#pragma warning restore CS0618 //obsolete warning
+#pragma warning restore CS0618 
 
             axis.Zoom(_settings.GetValue("plotPanel.Min" + axis.Key, float.NaN), _settings.GetValue("plotPanel.Max" + axis.Key, float.NaN));
 
@@ -293,7 +287,7 @@ public class PlotPanel : UserControl
 
     private void SetDpi()
     {
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/dn469266(v=vs.85).aspx
+        
         const int defaultDpi = 96;
         Graphics g = CreateGraphics();
 
@@ -318,7 +312,6 @@ public class PlotPanel : UserControl
         _model.Series.Clear();
         var types = new HashSet<SensorType>();
 
-
         DataPoint CreateDataPoint(SensorType type, SensorValue value)
         {
             float displayedValue;
@@ -334,7 +327,6 @@ public class PlotPanel : UserControl
 
             return new DataPoint((_now - value.Time).TotalSeconds, displayedValue);
         }
-
 
         foreach (ISensor sensor in sensors)
         {

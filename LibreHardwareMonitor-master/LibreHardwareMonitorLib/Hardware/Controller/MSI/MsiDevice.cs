@@ -1,7 +1,5 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) Florian K. (Blacktempel)
-// All Rights Reserved.
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
 
 namespace LibreHardwareMonitor.Hardware.Controller.MSI;
 
@@ -57,7 +55,6 @@ public class MsiDevice
         }
     }
 
-    //Relevant for further HWMonitoring later
     public bool SupportsHWMonitorIndex13and14(uint firmwareVersion)
     {
         switch (DeviceType)

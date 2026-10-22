@@ -1,19 +1,11 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using LibreHardwareMonitor.Interop;
-
-// ReSharper disable InconsistentNaming
 
 namespace LibreHardwareMonitor.Hardware.Controller.TBalancer;
 
@@ -167,8 +159,7 @@ internal class TBalancer : Hardware
 
         if (_data[1] is 255 or 88)
         {
-            // bigNG
-
+            
             if (_data[274] != _protocolVersion)
                 return;
 
@@ -248,9 +239,9 @@ internal class TBalancer : Hardware
                                         _settings);
 
                 float value;
-                if ((_data[136] & (1 << i)) == 0) // pwm mode
+                if ((_data[136] & (1 << i)) == 0) 
                     value = 0.02f * _data[137 + i];
-                else // analog mode
+                else 
                     value = 0.01f * _data[141 + i];
 
                 _fans[i].Value = _fans[i].Parameters[0].Value * value;
@@ -262,14 +253,14 @@ internal class TBalancer : Hardware
         }
         else if (_data[1] == 253)
         {
-            // miniNG #1
+            
             if (_alternativeData.Length == 0)
                 _alternativeData = new byte[_data.Length];
 
             _data.CopyTo(_alternativeData, 0);
 
             ReadMiniNg(0);
-            if (_data[66] == 253) // miniNG #2
+            if (_data[66] == 253) 
                 ReadMiniNg(1);
         }
     }

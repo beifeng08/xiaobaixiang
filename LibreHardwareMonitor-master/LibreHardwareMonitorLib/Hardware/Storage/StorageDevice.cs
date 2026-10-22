@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -69,15 +63,8 @@ public sealed class StorageDevice : Hardware, ISmart
 
     public IReadOnlyList<SmartAttribute> Attributes => _attributes;
 
-    /// <summary>
-    /// Forces disk to wake up, if disk is asleep.
-    /// </summary>
-    /// <remarks>See <see cref="StorageDIT.TryWakeUp"/> for more information.</remarks>
     public bool ForceWakeup { get; set; }
 
-    /// <summary>
-    /// Gets or sets the number of regular update cycles between S.M.A.R.T. data refreshes.
-    /// </summary>
     public static uint SmartUpdateCycleCount { get; set; } = 1;
 
     public override void Update()
@@ -90,7 +77,6 @@ public sealed class StorageDevice : Hardware, ISmart
 
         bool isDevicePoweredOn = _storage.IsDevicePowerOn.GetValueOrDefault(true);
 
-        // Try waking up storage device if it is asleep and ForceWakeup is enabled
         if (ForceWakeup && !isDevicePoweredOn)
         {
             StorageDIT.TryWakeUp(_storage);
@@ -99,7 +85,6 @@ public sealed class StorageDevice : Hardware, ISmart
 
         bool hasChanges = false;
 
-        //No updates for sleeping devices if we should not wake it up
         if (isDevicePoweredOn)
         {
             hasChanges = StorageDIT.Refresh(_storage, refreshSmartData);
@@ -113,7 +98,7 @@ public sealed class StorageDevice : Hardware, ISmart
             }
             else
             {
-                // If storage device has no changes, still update performance sensors to avoid stale throughput data
+                
                 UpdatePerformanceSensors();
                 _lastUpdate = DateTime.UtcNow;
                 return;
@@ -126,20 +111,17 @@ public sealed class StorageDevice : Hardware, ISmart
         UpdatePerformanceSensors();
         UpdateSpaceSensors();
 
-        // Update attributes
         foreach (var attribute in _storage.SmartAttributes)
         {
-            // Try to find attribute
+            
             var found = _attributes.Find(sa => sa.Id == attribute.ID);
 
-            // Found attribute, update it
             if (found != null)
             {
                 found.Attribute = attribute;
             }
         }
 
-        // Update general sensors
         _sensors.ForEach(s => s.Update(_storage));
     }
 
@@ -165,7 +147,7 @@ public sealed class StorageDevice : Hardware, ISmart
         r.AppendLine($"Bus type: {_storage.BusType}");
 
         r.AppendLine($"Controller information:");
-        r.AppendLine($"  Service: {_storage.Controller.Service}"); // Important
+        r.AppendLine($"  Service: {_storage.Controller.Service}"); 
         r.AppendLine($"  Vendor: 0x{_storage.Controller.VendorID:X4} ('{_storage.Controller.VendorName}')");
         r.AppendLine($"  Device: 0x{_storage.Controller.DeviceID:X4} ('{_storage.Controller.DeviceName}')");
         r.AppendLine($"  Family: {_storage.Controller.Family}");
@@ -287,7 +269,6 @@ public sealed class StorageDevice : Hardware, ISmart
             AddSensor("Temperature", 0, false, SensorType.Temperature, s => s.Temperature.GetValueOrDefault());
         }
 
-        // NVMe specific temperature sensors, if available
         TryAddTemperatureSensor(_storage, 1, false, 1, SmartTextKeys.GetAttributeNameKey(SmartTextKeys.TemperatureSensor1));
         TryAddTemperatureSensor(_storage, 2, false, 2, SmartTextKeys.GetAttributeNameKey(SmartTextKeys.TemperatureSensor2));
         TryAddTemperatureSensor(_storage, 3, false, 3, SmartTextKeys.GetAttributeNameKey(SmartTextKeys.TemperatureSensor3));
@@ -468,7 +449,7 @@ public sealed class StorageDevice : Hardware, ISmart
     {
         if (_storage.DiskSizeBytes > 0)
         {
-            // Set sensor value
+            
             _usageSensor.Value = 100.0f - (100.0f * _storage.TotalPartitionFreeSpaceBytes / _storage.DiskSizeBytes);
             _freeSpaceSensor.Value = (float)DataUnitConverter.ToGigaByte(_storage.TotalPartitionFreeSpaceBytes.GetValueOrDefault(), DataUnit.Byte);
         }
@@ -481,7 +462,7 @@ public sealed class StorageDevice : Hardware, ISmart
 
     private void AddSmartAttributeSensors()
     {
-        // Unique attributes by sensor- type and channel
+        
         var attributes = Attributes.Where(sa => sa.SensorType.HasValue)
                                    .GroupBy(sa => new { sa.SensorType.Value, sa.SensorChannel })
                                    .Select(sa => sa.First());
@@ -496,10 +477,6 @@ public sealed class StorageDevice : Hardware, ISmart
         }
     }
 
-    /// <summary>
-    /// Helper to calculate the disk performance with base timestamps
-    /// https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-perfrawdata
-    /// </summary>
     private class PerformanceValue
     {
         public double Result { get; private set; }
@@ -517,8 +494,6 @@ public sealed class StorageDevice : Hardware, ISmart
             Time = valBase;
             Result = 100.0 / diffTime * diffValue;
 
-            // sometimes it is possible that diff_value > diff_timebase
-            // limit result to 100%, this is because timing issues during read from pcie controller an latency between IO operation
             if (Result > 100)
                 Result = 100;
         }

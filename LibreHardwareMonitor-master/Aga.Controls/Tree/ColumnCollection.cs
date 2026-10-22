@@ -1,21 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections.ObjectModel;
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
 
-namespace Aga.Controls.Tree
-{
-	/*internal class ColumnCollection: Collection<Column>
-	{
-		public int TotalWidth
-		{
-			get
-			{
-				int res = 0;
-				foreach (Column c in Items)
-					res += c.Width;
-				return res;
-			}
-		}
-	}*/
-}
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Collections.ObjectModel;
+
+namespace Aga.Controls.Tree
+{
+	
+}

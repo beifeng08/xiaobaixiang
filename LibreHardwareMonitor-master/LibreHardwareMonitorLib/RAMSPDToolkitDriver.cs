@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using System;
 using System.Collections.Generic;
 using RAMSPDToolkit.I2CSMBus.Interop.PawnIO;
 using RAMSPDToolkit.Windows.Driver.Interfaces;
@@ -18,7 +21,7 @@ internal sealed class RAMSPDToolkitDriver : IPawnIODriver
 
     public bool Load()
     {
-        //Not required
+        
         return true;
     }
 

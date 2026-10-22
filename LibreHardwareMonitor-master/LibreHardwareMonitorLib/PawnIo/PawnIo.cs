@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -22,7 +25,7 @@ public class PawnIo
 
     static PawnIo()
     {
-        using RegistryKey subKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PawnIO");
+        using RegistryKey subKey = Registry.LocalMachine.OpenSubKey(@SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PawnIO");
 
         if (Version.TryParse(subKey?.GetValue("DisplayVersion") as string, out Version version))
         {
@@ -32,7 +35,7 @@ public class PawnIo
         {
             using RegistryKey registryKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
 
-            using RegistryKey subKeyWow64 = registryKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PawnIO");
+            using RegistryKey subKeyWow64 = registryKey.OpenSubKey(@SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PawnIO");
 
             if (Version.TryParse(subKeyWow64?.GetValue("DisplayVersion") as string, out version))
             {
@@ -43,19 +46,10 @@ public class PawnIo
 
     private PawnIo(SafeFileHandle handle) => _handle = handle;
 
-    /// <summary>
-    /// Gets a value indicating whether PawnIO is installed on the system.
-    /// </summary>
     public static bool IsInstalled => Version is not null;
 
-    /// <summary>
-    /// Retrieves the version information for the installed PawnIO.
-    /// </summary>
     public static Version Version { get; }
 
-    /// <summary>
-    /// Gets a value indicating whether the underlying handle is currently valid and open.
-    /// </summary>
     public bool IsLoaded => _handle is
     {
         IsInvalid: false,
@@ -64,7 +58,7 @@ public class PawnIo
 
     internal static unsafe PawnIo LoadModuleFromResource(Assembly assembly, string resourceName)
     {
-        SafeFileHandle handle = PInvoke.CreateFile(@"\\?\GLOBALROOT\Device\PawnIO",
+        SafeFileHandle handle = PInvoke.CreateFile(@\\?\GLOBALROOT\Device\PawnIO",
                                                    (uint)FileAccess.ReadWrite,
                                                    FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
                                                    null,

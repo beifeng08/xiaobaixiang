@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using HidSharp;
 
@@ -27,7 +22,7 @@ internal sealed class HighFlowNext : Hardware
     {
         if (dev.TryOpen(out _stream))
         {
-            // Reading output report instead of feature report, as the measurements are in the output report.
+            
             _stream.Read(_rawData);
 
             FirmwareVersion = ReadUInt16BE(_rawData, 13);
@@ -85,12 +80,11 @@ internal sealed class HighFlowNext : Hardware
 
     public override void Update()
     {
-        // Reading output report instead of feature report, as the measurements are in the output report.
+        
         _stream.Read(_rawData);
 
-        _temperatures[0].Value = ReadUInt16BE(_rawData, 85) / 100f; // Water Temperature
+        _temperatures[0].Value = ReadUInt16BE(_rawData, 85) / 100f; 
 
-        // External Temperature.
         ushort rawExtTempValue = ReadUInt16BE(_rawData, 87);
         bool externalTempSensorConnected = rawExtTempValue != short.MaxValue;
 
@@ -100,39 +94,34 @@ internal sealed class HighFlowNext : Hardware
         }
         else
         {
-            // No external temp sensor connected.
+            
             _temperatures[1].Value = null;
         }
 
-        _flows[0].Value = ReadUInt16BE(_rawData, 81) / 10f; // Flow
+        _flows[0].Value = ReadUInt16BE(_rawData, 81) / 10f; 
 
+        _levels[0].Value = ReadUInt16BE(_rawData, 89) / 100f; 
 
-        _levels[0].Value = ReadUInt16BE(_rawData, 89) / 100f; // Water Quality
-
-        // Dissipated Power.
         if (externalTempSensorConnected)
         {
             _powers[0].Value = ReadUInt16BE(_rawData, 91);
         }
         else
         {
-            // Power calculation requires the external temp sensor to be connected.
+            
             _powers[0].Value = null;
         }
 
-        _conductivities[0].Value = ReadUInt16BE(_rawData, 95) / 10f; // Conductivity
+        _conductivities[0].Value = ReadUInt16BE(_rawData, 95) / 10f; 
 
-        _voltages[0].Value = ReadUInt16BE(_rawData, 97) / 100f; // VCC
-        _voltages[1].Value = ReadUInt16BE(_rawData, 99) / 100f; // VCC USB
+        _voltages[0].Value = ReadUInt16BE(_rawData, 97) / 100f; 
+        _voltages[1].Value = ReadUInt16BE(_rawData, 99) / 100f; 
 
-        _alarms[0].Value = (_rawData[116] & 0x02) >> 1; // Flow alarm
-        _alarms[1].Value = (_rawData[116] & 0x04) >> 2; // Water temperature alarm
-        _alarms[2].Value = (_rawData[116] & 0x08) >> 3; // External temperature alarm
-        _alarms[3].Value = (_rawData[116] & 0x10) >> 4; // Water quality alarm
+        _alarms[0].Value = (_rawData[116] & 0x02) >> 1; 
+        _alarms[1].Value = (_rawData[116] & 0x04) >> 2; 
+        _alarms[2].Value = (_rawData[116] & 0x08) >> 3; 
+        _alarms[3].Value = (_rawData[116] & 0x10) >> 4; 
 
-        // Unused:
-        // _rawData[101..104] -> Total pumped volume liters
-        // _rawData[105..109] -> Internal impulse counter from flow meter
     }
 
     private ushort ReadUInt16BE(byte[] value, int startIndex)

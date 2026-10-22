@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 namespace LibreHardwareMonitor.Interop.PowerMonitor;
 
 public enum UsbCmd : byte
@@ -158,7 +152,7 @@ public enum THEME_BACKGROUND : byte
 
 public enum THEME_FAN : byte
 {
-    ThermalGrizzlyOrange = 0x64, // Bitmap 4 + 6
-    ThermalGrizzlyDark = 0x75, // Bitmap 5 + 7
-    ThermalGrizzlyBlackWhite = 0x98, // Bitmap 8 + 9
+    ThermalGrizzlyOrange = 0x64, 
+    ThermalGrizzlyDark = 0x75, 
+    ThermalGrizzlyBlackWhite = 0x98, 
 }

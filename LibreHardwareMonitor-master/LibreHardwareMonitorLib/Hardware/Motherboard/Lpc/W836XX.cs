@@ -1,17 +1,9 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Globalization;
 using System.Text;
-
-// ReSharper disable once InconsistentNaming
 
 namespace LibreHardwareMonitor.Hardware.Motherboard.Lpc;
 
@@ -25,7 +17,6 @@ internal class W836XX : ISuperIO
     private readonly float _voltageGain = 0.008f;
     private readonly byte[] _voltageRegister = Array.Empty<byte>();
 
-    // Added to control fans. 
     private readonly byte[] _fanPwmRegister = Array.Empty<byte>();
     private readonly byte[] _fanPrimaryControlModeRegister = Array.Empty<byte>();
     private readonly byte[] _fanPrimaryControlValue = Array.Empty<byte>();
@@ -55,7 +46,7 @@ internal class W836XX : ISuperIO
         {
             case Chip.W83667HG:
             case Chip.W83667HGB:
-                // note temperature sensor registers that read PECI
+                
                 byte flag = ReadByte(0, TEMPERATURE_SOURCE_SELECT_REG);
                 _peciTemperature[0] = (flag & 0x04) != 0;
                 _peciTemperature[1] = (flag & 0x40) != 0;
@@ -64,7 +55,7 @@ internal class W836XX : ISuperIO
 
             case Chip.W83627DHG:
             case Chip.W83627DHGP:
-                // note temperature sensor registers that read PECI
+                
                 byte sel = ReadByte(0, TEMPERATURE_SOURCE_SELECT_REG);
                 _peciTemperature[0] = (sel & 0x07) != 0;
                 _peciTemperature[1] = (sel & 0x70) != 0;
@@ -72,7 +63,7 @@ internal class W836XX : ISuperIO
                 break;
 
             default:
-                // no PECI support
+                
                 _peciTemperature[0] = false;
                 _peciTemperature[1] = false;
                 _peciTemperature[2] = false;
@@ -88,11 +79,11 @@ internal class W836XX : ISuperIO
                 _voltageGain = 0.008f;
 
                 Fans = new float?[5];
-                _fanPwmRegister = new byte[] { 0x01, 0x03, 0x11 }; // Fan PWM values.
-                _fanPrimaryControlModeRegister = new byte[] { 0x04, 0x04, 0x12 }; // Primary control register.
-                _fanPrimaryControlValue = new byte[] { 0b11110011, 0b11001111, 0b11111001 }; // Values to gain control of fans.
-                _initialFanControlValue = new byte[3]; // To store primary default value.
-                _initialFanSecondaryControlValue = new byte[3]; // To store secondary default value.
+                _fanPwmRegister = new byte[] { 0x01, 0x03, 0x11 }; 
+                _fanPrimaryControlModeRegister = new byte[] { 0x04, 0x04, 0x12 }; 
+                _fanPrimaryControlValue = new byte[] { 0b11110011, 0b11001111, 0b11111001 }; 
+                _initialFanControlValue = new byte[3]; 
+                _initialFanSecondaryControlValue = new byte[3]; 
 
                 Controls = new float?[3];
                 break;
@@ -105,11 +96,11 @@ internal class W836XX : ISuperIO
 
                 _voltageGain = 0.008f;
                 Fans = new float?[5];
-                _fanPwmRegister = new byte[] { 0x01, 0x03, 0x11 }; // Fan PWM values
-                _fanPrimaryControlModeRegister = new byte[] { 0x04, 0x04, 0x12 }; // added. Primary control register
-                _fanPrimaryControlValue = new byte[] { 0b11110011, 0b11001111, 0b11111001 }; // Values to gain control of fans
-                _initialFanControlValue = new byte[3]; // To store primary default value
-                _initialFanSecondaryControlValue = new byte[3]; // To store secondary default value.
+                _fanPwmRegister = new byte[] { 0x01, 0x03, 0x11 }; 
+                _fanPrimaryControlModeRegister = new byte[] { 0x04, 0x04, 0x12 }; 
+                _fanPrimaryControlValue = new byte[] { 0b11110011, 0b11001111, 0b11111001 }; 
+                _initialFanControlValue = new byte[3]; 
+                _initialFanSecondaryControlValue = new byte[3]; 
 
                 Controls = new float?[3];
                 break;
@@ -122,17 +113,17 @@ internal class W836XX : ISuperIO
                 _voltageGain = 0.008f;
 
                 Fans = new float?[5];
-                _fanPwmRegister = new byte[] { 0x01, 0x03, 0x11 }; // Fan PWM values.
-                _fanPrimaryControlModeRegister = new byte[] { 0x04, 0x04, 0x12 }; // Primary control register.
-                _fanPrimaryControlValue = new byte[] { 0b11110011, 0b11001111, 0b11111001 }; // Values to gain control of fans.
-                _fanSecondaryControlModeRegister = new byte[] { 0x7c, 0x7c, 0x7c }; // Secondary control register for SmartFan4.
-                _fanSecondaryControlValue = new byte[] { 0b11101111, 0b11011111, 0b10111111 }; // Values for secondary register to gain control of fans.
-                _fanTertiaryControlModeRegister = new byte[] { 0x62, 0x7c, 0x62 }; // Tertiary control register. 2nd fan doesn't have Tertiary control, same as secondary to avoid change.
-                _fanTertiaryControlValue = new byte[] { 0b11101111, 0b11011111, 0b11011111 }; // Values for tertiary register to gain control of fans. 2nd fan doesn't have Tertiary control, same as secondary to avoid change.
+                _fanPwmRegister = new byte[] { 0x01, 0x03, 0x11 }; 
+                _fanPrimaryControlModeRegister = new byte[] { 0x04, 0x04, 0x12 }; 
+                _fanPrimaryControlValue = new byte[] { 0b11110011, 0b11001111, 0b11111001 }; 
+                _fanSecondaryControlModeRegister = new byte[] { 0x7c, 0x7c, 0x7c }; 
+                _fanSecondaryControlValue = new byte[] { 0b11101111, 0b11011111, 0b10111111 }; 
+                _fanTertiaryControlModeRegister = new byte[] { 0x62, 0x7c, 0x62 }; 
+                _fanTertiaryControlValue = new byte[] { 0b11101111, 0b11011111, 0b11011111 }; 
 
-                _initialFanControlValue = new byte[3]; // To store primary default value.
-                _initialFanSecondaryControlValue = new byte[3]; // To store secondary default value.
-                _initialFanTertiaryControlValue = new byte[3]; // To store tertiary default value.
+                _initialFanControlValue = new byte[3]; 
+                _initialFanSecondaryControlValue = new byte[3]; 
+                _initialFanTertiaryControlValue = new byte[3]; 
                 Controls = new float?[3];
                 break;
 
@@ -143,7 +134,7 @@ internal class W836XX : ISuperIO
                 _voltageGain = 0.016f;
 
                 Fans = new float?[3];
-                _fanPwmRegister = new byte[] { 0x5A, 0x5B }; // Fan PWM values.
+                _fanPwmRegister = new byte[] { 0x5A, 0x5B }; 
 
                 Controls = new float?[2];
                 break;
@@ -155,10 +146,10 @@ internal class W836XX : ISuperIO
                 _voltageGain = 0.016f;
 
                 Fans = new float?[3];
-                _fanPwmRegister = new byte[] { 0x01, 0x03, 0x11 }; // Fan PWM values.
-                _fanPrimaryControlModeRegister = new byte[] { 0x04, 0x04, 0x12 }; // Primary control register.
-                _fanPrimaryControlValue = new byte[] { 0b11110011, 0b11001111, 0b11111001 }; // Values to gain control of fans.
-                _initialFanControlValue = new byte[3]; // To store primary default value.
+                _fanPwmRegister = new byte[] { 0x01, 0x03, 0x11 }; 
+                _fanPrimaryControlModeRegister = new byte[] { 0x04, 0x04, 0x12 }; 
+                _fanPrimaryControlValue = new byte[] { 0b11110011, 0b11001111, 0b11111001 }; 
+                _initialFanControlValue = new byte[3]; 
 
                 Controls = new float?[3];
                 break;
@@ -220,7 +211,6 @@ internal class W836XX : ISuperIO
                 }
             }
 
-            // set output value
             WriteByte(0, _fanPwmRegister[index], value.Value);
         }
         else
@@ -231,7 +221,7 @@ internal class W836XX : ISuperIO
         Mutexes.ReleaseIsaBus();
     }
 
-    private void SaveDefaultFanPwmControl(int index) //added to save initial control values
+    private void SaveDefaultFanPwmControl(int index) 
     {
         if (_fanPrimaryControlModeRegister.Length > 0 &&
             _initialFanControlValue.Length > 0 &&
@@ -260,7 +250,7 @@ internal class W836XX : ISuperIO
         }
     }
 
-    private void RestoreDefaultFanPwmControl(int index) //added to restore initial control values
+    private void RestoreDefaultFanPwmControl(int index) 
     {
         if (_fanPrimaryControlModeRegister.Length > 0 &&
             _initialFanControlValue.Length > 0 &&
@@ -271,7 +261,7 @@ internal class W836XX : ISuperIO
             WriteByte(0,
                       _fanPrimaryControlModeRegister[index],
                       (byte)((_initialFanControlValue[index] & ~_fanPrimaryControlValue[index]) |
-                             ReadByte(0, _fanPrimaryControlModeRegister[index]))); //bitwise operands to change only desired bits
+                             ReadByte(0, _fanPrimaryControlModeRegister[index]))); 
 
             if (_fanSecondaryControlModeRegister.Length > 0 && _initialFanSecondaryControlValue.Length > 0 && _fanSecondaryControlValue.Length > 0)
             {
@@ -280,7 +270,7 @@ internal class W836XX : ISuperIO
                     WriteByte(0,
                               _fanSecondaryControlModeRegister[index],
                               (byte)((_initialFanSecondaryControlValue[index] & ~_fanSecondaryControlValue[index]) |
-                                     ReadByte(0, _fanSecondaryControlModeRegister[index]))); //bitwise operands to change only desired bits
+                                     ReadByte(0, _fanSecondaryControlModeRegister[index]))); 
                 }
 
                 if (_fanTertiaryControlModeRegister.Length > 0 &&
@@ -290,7 +280,7 @@ internal class W836XX : ISuperIO
                 {
                     WriteByte(0,
                               _fanTertiaryControlModeRegister[index],
-                              (byte)((_initialFanTertiaryControlValue[index] & ~_fanTertiaryControlValue[index]) | ReadByte(0, _fanTertiaryControlModeRegister[index]))); //bitwise operands to change only desired bits
+                              (byte)((_initialFanTertiaryControlValue[index] & ~_fanTertiaryControlValue[index]) | ReadByte(0, _fanTertiaryControlModeRegister[index]))); 
                 }
             }
 
@@ -307,16 +297,16 @@ internal class W836XX : ISuperIO
         {
             if (_voltageRegister[i] != VOLTAGE_VBAT_REG)
             {
-                // two special VCore measurement modes for W83627THF
+                
                 float fValue;
                 if ((Chip == Chip.W83627HF || Chip == Chip.W83627THF || Chip == Chip.W83687THF) && i == 0)
                 {
                     byte vrmConfiguration = ReadByte(0, 0x18);
                     int value = ReadByte(_voltageBank[i], _voltageRegister[i]);
                     if ((vrmConfiguration & 0x01) == 0)
-                        fValue = 0.016f * value; // VRM8 formula
+                        fValue = 0.016f * value; 
                     else
-                        fValue = (0.00488f * value) + 0.69f; // VRM9 formula
+                        fValue = (0.00488f * value) + 0.69f; 
                 }
                 else
                 {
@@ -331,7 +321,7 @@ internal class W836XX : ISuperIO
             }
             else
             {
-                // Battery voltage
+                
                 bool valid = (ReadByte(0, 0x5D) & 0x01) > 0;
                 if (valid)
                 {
@@ -370,7 +360,6 @@ internal class W836XX : ISuperIO
         {
             int count = ReadByte(FAN_TACHO_BANK[i], FAN_TACHO_REG[i]);
 
-            // assemble fan divisor
             int divisorBits = (int)(
                 (((bits >> FAN_DIV_BIT2[i]) & 1) << 2) |
                 (((bits >> FAN_DIV_BIT1[i]) & 1) << 1) |
@@ -382,7 +371,7 @@ internal class W836XX : ISuperIO
 
             switch (count)
             {
-                // update fan divisor
+                
                 case > 192 when divisorBits < 7:
                     divisorBits++;
                     break;
@@ -405,7 +394,6 @@ internal class W836XX : ISuperIO
         Mutexes.ReleaseIsaBus();
     }
 
-    /// <inheritdoc />
     public void Close()
     {
         _port.Close();
@@ -502,8 +490,7 @@ internal class W836XX : ISuperIO
         ulong mask = (ulong)1 << bit;
         return value > 0 ? target | mask : target & ~mask;
     }
-    // ReSharper disable InconsistentNaming
-
+    
     private const byte ADDRESS_REGISTER_OFFSET = 0x05;
     private const byte BANK_SELECT_REGISTER = 0x4E;
     private const byte DATA_REGISTER_OFFSET = 0x06;
@@ -523,5 +510,4 @@ internal class W836XX : ISuperIO
     private readonly byte[] TEMPERATURE_BANK = { 1, 2, 0 };
     private readonly byte[] TEMPERATURE_REG = { 0x50, 0x50, 0x27 };
 
-    // ReSharper restore InconsistentNaming
 }

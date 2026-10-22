@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
@@ -61,14 +56,9 @@ internal sealed class Network : Hardware
 
             IPv4InterfaceStatistics interfaceStats = NetworkInterface.GetIPv4Statistics();
 
-            // Report out the number of GB (2^30 Bytes) that this interface has up/downloaded. Note
-            // that these values can reset back at zero (eg: after waking from sleep).
             _dataUploaded.Value = (float)(interfaceStats.BytesSent / (double)0x40000000);
             _dataDownloaded.Value = (float)(interfaceStats.BytesReceived / (double)0x40000000);
 
-            // Detect a reset in interface stats if the new total is less than what was previously
-            // seen. While setting the previous values to zero doesn't encapsulate the value the
-            // instant before the reset, it is the best approximation we have.
             if (interfaceStats.BytesSent < _bytesUploaded || interfaceStats.BytesReceived < _bytesDownloaded)
             {
                 _bytesUploaded = 0;
@@ -78,24 +68,15 @@ internal sealed class Network : Hardware
             long dBytesUploaded = interfaceStats.BytesSent - _bytesUploaded;
             long dBytesDownloaded = interfaceStats.BytesReceived - _bytesDownloaded;
 
-            // Upload and download speeds are reported as the number of bytes transfered over the
-            // time difference since the last report. In this way, the values represent the average
-            // number of bytes up/downloaded in a second.
             _uploadSpeed.Value = (float)(dBytesUploaded / dt);
             _downloadSpeed.Value = (float)(dBytesDownloaded / dt);
 
-            // Network speed is in bits per second, so when calculating the load on the NIC we first
-            // grab the total number of bits up/downloaded
             long dbits = (dBytesUploaded + dBytesDownloaded) * 8;
 
-            // Converts the ratio of total bits transferred over time over theoretical max bits
-            // transfer rate into a percentage load
             double load = (dbits / dt / NetworkInterface.Speed) * 100;
 
-            // Finally clamp the value between 0% and 100% to avoid reporting nonsensical numbers
             _networkUtilization.Value = (float)Math.Min(Math.Max(load, 0), 100);
 
-            // Store the recorded values and time, so they can be used in the next update
             _bytesUploaded = interfaceStats.BytesSent;
             _bytesDownloaded = interfaceStats.BytesReceived;
             _lastTick = newTick;

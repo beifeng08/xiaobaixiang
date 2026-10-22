@@ -1,25 +1,13 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 namespace LibreHardwareMonitor.Windows.Forms.UI
 {
     partial class ParameterForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
+        
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -31,10 +19,6 @@ namespace LibreHardwareMonitor.Windows.Forms.UI
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
@@ -51,9 +35,7 @@ namespace LibreHardwareMonitor.Windows.Forms.UI
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
             this.SuspendLayout();
-            //
-            // okButton
-            //
+            
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.Location = new System.Drawing.Point(186, 213);
@@ -63,9 +45,7 @@ namespace LibreHardwareMonitor.Windows.Forms.UI
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.OkButton_Click);
-            //
-            // cancelButton
-            //
+            
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.Location = new System.Drawing.Point(267, 213);
@@ -74,9 +54,7 @@ namespace LibreHardwareMonitor.Windows.Forms.UI
             this.cancelButton.TabIndex = 3;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
-            //
-            // captionLabel
-            //
+            
             this.captionLabel.AutoSize = true;
             this.captionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.captionLabel.Location = new System.Drawing.Point(12, 9);
@@ -84,9 +62,7 @@ namespace LibreHardwareMonitor.Windows.Forms.UI
             this.captionLabel.Size = new System.Drawing.Size(80, 13);
             this.captionLabel.TabIndex = 4;
             this.captionLabel.Text = "captionLabel";
-            //
-            // dataGridView
-            //
+            
             this.dataGridView.AllowUserToAddRows = false;
             this.dataGridView.AllowUserToDeleteRows = false;
             this.dataGridView.AllowUserToResizeRows = false;
@@ -123,36 +99,26 @@ namespace LibreHardwareMonitor.Windows.Forms.UI
             this.dataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DataGridView_CellValidating);
             this.dataGridView.CurrentCellDirtyStateChanged += new System.EventHandler(this.DataGridView_CurrentCellDirtyStateChanged);
             this.dataGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_RowEnter);
-            //
-            // NameColumn
-            //
+            
             this.NameColumn.DataPropertyName = "Name";
             this.NameColumn.HeaderText = "Name";
             this.NameColumn.Name = "NameColumn";
             this.NameColumn.ReadOnly = true;
             this.NameColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            //
-            // Default
-            //
+            
             this.Default.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.Default.DataPropertyName = "Default";
             this.Default.HeaderText = "Default";
             this.Default.Name = "Default";
             this.Default.Width = 47;
-            //
-            // ValueColumn
-            //
+            
             this.ValueColumn.DataPropertyName = "Value";
             this.ValueColumn.HeaderText = "Value";
             this.ValueColumn.Name = "ValueColumn";
             this.ValueColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            //
-            // bindingSource
-            //
+            
             this.bindingSource.AllowNew = false;
-            //
-            // descriptionLabel
-            //
+            
             this.descriptionLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.descriptionLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -162,9 +128,7 @@ namespace LibreHardwareMonitor.Windows.Forms.UI
             this.descriptionLabel.Size = new System.Drawing.Size(327, 50);
             this.descriptionLabel.TabIndex = 6;
             this.descriptionLabel.Text = "descriptionLabel";
-            //
-            // ParameterForm
-            //
+            
             this.AcceptButton = this.okButton;
             this.AccessibleName = "";
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);

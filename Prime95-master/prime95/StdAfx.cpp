@@ -1,6 +1,5 @@
-// stdafx.cpp : source file that includes just the standard includes
-//	Prime95.pch will be the pre-compiled header
-//	stdafx.obj will contain the pre-compiled type information
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
 
-#include "stdafx.h"
-
+#include "stdafx.h"
+

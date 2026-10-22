@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -61,14 +55,13 @@ internal sealed class NvidiaGpu : GenericGpu
     private readonly Sensor _12VHPwrConnectorCurrentSensor;
     private bool _pawnHotSpotMaximumActive;
 
-    // ASUS Astral subsystem IDs for 12VHPwr pin monitoring
     private static readonly uint[] AstralSubSystemIds =
     [
-        0x89EA1043, // Astral 5090D OC
-        0x8A611043, // Astral 5090 Matrix
-        0x89EC1043, // Astral 5090 LC
-        0x89E31043, // Astral 5090 OC
-        0x89DE1043, // Astral 5080 OC
+        0x89EA1043, 
+        0x8A611043, 
+        0x89EC1043, 
+        0x89E31043, 
+        0x89DE1043, 
     ];
 
     public NvidiaGpu(int adapterIndex, NvApi.NvPhysicalGpuHandle handle, NvApi.NvDisplayHandle? displayHandle, ISettings settings)
@@ -82,7 +75,6 @@ internal sealed class NvidiaGpu : GenericGpu
 
         bool hasBusId = NvApi.NvAPI_GPU_GetBusId(handle, out uint busId) == NvApi.NvStatus.OK;
 
-        // Thermal settings.
         NvApi.NvThermalSettings thermalSettings = GetThermalSettings(out NvApi.NvStatus status);
         if (status == NvApi.NvStatus.OK && thermalSettings.Count > 0)
         {
@@ -109,14 +101,13 @@ internal sealed class NvidiaGpu : GenericGpu
             }
         }
 
-        // Thermal sensors.
         _hotSpotTemperature = new Sensor("GPU Hot Spot", (int)thermalSettings.Count + 1, SensorType.Temperature, this, settings);
         _memoryJunctionTemperature = new Sensor("GPU Memory Junction", (int)thermalSettings.Count + 2, SensorType.Temperature, this, settings);
         bool hasAnyThermalSensor = false;
 
         for (int thermalSensorsMaxBit = 0; thermalSensorsMaxBit < 32; thermalSensorsMaxBit++)
         {
-            // Find the maximum thermal sensor mask value.
+            
             _thermalSensorsMask = 1u << thermalSensorsMaxBit;
 
             GetThermalSensors(_thermalSensorsMask, out NvApi.NvStatus thermalSensorsStatus);
@@ -174,7 +165,6 @@ internal sealed class NvidiaGpu : GenericGpu
             }
         }
 
-        // Clock frequencies.
         for (int clockVersion = 1; clockVersion <= 3; clockVersion++)
         {
             _clockVersion = clockVersion;
@@ -215,7 +205,6 @@ internal sealed class NvidiaGpu : GenericGpu
             }
         }
 
-        // Fans + controllers.
         NvApi.NvFanCoolersStatus fanCoolers = GetFanCoolersStatus(out status);
         if (status == NvApi.NvStatus.OK && fanCoolers.Count > 0)
         {
@@ -296,7 +285,6 @@ internal sealed class NvidiaGpu : GenericGpu
 
         int nextLoadIndex = 0;
 
-        // Load usages.
         NvApi.NvDynamicPStatesInfo pStatesInfo = GetDynamicPstatesInfoEx(out status);
         if (status == NvApi.NvStatus.OK)
         {
@@ -351,10 +339,8 @@ internal sealed class NvidiaGpu : GenericGpu
             }
         }
 
-        // GPU Memory load: created after NVAPI utilization loads so it appears with other GPU metrics (before power/D3D loads).
         _memoryLoad = new Sensor("GPU Memory", nextLoadIndex++, SensorType.Load, this, settings);
 
-        // Power.
         NvApi.NvPowerTopology powerTopology = GetPowerTopology(out NvApi.NvStatus powerStatus);
         if (powerStatus == NvApi.NvStatus.OK && powerTopology.Count > 0)
         {
@@ -377,7 +363,6 @@ internal sealed class NvidiaGpu : GenericGpu
             }
         }
 
-        // Voltage
         var voltageSensor = GetVoltRailsStatus(out status);
         if (status == NvApi.NvStatus.OK)
         {
@@ -422,7 +407,7 @@ internal sealed class NvidiaGpu : GenericGpu
 
                                     try
                                     {
-                                        if (Registry.GetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\nvlddmkm\Enum", adapterIndex.ToString(), null) is string adapterPnpId)
+                                        if (Registry.GetValue(@HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\nvlddmkm\Enum", adapterIndex.ToString(), null) is string adapterPnpId)
                                         {
                                             if (actualDeviceId.IndexOf(adapterPnpId, StringComparison.OrdinalIgnoreCase) != -1 ||
                                                 adapterPnpId.IndexOf(actualDeviceId, StringComparison.OrdinalIgnoreCase) != -1)
@@ -433,7 +418,7 @@ internal sealed class NvidiaGpu : GenericGpu
                                     }
                                     catch
                                     {
-                                        // Ignored.
+                                        
                                     }
 
                                     if (!isMatch)
@@ -441,13 +426,11 @@ internal sealed class NvidiaGpu : GenericGpu
                                         try
                                         {
                                             string path = actualDeviceId;
-                                            path = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\" + path;
+                                            path = @HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\" + path;
 
                                             if (Registry.GetValue(path, "LocationInformation", null) is string locationInformation)
                                             {
-                                                // For example:
-                                                // @System32\drivers\pci.sys,#65536;PCI bus %1, device %2, function %3;(38,0,0)
-
+                                                
                                                 int index = locationInformation.IndexOf('(');
                                                 if (index != -1)
                                                 {
@@ -465,13 +448,13 @@ internal sealed class NvidiaGpu : GenericGpu
                                         }
                                         catch
                                         {
-                                            // Ignored.
+                                            
                                         }
                                     }
 
                                     if (isMatch && D3DDisplayDevice.GetDeviceInfoByIdentifier(deviceId, out D3DDisplayDevice.D3DDeviceInfo deviceInfo))
                                     {
-                                        int smallDataSensorIndex = 3; // There are three normal GPU memory sensors.
+                                        int smallDataSensorIndex = 3; 
                                         int nextD3dLoadIndex = d3dLoadStartIndex;
 
                                         _d3dDeviceId = deviceId;
@@ -504,7 +487,6 @@ internal sealed class NvidiaGpu : GenericGpu
         _memoryUsed = new Sensor("GPU Memory Used", 1, SensorType.SmallData, this, settings);
         _memoryTotal = new Sensor("GPU Memory Total", 2, SensorType.SmallData, this, settings);
 
-        // Pin power sensors for NVIDIA RTX Astral series from ASUS
         if (NvApi.NvAPI_I2CReadEx != null && NvApi.NvAPI_GPU_GetPCIIdentifiers != null)
         {
             NvApi.NvStatus pciIdentifierStatus = NvApi.NvAPI_GPU_GetPCIIdentifiers(_handle, out _, out uint subSystemId, out _, out _);
@@ -559,7 +541,6 @@ internal sealed class NvidiaGpu : GenericGpu
         Update();
     }
 
-    /// <inheritdoc />
     public override string DeviceId
     {
         get
@@ -601,7 +582,7 @@ internal sealed class NvidiaGpu : GenericGpu
             if (_temperatures is { Length: > 0 })
             {
                 NvApi.NvThermalSettings settings = GetThermalSettings(out status);
-                // settings.Count is 0 when no valid data available, this happens when you try to read out this value with a high polling interval.
+                
                 if (status == NvApi.NvStatus.OK && settings.Count > 0)
                 {
                     foreach (Sensor sensor in _temperatures)
@@ -615,14 +596,14 @@ internal sealed class NvidiaGpu : GenericGpu
 
                 if (status == NvApi.NvStatus.OK)
                 {
-                    // RTX 50xx series
+                    
                     if (Name.StartsWith("NVIDIA GeForce RTX 50", StringComparison.OrdinalIgnoreCase))
                     {
                         _hotSpotTemperature.Value = 0;
                         _temperatures[0].Value = thermalSensors.Temperatures[1] / 256.0f;
                         _memoryJunctionTemperature.Value = thermalSensors.Temperatures[2] / 256.0f;
                     }
-                    // RTX 40xx series
+                    
                     else if (Name.StartsWith("NVIDIA GeForce RTX 40", StringComparison.OrdinalIgnoreCase))
                     {
                         _hotSpotTemperature.Value = thermalSensors.Temperatures[1] / 256.0f;
@@ -766,7 +747,6 @@ internal sealed class NvidiaGpu : GenericGpu
                 uint free = 0;
                 uint total = 0;
 
-                //Size in bytes
                 NvApi.NvMemoryInfoEx memoryInfoEx = GetMemoryInfoEx(out status);
                 if (status == NvApi.NvStatus.OK)
                 {
@@ -775,7 +755,7 @@ internal sealed class NvidiaGpu : GenericGpu
                 }
                 else
                 {
-                    //Size in kilobytes, fallback for older drivers
+                    
                     NvApi.NvMemoryInfo memoryInfo = GetMemoryInfo(out status);
                     if (status == NvApi.NvStatus.OK)
                     {
@@ -809,7 +789,6 @@ internal sealed class NvidiaGpu : GenericGpu
                     ActivateSensor(_powerUsage);
                 }
 
-                // In MB/s, throughput sensors are passed as in KB/s.
                 uint? rx = NvidiaML.NvmlDeviceGetPcieThroughput(_nvmlDevice.Value, NvidiaML.NvmlPcieUtilCounter.RxBytes);
                 if (rx.HasValue)
                 {
@@ -825,7 +804,6 @@ internal sealed class NvidiaGpu : GenericGpu
                 }
             }
 
-            // Astral specific
             if (_12VHPwrPinCurrentSensors is { Length: > 0 } && TryReadAstral12VHPwrPinSensors(out ushort[] pinSensorValues))
             {
                 float connectorCurrent = 0;
@@ -948,7 +926,6 @@ internal sealed class NvidiaGpu : GenericGpu
             }
         }
 
-        // Parse 12 x u16 big-endian (as mV and mA) values in reverse order
         data = new ushort[12];
         for (int i = 0; i < 12; i++)
         {

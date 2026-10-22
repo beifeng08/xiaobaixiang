@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using System;
 
 namespace LibreHardwareMonitor.PawnIo;
 
@@ -14,7 +17,6 @@ public class LpcCrOSEc
         inArray[2] = outsize;
         inArray[3] = insize;
 
-        // Start packing data into inArray at the 4th long (8 bytes)
         Buffer.BlockCopy(data, 0, inArray, 4 * 8, data.Length);
 
         long[] outArray = _pawnIO.Execute("ioctl_ec_command", inArray, 1 + (int)Math.Ceiling(insize / 8.0));
@@ -24,7 +26,7 @@ public class LpcCrOSEc
         }
 
         byte[] retArray = new byte[insize];
-        // Unpack the data skipping the first long
+        
         Buffer.BlockCopy(outArray, 8, retArray, 0, insize);
         return retArray;
     }

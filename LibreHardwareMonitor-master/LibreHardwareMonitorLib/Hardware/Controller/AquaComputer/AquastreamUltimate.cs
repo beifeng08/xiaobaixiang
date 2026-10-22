@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using HidSharp;
 
@@ -27,7 +22,7 @@ internal sealed class AquastreamUltimate : Hardware
     {
         if (dev.TryOpen(out _stream))
         {
-            // Reading output report instead of feature report, as the measurements are in the output report.
+            
             _stream.Read(_rawData);
 
             FirmwareVersion = GetConvertedValue(0xD).GetValueOrDefault(0);
@@ -52,7 +47,6 @@ internal sealed class AquastreamUltimate : Hardware
             _powers[0] = new Sensor("Pump", 0, SensorType.Power, this, Array.Empty<ParameterDescription>(), settings);
             ActivateSensor(_powers[0]);
 
-            // Initialize the flow sensor
             _flows[0] = new Sensor("Pump", 0, SensorType.Flow, this, Array.Empty<ParameterDescription>(), settings);
             ActivateSensor(_flows[0]);
 
@@ -88,26 +82,26 @@ internal sealed class AquastreamUltimate : Hardware
 
     public override void Update()
     {
-        // Reading output report instead of feature report, as the measurements are in the output report
+        
         _stream.Read(_rawData);
 
-        _rpmSensors[0].Value = GetConvertedValue(0x51); // Pump speed.
-        _rpmSensors[1].Value = GetConvertedValue(0x41 + 0x06); // Fan speed.
+        _rpmSensors[0].Value = GetConvertedValue(0x51); 
+        _rpmSensors[1].Value = GetConvertedValue(0x41 + 0x06); 
 
-        _temperatures[0].Value = GetConvertedValue(0x2D) / 100f; // Water temp.
-        _temperatures[1].Value = GetConvertedValue(0x2F) / 100f; // Ext sensor temp.
+        _temperatures[0].Value = GetConvertedValue(0x2D) / 100f; 
+        _temperatures[1].Value = GetConvertedValue(0x2F) / 100f; 
 
-        _voltages[0].Value = GetConvertedValue(0x3D) / 100f; // Pump input voltage.
-        _voltages[1].Value = GetConvertedValue(0x41 + 0x02) / 100f; // Fan output voltage.
+        _voltages[0].Value = GetConvertedValue(0x3D) / 100f; 
+        _voltages[1].Value = GetConvertedValue(0x41 + 0x02) / 100f; 
 
-        _currents[0].Value = GetConvertedValue(0x53) / 1000f; // Pump current.
-        _currents[1].Value = GetConvertedValue(0x41 + 0x00) / 1000f; // Fan current.
+        _currents[0].Value = GetConvertedValue(0x53) / 1000f; 
+        _currents[1].Value = GetConvertedValue(0x41 + 0x00) / 1000f; 
 
-        _powers[0].Value = GetConvertedValue(0x55) / 100f; // Pump power.
-        _powers[1].Value = GetConvertedValue(0x41 + 0x04) / 100f; // Fan power.
+        _powers[0].Value = GetConvertedValue(0x55) / 100f; 
+        _powers[1].Value = GetConvertedValue(0x41 + 0x04) / 100f; 
 
-        _flows[0].Value = GetConvertedValue(0x37); // Flow.
-        _flows[1].Value = GetConvertedValue(0x57) / 1000f; // Pressure.
+        _flows[0].Value = GetConvertedValue(0x37); 
+        _flows[1].Value = GetConvertedValue(0x57) / 1000f; 
     }
 
     private ushort? GetConvertedValue(int index)

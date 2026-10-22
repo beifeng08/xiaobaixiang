@@ -1,21 +1,12 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Text;
 using HidSharp;
 
 namespace LibreHardwareMonitor.Hardware;
 
-/// <summary>
-/// Represents a unique <see cref="ISensor" />/<see cref="IHardware" /> identifier in text format with a / separator.
-/// </summary>
 public class Identifier : IComparable<Identifier>
 {
     private const char Separator = '/';
@@ -34,11 +25,6 @@ public class Identifier : IComparable<Identifier>
         _identifier = s.ToString();
     }
 
-    /// <summary>
-    /// Creates a new identifier instance based on the base <see cref="Identifier" /> and additional elements.
-    /// </summary>
-    /// <param name="identifier">Base identifier being the beginning of the new one.</param>
-    /// <param name="extensions">Additional parts by which the base <see cref="Identifier" /> will be extended.</param>
     public Identifier(Identifier identifier, params string[] extensions)
     {
         CoerceIdentifiers(extensions);
@@ -53,12 +39,6 @@ public class Identifier : IComparable<Identifier>
         _identifier = s.ToString();
     }
 
-    /// <summary>
-    /// Creates a new identifier instance based on the supplied <see cref="HidDevice" />.
-    /// If available the identifier will consist of the vendor-id, product-id and serial number of the HidDevice.
-    /// Alternatively a platform dependent identifier based on the usb device-path is generated.
-    /// </summary>
-    /// <param name="dev">The <see cref="HidDevice" /> this identifier will be created for.</param>
     public Identifier(HidDevice dev)
     {
         string[] identifiers;
@@ -82,7 +62,6 @@ public class Identifier : IComparable<Identifier>
         _identifier = s.ToString();
     }
 
-    /// <inheritdoc />
     public int CompareTo(Identifier other)
     {
         if (other == null)
@@ -102,13 +81,11 @@ public class Identifier : IComparable<Identifier>
         }
     }
 
-    /// <inheritdoc />
     public override string ToString()
     {
         return _identifier;
     }
 
-    /// <inheritdoc />
     public override bool Equals(object obj)
     {
         if (obj == null)
@@ -121,7 +98,6 @@ public class Identifier : IComparable<Identifier>
         return _identifier == id._identifier;
     }
 
-    /// <inheritdoc />
     public override int GetHashCode()
     {
         return _identifier.GetHashCode();

@@ -1,4 +1,5 @@
-﻿//#define ISA_BRIDGE_EC_DEBUG
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
 
 using System.Diagnostics;
 
@@ -27,7 +28,6 @@ namespace LibreHardwareMonitor.PawnIo
     {
         private readonly PawnIo _pawnIO = PawnIo.LoadModuleFromResource(typeof(IsaBridgeEc).Assembly, $"{nameof(LibreHardwareMonitor)}.Resources.PawnIo.IsaBridgeEC.bin");
 
-        // ioctl_find_superio_mmio
         public bool FindSuperIoMMIO(out MMIOMapping firstMmio, out MMIOMapping secondMmio)
         {
             long[] outArray = new long[6];
@@ -64,15 +64,14 @@ namespace LibreHardwareMonitor.PawnIo
             return firstMmio.BaseAddress != 0 || secondMmio.BaseAddress != 0;
         }
 
-        //ioctl_access_superio_mmio
         public bool ReadMmio(long superIoIndex, long offset, long size, out byte value)
         {
             long[] inArray = new long[5] {
-                superIoIndex, // superio index
-                offset, // offset
-                size, // size
-                0, // is write?
-                0 // value (ignored for read)
+                superIoIndex, 
+                offset, 
+                size, 
+                0, 
+                0 
             };
 
             long[] outarray = new long[1];
@@ -86,15 +85,14 @@ namespace LibreHardwareMonitor.PawnIo
             return ntStatusCode == 0;
         }
 
-        //ioctl_access_superio_mmio
         public bool WriteMmio(long superIoIndex, long offset, long size, byte value)
         {
             long[] inArray = new long[5] {
-                superIoIndex, // superio index
-                offset, // offset
-                size, // size
-                1, // is write?
-                value // value
+                superIoIndex, 
+                offset, 
+                size, 
+                1, 
+                value 
             };
 
             long[] outarray = new long[1];
@@ -106,7 +104,6 @@ namespace LibreHardwareMonitor.PawnIo
             return ntStatusCode == 0;
         }
 
-        // ioctl_map_superio_mmio
         public bool Map()
         {
             int ntStatusCode = _pawnIO.ExecuteHr("ioctl_map_superio_mmio", [], 0, [], 0, out uint returnSize);
@@ -116,7 +113,6 @@ namespace LibreHardwareMonitor.PawnIo
             return ntStatusCode == 0;
         }
 
-        // ioctl_unmap_superio_mmio
         public bool Unmap()
         {
             int ntStatusCode = _pawnIO.ExecuteHr("ioctl_unmap_superio_mmio", [], 0, [], 0, out uint returnSize);
@@ -126,7 +122,6 @@ namespace LibreHardwareMonitor.PawnIo
             return ntStatusCode == 0;
         }
 
-        // ioctl_access_superio_mmio
         public bool GetOriginalState(out MMIOState state)
         {
             state = MMIOState.Unknown;
@@ -134,7 +129,6 @@ namespace LibreHardwareMonitor.PawnIo
             int ntStatusCode = _pawnIO.ExecuteHr("ioctl_iomem_mmio_get_org_state", [], 0, outArray, 1, out uint returnSize);
 
             Log($"GetOriginalState statusCode: {ntStatusCode}");
-
 
             if (ntStatusCode != 0)
                 return false;
@@ -174,13 +168,6 @@ namespace LibreHardwareMonitor.PawnIo
 
         public void Close() => _pawnIO.Close();
 
-        /// <summary>
-        /// Writes a debug message to both the output window and a log file when ISA_BRIDGE_EC_DEBUG is defined.
-        /// </summary>
-        /// <remarks>The log entry is timestamped and appended to the file
-        /// 'PawnIo_IsaBridgeEc_DebugLog.txt' in the application's working directory. This method only produces output
-        /// when compiled with the ISA_BRIDGE_EC_DEBUG symbol defined.</remarks>
-        /// <param name="message">The message to log. This should provide relevant information for debugging purposes.</param>
         [Conditional("DEBUG_LOG"), Conditional("ISA_BRIDGE_EC_DEBUG")]
         private static void Log(string message)
         {

@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,7 +58,7 @@ internal class CpuLoad
 
         while (true)
         {
-            //Query processor performance information
+            
             NTSTATUS status = PInvoke.NtQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemProcessorPerformanceInformation, (void*)handle, (uint)size, &returnSize);
             if (status == NTSTATUS.STATUS_INFO_LENGTH_MISMATCH)
             {
@@ -117,25 +111,20 @@ internal class CpuLoad
 
         string[] cpuInfos = File.ReadAllLines("/proc/stat");
 
-        // currently parse the OverAll CPU info
-        // cpu   1583083 737    452845   36226266 723316   63685 31896     0       0       0
-        // cpu0  397468  189    109728   9040007  191429   16939 14954     0       0       0
-        // 0=cpu 1=user  2=nice 3=system 4=idle   5=iowait 6=irq 7=softirq 8=steal 9=guest 10=guest_nice
         foreach (string cpuInfo in cpuInfos.Where(s => s.StartsWith("cpu") && s.Length > 3 && s[3] != ' '))
         {
             string[] overall = cpuInfo.Split([' '], StringSplitOptions.RemoveEmptyEntries);
 
             try
             {
-                // Parse idle information.
+                
                 idleList.Add(long.Parse(overall[4]));
             }
             catch
             {
-                // Ignored.
+                
             }
 
-            // Parse total information = user + nice + system + idle + iowait + irq + softirq + steal + guest + guest_nice.
             long currentTotal = 0;
             foreach (string item in overall.Skip(1))
             {
@@ -145,7 +134,7 @@ internal class CpuLoad
                 }
                 catch
                 {
-                    // Ignored.
+                    
                 }
             }
 

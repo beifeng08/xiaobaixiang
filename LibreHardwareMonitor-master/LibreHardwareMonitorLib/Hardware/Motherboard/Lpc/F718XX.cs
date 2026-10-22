@@ -1,17 +1,9 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Globalization;
 using System.Text;
-
-// ReSharper disable once InconsistentNaming
 
 namespace LibreHardwareMonitor.Hardware.Motherboard.Lpc;
 
@@ -121,7 +113,7 @@ internal class F718XX : ISuperIO
         {
             if (Chip == Chip.F71808E && i == 6)
             {
-                // 0x26 is reserved on F71808E
+                
                 Voltages[i] = 0;
             }
             else
@@ -209,7 +201,6 @@ internal class F718XX : ISuperIO
         Mutexes.ReleaseIsaBus();
     }
 
-    /// <inheritdoc />
     public void Close()
     {
         _port.Close();
@@ -245,8 +236,7 @@ internal class F718XX : ISuperIO
         _port.WriteIoPort((ushort)(_address + DATA_REGISTER_OFFSET), value);
     }
 
-    // ReSharper disable InconsistentNaming
-#pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable IDE1006 
 
     private const byte ADDRESS_REGISTER_OFFSET = 0x05;
     private const byte DATA_REGISTER_OFFSET = 0x06;
@@ -258,6 +248,5 @@ internal class F718XX : ISuperIO
     private readonly byte[] FAN_PWM_REG = { 0xA3, 0xB3, 0xC3, 0xD3 };
     private readonly byte[] FAN_TACHOMETER_REG = { 0xA0, 0xB0, 0xC0, 0xD0 };
 
-    // ReSharper restore InconsistentNaming
-#pragma warning restore IDE1006 // Naming Styles
+#pragma warning restore IDE1006 
 }

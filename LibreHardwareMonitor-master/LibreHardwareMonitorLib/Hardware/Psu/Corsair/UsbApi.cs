@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Linq;
 using System.Text;
@@ -17,8 +12,8 @@ internal static class UsbApi
 {
     public enum Command : byte
     {
-        SELECT_RAIL = 0x00, /* expects length 2 */
-        RAIL_VOLTS_HCRIT = 0x40, /* the rest of the commands expect length 3 */
+        SELECT_RAIL = 0x00, 
+        RAIL_VOLTS_HCRIT = 0x40, 
         RAIL_VOLTS_LCRIT = 0x44,
         RAIL_AMPS_HCRIT = 0x46,
         TEMP_HCRIT = 0x4F,
@@ -48,10 +43,7 @@ internal static class UsbApi
 
     public static void Init(HidStream stream)
     {
-        /*
-         * PSU_CMD_INIT uses swapped length/command and expects 2 parameter bytes, this command
-         * actually generates a reply, but we don't need it
-         */
+        
         SendCommand(stream, (byte)Command.INIT, (Command)3, 0, out _);
     }
 
@@ -60,17 +52,11 @@ internal static class UsbApi
         if (!Request(stream, cmd, rail, out byte[] data))
             return null;
 
-        /*
-         * the biggest value here comes from the uptime command and to exceed MAXINT total uptime
-         * needs to be about 68 years, the rest are u16 values and the biggest value coming out of
-         * the LINEAR11 conversion are the watts values which are about 1200 for the strongest psu
-         * supported (HX1200i)
-         */
-        int tmp = BitConverter.ToInt32(data, 0); // ((int)data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0];
+        int tmp = BitConverter.ToInt32(data, 0); 
         return cmd switch
         {
             Command.RAIL_VOLTS_HCRIT or Command.RAIL_VOLTS_LCRIT or Command.RAIL_AMPS_HCRIT or Command.TEMP_HCRIT or Command.IN_VOLTS or Command.IN_AMPS or Command.RAIL_VOLTS or Command.RAIL_AMPS
-                or Command.TEMP0 or Command.TEMP1 or Command.FAN_RPM or Command.RAIL_WATTS or Command.TOTAL_WATTS => Linear11ToFloat32((ushort)tmp), // Linear11ToInt((ushort)tmp, 1000000);
+                or Command.TEMP0 or Command.TEMP1 or Command.FAN_RPM or Command.RAIL_WATTS or Command.TOTAL_WATTS => Linear11ToFloat32((ushort)tmp), 
             Command.TOTAL_UPTIME or Command.UPTIME or Command.OCPMODE => tmp,
             _ => null
         };
@@ -85,7 +71,7 @@ internal static class UsbApi
         for (byte rail = 0; rail < tempCount; rail++)
             res.TempMax[rail] = GetValue(stream, Command.TEMP_HCRIT, rail);
 
-        const byte railCount = 3; /* 3v + 5v + 12v */
+        const byte railCount = 3; 
         res.VoltageMin = new float?[railCount];
         res.VoltageMax = new float?[railCount];
         res.CurrentMax = new float?[railCount];
@@ -128,40 +114,12 @@ internal static class UsbApi
 
     private static bool SendCommand(HidStream stream, byte length, Command cmd, byte arg, out byte[] replyData)
     {
-        /*
-         * Corsair protocol for PSUs
-         *
-         * message size = 64 bytes (request and response, little endian)
-         * request:
-         *	[length][command][param0][param1][paramX]...
-         * reply:
-         *	[echo of length][echo of command][data0][data1][dataX]...
-         *
-         *	- commands are byte sized opcodes
-         *	- length is the sum of all bytes of the commands/params
-         *	- the micro-controller of most of these PSUs support concatenation in the request and reply,
-         *	  but it is better to not rely on this (it is also hard to parse)
-         *	- the driver uses raw events to be accessible from userspace (though this is not really
-         *	  supported, it is just there for convenience, may be removed in the future)
-         *	- a reply always start with the length and command in the same order the request used it
-         *	- length of the reply data is specific to the command used
-         *	- some of the commands work on a rail and can be switched to a specific rail (0 = 12v,
-         *	  1 = 5v, 2 = 3.3v)
-         *	- the format of the init command 0xFE is swapped length/command bytes
-         *	- parameter bytes amount and values are specific to the command (rail setting is the only
-         *	  for now that uses non-zero values)
-         *	- there are much more commands, especially for configuring the device, but they are not
-         *	  supported because a wrong command/length can lockup the micro-controller
-         *	- the driver supports debugfs for values not fitting into the hwmon class
-         *	- not every device class (HXi, RMi or AXi) supports all commands
-         *	- it is a pure sensors reading driver (will not support configuring)
-         */
-
+        
         const int cmdBufferSize = 64;
         const int replySize = 16;
 
         byte[] cmdBuffer = new byte[cmdBufferSize + 1];
-        cmdBuffer[0] = 0; // report id
+        cmdBuffer[0] = 0; 
         cmdBuffer[1] = length;
         cmdBuffer[2] = (byte)cmd;
         cmdBuffer[3] = arg;

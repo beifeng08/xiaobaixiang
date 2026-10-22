@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Text;
 
@@ -21,12 +15,7 @@ public enum Vendor
 
 public class CpuId
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CpuId" /> class.
-    /// </summary>
-    /// <param name="group">The group.</param>
-    /// <param name="thread">The thread.</param>
-    /// <param name="affinity">The affinity.</param>
+    
     private CpuId(int group, int thread, GroupAffinity affinity)
     {
         Thread = thread;
@@ -88,12 +77,12 @@ public class CpuId
 
         if (Vendor == Vendor.Intel && maxCpuid >= 0x1A)
         {
-            // Leaf 0x1A, SubLeaf 0, EAX Bits 31:24 = Core Type ID
+            
             uint coreType = (Data[0x1A, 0] >> 24) & 0xFF;
 
             CoreType = coreType switch
             {
-                // 0x40 = Core (P-Core), 0x20 = Atom (E-Core)
+                
                 0x40 => CoreType.Performance,
                 0x20 => CoreType.Efficient,
                 _ => CoreType.Unknown
@@ -180,15 +169,12 @@ public class CpuId
 
                 if (Family is 0x17 or 0x19)
                 {
-                    // ApicIdCoreIdSize: APIC ID size.
-                    // cores per DIE
-                    // we need this for Ryzen 5 (4 cores, 8 threads) ans Ryzen 6 (6 cores, 12 threads)
-                    // Ryzen 5: [core0][core1][dummy][dummy][core2][core3] (Core0 EBX = 00080800, Core2 EBX = 08080800)
+                    
                     coreMaskWith = ((ExtData[8, 2] >> 12) & 0xF) switch
                     {
-                        0x04 => NextLog2(16), // Ryzen
-                        0x05 => NextLog2(32), // Threadripper
-                        0x06 => NextLog2(64), // Epic
+                        0x04 => NextLog2(16), 
+                        0x05 => NextLog2(32), 
+                        0x06 => NextLog2(64), 
                         _ => coreMaskWith
                     };
                 }
@@ -238,12 +224,6 @@ public class CpuId
 
     public Vendor Vendor { get; } = Vendor.Unknown;
 
-    /// <summary>
-    /// Gets the specified <see cref="CpuId" />.
-    /// </summary>
-    /// <param name="group">The group.</param>
-    /// <param name="thread">The thread.</param>
-    /// <returns><see cref="CpuId" />.</returns>
     public static CpuId Get(int group, int thread)
     {
         if (thread >= 64)
@@ -289,8 +269,7 @@ public class CpuId
         return count;
     }
 
-    // ReSharper disable InconsistentNaming
     public const uint CPUID_0 = 0;
     public const uint CPUID_EXT = 0x80000000;
-    // ReSharper restore InconsistentNaming
+    
 }

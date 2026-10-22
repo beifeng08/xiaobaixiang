@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,10 +11,7 @@ namespace LibreHardwareMonitor.Hardware.Motherboard.Lpc.EC;
 
 public abstract class EmbeddedController : Hardware
 {
-    // If you are updating board information, please consider sharing your changes with the corresponding Linux driver.
-    // You can do that at https://github.com/zeule/asus-ec-sensors or contribute directly to Linux HWMON.
-    // If you are adding a new board, please share DSDT table for the board at https://github.com/zeule/asus-ec-sensors.
-    // https://dortania.github.io/Getting-Started-With-ACPI/Manual/dump.html
+    
     private static readonly BoardInfo[] _boards =
     {
         new(Model.ROG_STRIX_B850_E_GAMING_WIFI,
@@ -410,7 +402,7 @@ public abstract class EmbeddedController : Hardware
     private static readonly Dictionary<BoardFamily, Dictionary<ECSensor, EmbeddedControllerSource>> _knownSensors = new()
     {
         {
-            BoardFamily.Amd400, new Dictionary<ECSensor, EmbeddedControllerSource>() // no chipset fans in this generation
+            BoardFamily.Amd400, new Dictionary<ECSensor, EmbeddedControllerSource>() 
             {
                 { ECSensor.TempChipset, new EmbeddedControllerSource("Chipset", SensorType.Temperature, 0x003a) },
                 { ECSensor.TempCPU, new EmbeddedControllerSource("CPU", SensorType.Temperature, 0x003b) },
@@ -438,7 +430,7 @@ public abstract class EmbeddedController : Hardware
                 { ECSensor.FanCPUOpt, new EmbeddedControllerSource("CPU Optional Fan", SensorType.Fan, 0x00b0, 2) },
                 { ECSensor.FanVrmHS, new EmbeddedControllerSource("VRM Heat Sink Fan", SensorType.Fan, 0x00b2, 2) },
                 { ECSensor.FanChipset, new EmbeddedControllerSource("Chipset Fan", SensorType.Fan, 0x00b4, 2) },
-                // TODO: "why 42?" is a silly question, I know, but still, why? On the serious side, it might be 41.6(6)
+                
                 { ECSensor.FanWaterFlow, new EmbeddedControllerSource("Water flow", SensorType.Flow, 0x00bc, 2, factor: 1.0f / 42f * 60f) },
                 { ECSensor.CurrCPU, new EmbeddedControllerSource("CPU", SensorType.Current, 0x00f4) },
                 { ECSensor.TempWaterIn, new EmbeddedControllerSource("Water In", SensorType.Temperature, 0x0100, blank: -40) },
@@ -503,7 +495,7 @@ public abstract class EmbeddedController : Hardware
                 { ECSensor.TempTSensor, new EmbeddedControllerSource("T Sensor", SensorType.Temperature, 0x003d, blank: -40) },
                 { ECSensor.TempVrm, new EmbeddedControllerSource("VRM", SensorType.Temperature, 0x003e) },
                 { ECSensor.FanCPUOpt, new EmbeddedControllerSource("CPU Optional Fan", SensorType.Fan, 0x00b0, 2) },
-                { ECSensor.FanWaterFlow, new EmbeddedControllerSource("Water Flow", SensorType.Flow, 0x00be, 2, factor: 1.0f / 42f * 60f) }, // todo: need validation for this calculation
+                { ECSensor.FanWaterFlow, new EmbeddedControllerSource("Water Flow", SensorType.Flow, 0x00be, 2, factor: 1.0f / 42f * 60f) }, 
                 { ECSensor.CurrCPU, new EmbeddedControllerSource("CPU", SensorType.Current, 0x00f4) },
                 { ECSensor.TempWaterIn, new EmbeddedControllerSource("Water In", SensorType.Temperature, 0x0100, blank: -40) },
                 { ECSensor.TempWaterOut, new EmbeddedControllerSource("Water Out", SensorType.Temperature, 0x0101, blank: -40) },
@@ -517,7 +509,7 @@ public abstract class EmbeddedController : Hardware
                 { ECSensor.TempWaterIn, new EmbeddedControllerSource("Water In", SensorType.Temperature, 0x0100, blank: -40) },
                 { ECSensor.TempWaterOut, new EmbeddedControllerSource("Water Out", SensorType.Temperature, 0x0101, blank: -40) },
                 { ECSensor.TempWaterBlockIn, new EmbeddedControllerSource("Water Block In", SensorType.Temperature, 0x0102, blank: -40) },
-                { ECSensor.FanWaterFlow, new EmbeddedControllerSource("Water Flow", SensorType.Flow, 0x00be, 2, factor: 1.0f / 42f * 60f) } // todo: need validation for this calculation
+                { ECSensor.FanWaterFlow, new EmbeddedControllerSource("Water Flow", SensorType.Flow, 0x00be, 2, factor: 1.0f / 42f * 60f) } 
             }
         },
         {
@@ -529,7 +521,7 @@ public abstract class EmbeddedController : Hardware
                 { ECSensor.TempTSensor2, new EmbeddedControllerSource("T Sensor 2", SensorType.Temperature, 0x105, blank: -40) },
                 { ECSensor.TempWaterIn, new EmbeddedControllerSource("Water In", SensorType.Temperature, 0x0100, blank: -40) },
                 { ECSensor.TempWaterOut, new EmbeddedControllerSource("Water Out", SensorType.Temperature, 0x0101, blank: -40) },
-                { ECSensor.FanWaterFlow, new EmbeddedControllerSource("Water Flow", SensorType.Flow, 0x00be, 2, factor: 1.0f / 42f * 60f) } // todo: need validation for this calculation
+                { ECSensor.FanWaterFlow, new EmbeddedControllerSource("Water Flow", SensorType.Flow, 0x00be, 2, factor: 1.0f / 42f * 60f) } 
             }
         }
     };
@@ -542,7 +534,7 @@ public abstract class EmbeddedController : Hardware
 
     protected EmbeddedController(IEnumerable<EmbeddedControllerSource> sources, ISettings settings) : base("Embedded Controller", new Identifier("lpc", "ec"), settings)
     {
-        // sorting by address, which implies sorting by bank, for optimized EC access
+        
         var sourcesList = sources.ToList();
         sourcesList.Sort((left, right) => left.Register.CompareTo(right.Register));
         _sources = sourcesList;
@@ -604,7 +596,7 @@ public abstract class EmbeddedController : Hardware
     {
         if (!TryUpdateData())
         {
-            // just skip this update cycle?
+            
             return;
         }
 
@@ -689,58 +681,41 @@ public abstract class EmbeddedController : Hardware
 
     private enum ECSensor
     {
-        /// <summary>Chipset temperature [℃]</summary>
+        
         TempChipset,
 
-        /// <summary>CPU temperature [℃]</summary>
         TempCPU,
 		
-        /// <summary>CPU Package temperature [℃]</summary>
         TempCPUPackage,
 
-        /// <summary>motherboard temperature [℃]</summary>
         TempMB,
 
-        /// <summary>"T_Sensor" temperature sensor reading [℃]</summary>
         TempTSensor,
 
-        /// <summary>"T_Sensor" temperature sensor reading [℃]</summary>
         TempTSensorAlt,
 
-        /// <summary>"T_Sensor 2" temperature sensor reading [℃]</summary>
         TempTSensor2,
 
-        /// <summary>VRM temperature [℃]</summary>
         TempVrm,
 
-        /// <summary>CPU Core voltage [mV]</summary>
         VoltageCPU,
 
-        /// <summary>CPU_Opt fan [RPM]</summary>
         FanCPUOpt,
 
-        /// <summary>VRM heat sink fan [RPM]</summary>
         FanVrmHS,
 
-        /// <summary>Chipset fan [RPM]</summary>
         FanChipset,
 
-        /// <summary>Water Pump [RPM]</summary>
         FanWaterPump,
 
-        /// <summary>Water flow sensor reading [RPM]</summary>
         FanWaterFlow,
 
-        /// <summary>CPU current [A]</summary>
         CurrCPU,
 
-        /// <summary>"Water_In" temperature sensor reading [℃]</summary>
         TempWaterIn,
 
-        /// <summary>"Water_Out" temperature sensor reading [℃]</summary>
         TempWaterOut,
 
-        /// <summary>Water block temperature sensor reading [℃]</summary>
         TempWaterBlockIn,
         Max
     }

@@ -1,7 +1,5 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) Florian K. (Blacktempel)
-// All Rights Reserved.
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
 
 using System;
 using System.Collections.Generic;
@@ -74,7 +72,7 @@ internal class MsiCoreLiquidController : Hardware
             _fan4 = AddSensor("Pump Fan", 13, SensorType.Fan, m => m.Fan4.Speed);
             _fan5 = AddSensor("Pump", 14, SensorType.Fan, m => m.Fan5.Speed);
         }
-        else //May need other mapping for different devices
+        else 
         {
             _fan1 = AddSensor("Fan 1", 10, SensorType.Fan, m => m.Fan1.Speed);
             _fan2 = AddSensor("Fan 2", 11, SensorType.Fan, m => m.Fan2.Speed);
@@ -84,7 +82,7 @@ internal class MsiCoreLiquidController : Hardware
         }
 
         AddSensor("Inlet Temperature", 0, SensorType.Temperature, m => m.TemperatureInlet);
-        AddSensor("Liquid Temperature", 1, SensorType.Temperature, m => m.TemperatureOutlet); //Msi: "Liquid_Temp"
+        AddSensor("Liquid Temperature", 1, SensorType.Temperature, m => m.TemperatureOutlet); 
         AddSensor("Temperature Sensor 1", 2, SensorType.Temperature, m => m.TemperatureSensor1 == 125 ? -100 : m.TemperatureSensor1);
         AddSensor("Temperature Sensor 2", 3, SensorType.Temperature, m => m.TemperatureSensor2 == 125 ? -100 : m.TemperatureSensor2);
 
@@ -129,7 +127,6 @@ internal class MsiCoreLiquidController : Hardware
             }
         }
 
-        //Fan Controls
         TryAddFanControl(_fan1);
         TryAddFanControl(_fan2);
         TryAddFanControl(_fan3);
@@ -201,18 +198,16 @@ internal class MsiCoreLiquidController : Hardware
                 value = 100;
             }
 
-            //Set requested speed in % and CPU temperature in degrees Celsius
             fan.ConfigureDuty.Item0 = value;
-            fan.ConfigureTemp.Item0 = 0; //Set temperature to 0 to use fixed duty instead of temperature curve
+            fan.ConfigureTemp.Item0 = 0; 
 
             fan.ConfigureDuty.Item1 = value;
             fan.ConfigureTemp.Item1 = 90;
 
-            //Add failsafe to prevent fan from stopping at high temperatures if user sets low duty
-            fan.ConfigureDuty.Item2 = 100; //Max fan
+            fan.ConfigureDuty.Item2 = 100; 
             fan.ConfigureTemp.Item2 = 91;
 
-            fan.ConfigureDuty.Item3 = 100; //Max fan
+            fan.ConfigureDuty.Item3 = 100; 
             fan.ConfigureTemp.Item3 = 95;
 
             SetFanConfigure(msi);
@@ -418,7 +413,7 @@ internal class MsiCoreLiquidController : Hardware
             }
 
             stream.Write(inbuf);
-            Thread.Sleep(10); //Msi is using that interval
+            Thread.Sleep(10); 
             var readResult = stream.Read(outBuf);
 
             if (readResult <= 0)

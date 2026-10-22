@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 namespace LibreHardwareMonitor.Hardware.Motherboard.Lpc;
 
 internal class LpcPort
@@ -80,10 +74,10 @@ internal class LpcPort
     public void NuvotonDisableIOSpaceLock()
     {
         byte options = ReadByte(NUVOTON_HARDWARE_MONITOR_IO_SPACE_LOCK);
-        // if the i/o space lock is enabled
+        
         if ((options & 0x10) > 0)
         {
-            // disable the i/o space lock
+            
             WriteByte(NUVOTON_HARDWARE_MONITOR_IO_SPACE_LOCK, (byte)(options & ~0x10));
         }
     }
@@ -98,7 +92,7 @@ internal class LpcPort
 
     public void IT87Exit()
     {
-        // Do not exit config mode for secondary super IO.
+        
         if (RegisterPort != 0x4E)
         {
             _pawnModule.WritePort(RegisterPort, CONFIGURATION_CONTROL_REGISTER);
@@ -118,9 +112,8 @@ internal class LpcPort
 
     public void Close() => _pawnModule.Close();
 
-    // ReSharper disable InconsistentNaming
     private const byte CONFIGURATION_CONTROL_REGISTER = 0x02;
     private const byte DEVICE_SELECT_REGISTER = 0x07;
     private const byte NUVOTON_HARDWARE_MONITOR_IO_SPACE_LOCK = 0x28;
-    // ReSharper restore InconsistentNaming
+    
 }

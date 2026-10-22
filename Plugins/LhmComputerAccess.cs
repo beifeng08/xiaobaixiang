@@ -5,8 +5,6 @@ using LibreHardwareMonitor.Hardware;
 
 namespace YanJi.Hardware;
 
-/// <summary>两个插件链接此源码；命名信号量在同进程的不同程序集间协调完整 Computer 生命周期。
-/// 不放进 SDK，避免契约程序集依赖 LHM；不允许一方 Close 释放另一方正在使用的静态资源。</summary>
 internal static class LhmComputerAccess
 {
     const string FailureKey = "YanJi.Lhm.ComputerFailure";
@@ -32,7 +30,7 @@ internal static class LhmComputerAccess
                 }
                 catch (Exception ex)
                 {
-                    // LHM Open 中途失败时，公开 Close 不能保证回收部分初始化的静态资源。
+                    
                     AppContext.SetData(FailureKey, ex.Message);
                     throw;
                 }

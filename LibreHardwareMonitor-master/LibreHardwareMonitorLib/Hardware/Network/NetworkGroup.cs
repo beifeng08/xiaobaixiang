@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,8 +61,7 @@ internal class NetworkGroup : IGroup, IHardwareChanged
 
     private void UpdateNetworkInterfaces(ISettings settings)
     {
-        // When multiple events fire concurrently, we don't want threads interfering
-        // with others as they manipulate non-thread safe state.
+        
         lock (_updateLock)
         {
             List<NetworkInterface> networkInterfaces = GetNetworkInterfaces();
@@ -79,7 +73,6 @@ internal class NetworkGroup : IGroup, IHardwareChanged
 
             List<Network> hardware = [.. _hardware];
 
-            // Remove network interfaces that no longer exist.
             for (int i = 0; i < hardware.Count; i++)
             {
                 Network network = hardware[i];
@@ -90,7 +83,6 @@ internal class NetworkGroup : IGroup, IHardwareChanged
                 removables.Add(network);
             }
 
-            // Add new ones.
             foreach (NetworkInterface networkInterface in networkInterfaces)
             {
                 if (hardware.All(x => x.NetworkInterface.Id != networkInterface.Id))
@@ -103,7 +95,7 @@ internal class NetworkGroup : IGroup, IHardwareChanged
                     }
                     catch (NetworkInformationException)
                     {
-                        // Interface became unavailable between enumeration and construction; skip it.
+                        
                     }
                 }
             }
@@ -133,8 +125,7 @@ internal class NetworkGroup : IGroup, IHardwareChanged
             }
             catch (NetworkInformationException)
             {
-                // Disabling IPv4 while running can cause a NetworkInformationException: The pipe is being closed.
-                // This can be retried.
+                
             }
         }
 

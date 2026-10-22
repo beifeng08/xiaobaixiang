@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace LibreHardwareMonitor.Windows.Forms.UI.Themes
@@ -52,8 +55,6 @@ namespace LibreHardwareMonitor.Windows.Forms.UI.Themes
 
             _isScrolling = true;
 
-            //note: this.Capture is true when the control is clicked, no need to handle this
-
             _startPos = e.Y;
             _startValue = _scrollbar.Value;
 
@@ -73,7 +74,6 @@ namespace LibreHardwareMonitor.Windows.Forms.UI.Themes
             if (!_isScrolling)
                 return;
 
-            //pixel to range scaling:
             double totalRange = _scrollbar.Maximum - _scrollbar.Minimum;
 
             if (totalRange <= 0)

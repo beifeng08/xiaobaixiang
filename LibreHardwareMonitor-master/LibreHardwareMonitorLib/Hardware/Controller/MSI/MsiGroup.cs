@@ -1,7 +1,5 @@
-﻿// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) Florian K. (Blacktempel)
-// All Rights Reserved.
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
 
 using System;
 using System.Collections.Generic;
@@ -21,12 +19,11 @@ internal class MsiGroup : IGroup
         _report.AppendLine("MSI Hardware:");
         _report.AppendLine();
 
-        //Get all HID devices
         var hidDevices = DeviceList.Local.GetHidDevices();
 
         foreach (var hidDevice in hidDevices)
         {
-            //Check if the device is in the supported devices list
+            
             var found = MsiConstants.SupportedDevices.FirstOrDefault(md => md.VendorId == hidDevice.VendorID && md.ProductIdController == hidDevice.ProductID);
 
             if (found == null)

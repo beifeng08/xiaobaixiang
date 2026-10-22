@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) 2024 demorfi<demorfi@gmail.com>
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Linq;
 using System.Text;
@@ -83,7 +77,6 @@ internal static class UsbApi
         if (!Request(stream, new byte[2] { 0x51, 0xE0 }, out byte[] basic))
             throw new ProtocolError(stream.Device, "Can't read basic info");
 
-        // basic has information only about the first 20 sensors
         for (int i = 0; i < 20; i++)
         {
             byte[] replyData = new byte[4];
@@ -91,7 +84,6 @@ internal static class UsbApi
             info[i] = Linear11ToFloat32((ushort)BitConverter.ToInt32(replyData, 0));
         }
 
-        // runtime info
         Request(stream, new byte[2] { 0x51, 0xD1 }, out byte[] runtime);
         info[(int)IndexInfo.RUNTIME] = BitConverter.ToInt32(runtime, 0) / 100;
 

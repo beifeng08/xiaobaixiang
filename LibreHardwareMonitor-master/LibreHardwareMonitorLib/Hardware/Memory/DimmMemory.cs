@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using LibreHardwareMonitor.Hardware.Memory.Sensors;
 using RAMSPDToolkit.SPD;
 using RAMSPDToolkit.SPD.Interfaces;
@@ -21,10 +15,10 @@ internal sealed class DimmMemory : Hardware
     public DimmMemory(SPDAccessor accessor, string name, Identifier identifier, ISettings settings)
         : base(name, identifier, settings)
     {
-        //Only add thermal sensor if present
+        
         if (accessor is IThermalSensor ts && ts.HasThermalSensor)
         {
-            //Check which kind of RAM we have
+            
             switch (accessor.MemoryType())
             {
                 case SPDMemoryType.SPD_DDR4_SDRAM:
@@ -45,11 +39,9 @@ internal sealed class DimmMemory : Hardware
 
         bool hasThermalSensor = _thermalSensor != null;
 
-        //Add thermal sensor
         if (hasThermalSensor)
             ActivateSensor(_thermalSensor);
 
-        //Add other sensors
         CreateSensors(accessor, hasThermalSensor);
     }
 
@@ -76,14 +68,13 @@ internal sealed class DimmMemory : Hardware
     {
         if (hasThermalSensor)
         {
-            //Temperature Resolution (fixed value)
+            
             AddSensor("Temperature Sensor Resolution", 1, false, SensorType.Temperature, accessor.TemperatureResolution);
             AddSensor("Thermal Sensor Low Limit", 2, false, SensorType.Temperature, accessor.ThermalSensorLowLimit);
             AddSensor("Thermal Sensor High Limit", 3, false, SensorType.Temperature, accessor.ThermalSensorHighLimit);
             AddSensor("Thermal Sensor Critical Limit", 4, false, SensorType.Temperature, accessor.ThermalSensorCriticalLimit);
         }
 
-        //Timings
         AddSensor("tCKAVGmin (Minimum Cycle Time)", 20, false, SensorType.Timing, (float)accessor.SDRAMTimings.MinimumCycleTime);
         AddSensor("tCKAVGmax (Maximum Cycle Time)", 21, false, SensorType.Timing, (float)accessor.SDRAMTimings.MaximumCycleTime);
         AddSensor("tAA (CAS Latency Time)", 22, false, SensorType.Timing, (float)accessor.SDRAMTimings.MinimumCASLatencyTime);
@@ -102,7 +93,6 @@ internal sealed class DimmMemory : Hardware
         AddSensor("tWTR_S (Write to Read Time)", 35, false, SensorType.Timing, (float)accessor.SDRAMTimings.MinimumWriteToReadTime_DiffGroup);
         AddSensor("tWTR_L (Write to Read Time)", 36, false, SensorType.Timing, (float)accessor.SDRAMTimings.MinimumWriteToReadTime_SameGroup);
 
-        //Data
         AddSensor("Capacity", 50, false, SensorType.Data, accessor.GetCapacity());
     }
 
@@ -110,7 +100,7 @@ internal sealed class DimmMemory : Hardware
     {
         if (hasThermalSensor)
         {
-            //Temperature Resolution (fixed value)
+            
             AddSensor("Temperature Sensor Resolution", 1, false, SensorType.Temperature, accessor.TemperatureResolution);
             AddSensor("Thermal Sensor Low Limit", 2, false, SensorType.Temperature, accessor.ThermalSensorLowLimit);
             AddSensor("Thermal Sensor High Limit", 3, false, SensorType.Temperature, accessor.ThermalSensorHighLimit);
@@ -118,7 +108,6 @@ internal sealed class DimmMemory : Hardware
             AddSensor("Thermal Sensor Critical High Limit", 5, false, SensorType.Temperature, accessor.ThermalSensorCriticalHighLimit);
         }
 
-        //Timings
         AddSensor("tCKAVGmin (Minimum Cycle Time)", 20, false, SensorType.Timing, (float)accessor.SDRAMTimings.MinimumCycleTime);
         AddSensor("tCKAVGmax (Maximum Cycle Time)", 21, false, SensorType.Timing, (float)accessor.SDRAMTimings.MaximumCycleTime);
         AddSensor("tAA (CAS Latency Time)", 22, false, SensorType.Timing, (float)accessor.SDRAMTimings.MinimumCASLatencyTime);
@@ -134,7 +123,6 @@ internal sealed class DimmMemory : Hardware
         AddSensor("tRFC2_dlr (Fine Granularity Refresh Recovery Time 3DS)", 32, false, SensorType.Timing, (float)accessor.SDRAMTimings.FineGranularityRefreshRecoveryTime_3DSDifferentLogicalRank);
         AddSensor("tRFCsb_dlr (Same Bank Refresh Recovery Time 3DS)", 33, false, SensorType.Timing, (float)accessor.SDRAMTimings.SameBankRefreshRecoveryTime_3DSDifferentLogicalRank);
 
-        //Data
         AddSensor("Capacity", 50, false, SensorType.Data, accessor.GetCapacity());
     }
 

@@ -1,12 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -36,7 +30,6 @@ internal sealed class Amd10Cpu : AmdCpu
     {
         _pawnModule = new AmdFamily10();
 
-        // AMD family 1Xh processors support only one temperature sensor
         _coreTemperature = new Sensor("CPU Cores", 0, SensorType.Temperature, this, new[] { new ParameterDescription("Offset [°C]", "Temperature offset.", 0) }, settings);
         _coreVoltage = new Sensor("CPU Cores", 0, SensorType.Voltage, this, settings);
         ActivateSensor(_coreVoltage);
@@ -56,7 +49,6 @@ internal sealed class Amd10Cpu : AmdCpu
                 }
         }
 
-        // get the pci address for the Miscellaneous Control registers
         _busClock = new Sensor("Bus Speed", 0, SensorType.Clock, this, settings);
         _coreClocks = new Sensor[_coreCount];
         for (int i = 0; i < _coreClocks.Length; i++)
@@ -66,15 +58,12 @@ internal sealed class Amd10Cpu : AmdCpu
                 ActivateSensor(_coreClocks[i]);
         }
 
-        // set affinity to the first thread for all frequency estimations
         GroupAffinity previousAffinity = ThreadAffinity.Set(cpuId[0][0].Affinity);
 
         _timeStampCounterMultiplier = MeasureTimeStampCounterMultiplier();
 
-        // restore the thread affinity.
         ThreadAffinity.Set(previousAffinity);
 
-        // the file reader for lm-sensors support on Linux
         _temperatureStream = null;
 
         if (Software.OperatingSystem.IsUnix)
@@ -148,15 +137,13 @@ internal sealed class Amd10Cpu : AmdCpu
             case 0x11:
             case 0x15:
             case 0x16:
-                // 8:6 CpuDid: current core divisor ID
-                // 5:0 CpuFid: current core frequency ID
+                
                 cpuDid = (cofVidEax >> 6) & 7;
                 cpuFid = cofVidEax & 0x1F;
                 return 0.5 * (cpuFid + 0x10) / (1 << (int)cpuDid);
 
             case 0x12:
-                // 8:4 CpuFid: current CPU core frequency ID
-                // 3:0 CpuDid: current CPU core divisor ID
+                
                 cpuFid = (cofVidEax >> 4) & 0x1F;
                 cpuDid = cofVidEax & 0xF;
                 double divisor = cpuDid switch
@@ -175,8 +162,7 @@ internal sealed class Amd10Cpu : AmdCpu
                 return (cpuFid + 0x10) / divisor;
 
             case 0x14:
-                // 8:4: current CPU core divisor ID most significant digit
-                // 3:0: current CPU core divisor ID least significant digit
+                
                 uint divisorIdMsd = (cofVidEax >> 4) & 0x1F;
                 uint divisorIdLsd = cofVidEax & 0xF;
                 uint value = _pawnModule.ReadMiscCtl(Index, CLOCK_POWER_TIMING_CONTROL_0_REGISTER);
@@ -360,10 +346,9 @@ internal sealed class Amd10Cpu : AmdCpu
         _pawnModule.Close();
     }
 
-    // ReSharper disable InconsistentNaming
     private const uint CLOCK_POWER_TIMING_CONTROL_0_REGISTER = 0xD4;
     private const uint REPORTED_TEMPERATURE_CONTROL_REGISTER = 0xA4;
     private const uint COFVID_STATUS = 0xC0010071;
     private const uint SMU_REPORTED_TEMP_CTRL_OFFSET = 0xD8200CA4;
-    // ReSharper restore InconsistentNaming
+    
 }

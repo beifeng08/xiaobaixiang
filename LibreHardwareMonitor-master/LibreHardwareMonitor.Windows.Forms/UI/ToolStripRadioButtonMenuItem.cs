@@ -1,13 +1,13 @@
-﻿using System;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
 namespace LibreHardwareMonitor.Windows.Forms.UI;
 
-/// <summary>
-/// https://docs.microsoft.com/en-us/dotnet/desktop/winforms/controls/how-to-display-option-buttons-in-a-menustrip-windows-forms
-/// </summary>
 public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
 {
     public ToolStripRadioButtonMenuItem()
@@ -63,7 +63,6 @@ public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
         ShortcutKeys = shortcutKeys;
     }
 
-    // Called by all constructors to initialize CheckOnClick.
     private void Initialize()
     {
         CheckOnClick = true;
@@ -73,11 +72,8 @@ public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
     {
         base.OnCheckedChanged(e);
 
-        // If this item is no longer in the checked state or if its
-        // parent has not yet been initialized, do nothing.
         if (!Checked || Parent == null) return;
 
-        // Clear the checked state for all siblings.
         foreach (ToolStripItem item in Parent.Items)
         {
             if (item is ToolStripRadioButtonMenuItem radioItem
@@ -86,8 +82,6 @@ public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
             {
                 radioItem.Checked = false;
 
-                // Only one item can be selected at a time,
-                // so there is no need to continue.
                 return;
             }
         }
@@ -95,37 +89,29 @@ public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
 
     protected override void OnClick(EventArgs e)
     {
-        // If the item is already in the checked state, do not call
-        // the base method, which would toggle the value.
+        
         if (Checked) return;
 
         base.OnClick(e);
     }
 
-    // Let the item paint itself, and then paint the RadioButton
-    // where the check mark is normally displayed.
     protected override void OnPaint(PaintEventArgs e)
     {
         if (Image != null)
         {
-            // If the client sets the Image property, the selection behavior
-            // remains unchanged, but the RadioButton is not displayed and the
-            // selection is indicated only by the selection rectangle.
+            
             base.OnPaint(e);
             return;
         }
         else
         {
-            // If the Image property is not set, call the base OnPaint method
-            // with the CheckState property temporarily cleared to prevent
-            // the check mark from being painted.
+            
             CheckState currentState = CheckState;
             CheckState = CheckState.Unchecked;
             base.OnPaint(e);
             CheckState = currentState;
         }
 
-        // Determine the correct state of the RadioButton.
         RadioButtonState buttonState = RadioButtonState.UncheckedNormal;
         if (Enabled)
         {
@@ -157,7 +143,6 @@ public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
                 buttonState = RadioButtonState.UncheckedDisabled;
         }
 
-        // Calculate the position at which to display the RadioButton.
         int offset = (ContentRectangle.Height -
                       RadioButtonRenderer.GetGlyphSize(
                                                        e.Graphics, buttonState).Height) / 2;
@@ -166,7 +151,6 @@ public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
                                         ContentRectangle.Location.X + 4,
                                         ContentRectangle.Location.Y + offset);
 
-        // Paint the RadioButton.
         RadioButtonRenderer.DrawRadioButton(e.Graphics, imageLocation, buttonState);
     }
 
@@ -176,7 +160,6 @@ public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
     {
         mouseHoverState = true;
 
-        // Force the item to repaint with the new RadioButton state.
         Invalidate();
 
         base.OnMouseEnter(e);
@@ -194,7 +177,6 @@ public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
     {
         mouseDownState = true;
 
-        // Force the item to repaint with the new RadioButton state.
         Invalidate();
 
         base.OnMouseDown(e);
@@ -206,14 +188,11 @@ public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
         base.OnMouseUp(e);
     }
 
-    // Enable the item only if its parent item is in the checked state
-    // and its Enabled property has not been explicitly set to false.
     public override bool Enabled
     {
         get
         {
-            // Use the base value in design mode to prevent the designer
-            // from setting the base value to the calculated value.
+            
             if (!DesignMode
              && OwnerItem is ToolStripMenuItem ownerMenuItem
              && ownerMenuItem.CheckOnClick)
@@ -231,9 +210,6 @@ public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
         }
     }
 
-    // When OwnerItem becomes available, if it is a ToolStripMenuItem
-    // with a CheckOnClick property value of true, subscribe to its
-    // CheckedChanged event.
     protected override void OnOwnerChanged(EventArgs e)
     {
         if (OwnerItem is ToolStripMenuItem ownerMenuItem
@@ -245,8 +221,6 @@ public class ToolStripRadioButtonMenuItem : ToolStripMenuItem
         base.OnOwnerChanged(e);
     }
 
-    // When the checked state of the parent item changes,
-    // repaint the item so that the new Enabled state is displayed.
     private void OwnerMenuItem_CheckedChanged(object sender, EventArgs e)
     {
         Invalidate();

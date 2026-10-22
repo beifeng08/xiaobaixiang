@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using HidSharp;
 
@@ -27,49 +22,42 @@ internal sealed class Quadro : Hardware
     {
         if (dev.TryOpen(out _stream))
         {
-            //Reading output report instead of feature report, as the measurements are in the output report
+            
             _stream.Read(_rawData);
 
             Name = "QUADRO";
             FirmwareVersion = GetConvertedValue(QuadroDataIndexes.FIRMWARE_VERSION).GetValueOrDefault(0);
 
-            // Initialize the 4 temperature sensors
             for (int i = 0; i < 4; i++)
             {
                 _temperatures[i] = new Sensor($"Temperature #{i + 1}", i, SensorType.Temperature, this, Array.Empty<ParameterDescription>(), settings);
                 ActivateSensor(_temperatures[i]);
             }
 
-            // Initialize the input voltage sensor
             _voltages[0] = new Sensor("Input", 0, SensorType.Voltage, this, Array.Empty<ParameterDescription>(), settings);
             ActivateSensor(_voltages[0]);
 
-            // Initialize the flow sensor
             _flows[0] = new Sensor("Flow", 0, SensorType.Flow, this, Array.Empty<ParameterDescription>(), settings);
             ActivateSensor(_flows[0]);
 
-            // Initialize the 4 fan voltage sensors
             for (int i = 1; i < 5; i++)
             {
                 _voltages[i] = new Sensor($"Fan #{i}", i, SensorType.Voltage, this, Array.Empty<ParameterDescription>(), settings);
                 ActivateSensor(_voltages[i]);
             }
 
-            // Initialize the 4 fan current sensors
             for (int i = 0; i < 4; i++)
             {
                 _currents[i] = new Sensor($"Fan #{i + 1}", i, SensorType.Current, this, Array.Empty<ParameterDescription>(), settings);
                 ActivateSensor(_currents[i]);
             }
 
-            // Initialize the 4 fan power sensors
             for (int i = 0; i < 4; i++)
             {
                 _powers[i] = new Sensor($"Fan #{i + 1}", i, SensorType.Power, this, Array.Empty<ParameterDescription>(), settings);
                 ActivateSensor(_powers[i]);
             }
 
-            // Initialize the 4 fan speed sensors
             for (int i = 0; i < 4; i++)
             {
                 _rpmSensors[i] = new Sensor($"Fan #{i + 1}", i, SensorType.Fan, this, Array.Empty<ParameterDescription>(), settings);
@@ -94,37 +82,37 @@ internal sealed class Quadro : Hardware
 
     public override void Update()
     {
-        //Reading output report instead of feature report, as the measurements are in the output report
+        
         _stream.Read(_rawData);
 
-        _temperatures[0].Value = GetConvertedValue(QuadroDataIndexes.TEMP_1) / 100f; // Temp 1
-        _temperatures[1].Value = GetConvertedValue(QuadroDataIndexes.TEMP_2) / 100f; // Temp 2
-        _temperatures[2].Value = GetConvertedValue(QuadroDataIndexes.TEMP_3) / 100f; // Temp 3
-        _temperatures[3].Value = GetConvertedValue(QuadroDataIndexes.TEMP_4) / 100f; // Temp 4
+        _temperatures[0].Value = GetConvertedValue(QuadroDataIndexes.TEMP_1) / 100f; 
+        _temperatures[1].Value = GetConvertedValue(QuadroDataIndexes.TEMP_2) / 100f; 
+        _temperatures[2].Value = GetConvertedValue(QuadroDataIndexes.TEMP_3) / 100f; 
+        _temperatures[3].Value = GetConvertedValue(QuadroDataIndexes.TEMP_4) / 100f; 
 
-        _voltages[0].Value = GetConvertedValue(QuadroDataIndexes.VOLTAGE) / 100f; // Input voltage
+        _voltages[0].Value = GetConvertedValue(QuadroDataIndexes.VOLTAGE) / 100f; 
 
-        _flows[0].Value = GetConvertedValue(QuadroDataIndexes.FLOW) / 10f; // Flow
+        _flows[0].Value = GetConvertedValue(QuadroDataIndexes.FLOW) / 10f; 
 
-        _voltages[1].Value = GetConvertedValue(QuadroDataIndexes.FAN_VOLTAGE_1) / 100f; // Fan 1 voltage
-        _voltages[2].Value = GetConvertedValue(QuadroDataIndexes.FAN_VOLTAGE_2) / 100f; // Fan 2 voltage
-        _voltages[3].Value = GetConvertedValue(QuadroDataIndexes.FAN_VOLTAGE_3) / 100f; // Fan 3 voltage
-        _voltages[4].Value = GetConvertedValue(QuadroDataIndexes.FAN_VOLTAGE_4) / 100f; // Fan 4 voltage
+        _voltages[1].Value = GetConvertedValue(QuadroDataIndexes.FAN_VOLTAGE_1) / 100f; 
+        _voltages[2].Value = GetConvertedValue(QuadroDataIndexes.FAN_VOLTAGE_2) / 100f; 
+        _voltages[3].Value = GetConvertedValue(QuadroDataIndexes.FAN_VOLTAGE_3) / 100f; 
+        _voltages[4].Value = GetConvertedValue(QuadroDataIndexes.FAN_VOLTAGE_4) / 100f; 
 
-        _currents[0].Value = GetConvertedValue(QuadroDataIndexes.FAN_CURRENT_1) / 1000f; // Fan 1 current
-        _currents[1].Value = GetConvertedValue(QuadroDataIndexes.FAN_CURRENT_2) / 1000f; // Fan 2 current
-        _currents[2].Value = GetConvertedValue(QuadroDataIndexes.FAN_CURRENT_3) / 1000f; // Fan 3 current
-        _currents[3].Value = GetConvertedValue(QuadroDataIndexes.FAN_CURRENT_4) / 1000f; // Fan 4 current
+        _currents[0].Value = GetConvertedValue(QuadroDataIndexes.FAN_CURRENT_1) / 1000f; 
+        _currents[1].Value = GetConvertedValue(QuadroDataIndexes.FAN_CURRENT_2) / 1000f; 
+        _currents[2].Value = GetConvertedValue(QuadroDataIndexes.FAN_CURRENT_3) / 1000f; 
+        _currents[3].Value = GetConvertedValue(QuadroDataIndexes.FAN_CURRENT_4) / 1000f; 
 
-        _powers[0].Value = GetConvertedValue(QuadroDataIndexes.FAN_POWER_1) / 100f; // Fan 1 power
-        _powers[1].Value = GetConvertedValue(QuadroDataIndexes.FAN_POWER_2) / 100f; // Fan 2 power
-        _powers[2].Value = GetConvertedValue(QuadroDataIndexes.FAN_POWER_3) / 100f; // Fan 3 power
-        _powers[3].Value = GetConvertedValue(QuadroDataIndexes.FAN_POWER_4) / 100f; // Fan 4 power
+        _powers[0].Value = GetConvertedValue(QuadroDataIndexes.FAN_POWER_1) / 100f; 
+        _powers[1].Value = GetConvertedValue(QuadroDataIndexes.FAN_POWER_2) / 100f; 
+        _powers[2].Value = GetConvertedValue(QuadroDataIndexes.FAN_POWER_3) / 100f; 
+        _powers[3].Value = GetConvertedValue(QuadroDataIndexes.FAN_POWER_4) / 100f; 
 
-        _rpmSensors[0].Value = GetConvertedValue(QuadroDataIndexes.FAN_SPEED_1); // Fan 1 speed
-        _rpmSensors[1].Value = GetConvertedValue(QuadroDataIndexes.FAN_SPEED_2); // Fan 2 speed
-        _rpmSensors[2].Value = GetConvertedValue(QuadroDataIndexes.FAN_SPEED_3); // Fan 3 speed
-        _rpmSensors[3].Value = GetConvertedValue(QuadroDataIndexes.FAN_SPEED_4); // Fan 4 speed
+        _rpmSensors[0].Value = GetConvertedValue(QuadroDataIndexes.FAN_SPEED_1); 
+        _rpmSensors[1].Value = GetConvertedValue(QuadroDataIndexes.FAN_SPEED_2); 
+        _rpmSensors[2].Value = GetConvertedValue(QuadroDataIndexes.FAN_SPEED_3); 
+        _rpmSensors[3].Value = GetConvertedValue(QuadroDataIndexes.FAN_SPEED_4); 
 
     }
 

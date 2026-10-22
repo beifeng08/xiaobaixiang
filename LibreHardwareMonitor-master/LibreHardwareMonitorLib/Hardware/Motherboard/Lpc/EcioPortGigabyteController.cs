@@ -1,14 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// Partial Copyright (C) Michael Möller <mmoeller@openhardwaremonitor.org> and Contributors.
-// All Rights Reserved.
-
-//#define ECIO_GIGABYTE_CONTROLLER_DEBUG
-
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -35,7 +27,6 @@ internal class EcioPortGigabyteController : IGigabyteController
     {
         IT879xEcioPort port = new(lpcPort);
 
-        // Check compatibility by querying its version.
         if (!port.Read(ControllerFanControlArea + ControllerVersionOffset, out byte majorVersion) || majorVersion != 1)
         {
             return null;
@@ -72,7 +63,6 @@ internal class EcioPortGigabyteController : IGigabyteController
 
             Log($"ENABLE: write value {Convert.ToByte(enabled)} at offset {offset}");
 
-            // Allow the system to catch up.
             Thread.Sleep(500);
 
             _current = enabled;
@@ -94,14 +84,6 @@ internal class EcioPortGigabyteController : IGigabyteController
         Restore();
     }
 
-    /// <summary>
-    /// Writes a debug message to the output window and appends it to the debug log file when
-    /// ECIO_GIGABYTE_CONTROLLER_DEBUG is defined.
-    /// </summary>
-    /// <remarks>This method only performs logging when the ECIO_GIGABYTE_CONTROLLER_DEBUG compilation symbol
-    /// is defined. The log file is named "EcioPortGigabyteController_DebugLog.txt" and is appended to with each call.
-    /// Use this method for diagnostic purposes during development or troubleshooting.</remarks>
-    /// <param name="message">The message to log. This text is written to both the debug output and the log file.</param>
     [Conditional("DEBUG_LOG"), Conditional("ECIO_GIGABYTE_CONTROLLER_DEBUG")]
     private static void Log(string message)
     {

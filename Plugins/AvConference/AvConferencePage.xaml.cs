@@ -10,9 +10,6 @@ using System.Windows.Threading;
 
 namespace YanJi.Plugin.AvConference;
 
-/// <summary>「影音会议」页面：摄像头（WinRT 预览）/ 麦克风（NAudio 电平+录制回放）/ 扬声器（NAudio 播放试音曲）。
-/// 进入页面初始化设备并开始预览/监听；离开页面（Unloaded，含关程序）释放全部设备——摄像头指示灯随之熄灭。
-/// 通过约定同其它模块：确认无故障 → PassChanged(true) → 导航圆点变绿 + 自动跳下一模块。</summary>
 public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage, YanJi.PluginSdk.IReportSection
 {
     const string MusicFileName = "不死のバイオレット - 幻月遠征隊.mp3";
@@ -42,10 +39,8 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
     bool _hasRecording;
     bool _cameraFailed;
 
-    /// <summary>核对完成状态变化（true = 已通过，false = 回到待测试）；MainWindow 据此同步导航圆点并自动跳转。</summary>
     public event Action<bool>? PassChanged;
 
-    /// <summary>当前是否已确认通过。</summary>
     public bool Passed { get; private set; }
 
     public AvConferencePage()
@@ -72,15 +67,12 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         Unloaded += (_, _) => Cleanup();
     }
 
-    // ═══ 初始化 / 资源释放 ═══
-
-    /// <summary>枚举三类设备填充下拉框，并开启摄像头预览与麦克风监听。</summary>
     async Task InitAsync(int session, CancellationToken cancellationToken)
     {
         bool entered = false;
         try
         {
-            // 回页请求等待旧初始化收尾，不丢请求，也不轮询。
+            
             await _initGate.WaitAsync(cancellationToken);
             entered = true;
             if (!IsCurrentSession(session)) return;
@@ -126,7 +118,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
             if (!IsCurrentSession(session)) return;
             if (cameraError != null) CameraError.Text = cameraError;
         }
-        catch (OperationCanceledException) { /* 离页或已被新请求替代 */ }
+        catch (OperationCanceledException) {  }
         catch (Exception ex)
         {
             if (IsCurrentSession(session))
@@ -174,10 +166,9 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
     static string MusicPath() => Path.Combine(
             Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!, MusicFileName);
 
-    /// <summary>离开页面/关闭程序：停预览（灭灯）、停捕获与回放、清录音临时文件。</summary>
     void Cleanup()
     {
-        // 在任何异步释放前同步失效，已排队的帧/播放回调也不能再写本页。
+        
         Interlocked.Increment(ref _session);
         _sessionCts?.Cancel();
         _sessionCts?.Dispose();
@@ -206,7 +197,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         try { _audio.StopPlay(); }
         catch (Exception ex) { MusicStatus.Text = "停止播放失败：" + ex.Message; }
         try { if (File.Exists(_recordFile)) File.Delete(_recordFile); }
-        catch { /* 仅清理本页唯一临时文件，删不掉不致命 */ }
+        catch {  }
     }
 
     async Task StopCameraAsync()
@@ -214,8 +205,6 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         try { await _camera.StopAsync(); }
         catch (Exception ex) { System.Diagnostics.Trace.WriteLine("停止摄像头失败：" + ex.Message); }
     }
-
-    // ═══ 摄像头 ═══
 
     void CameraBox_Changed(object sender, SelectionChangedEventArgs e)
     {
@@ -262,7 +251,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
             return;
         }
         CameraError.Text = "正在启动摄像头…";
-        // 先同步失效旧相机 generation，再挂新页面回调，避免旧帧取得新订阅。
+        
         var startTask = _camera.StartAsync(deviceId, cancellationToken);
         _frameHandler = (w, h, px) => OnCameraFrame(session, preview, w, h, px);
         _cameraFailureHandler = error =>
@@ -287,7 +276,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
             if (!IsCurrentSession(session) || preview != _previewGeneration) return;
             if (!_cameraFailed && _wb == null) CameraError.Text = "摄像头已启动，等待画面…";
         }
-        catch (OperationCanceledException) { /* 离页或设备切换 */ }
+        catch (OperationCanceledException) {  }
         catch (Exception ex)
         {
             if (!IsCurrentSession(session) || preview != _previewGeneration) return;
@@ -300,7 +289,6 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         }
     }
 
-    /// <summary>摄像头帧回调（后台线程）：只保留最新帧，并限制 UI 队列最多一个更新。</summary>
     void OnCameraFrame(int session, int preview, int w, int h, byte[] px)
     {
         if (session != Volatile.Read(ref _session) || preview != Volatile.Read(ref _previewGeneration) ||
@@ -335,8 +323,6 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         _wb.WritePixels(new Int32Rect(0, 0, current.Width, current.Height),
             current.Pixels, current.Width * 4, 0);
     }
-
-    // ═══ 麦克风 ═══
 
     void MicBox_Changed(object sender, SelectionChangedEventArgs e)
     {
@@ -430,8 +416,6 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         }
     }
 
-    // ═══ 扬声器 ═══
-
     void SpkBox_Changed(object sender, SelectionChangedEventArgs e)
     {
         if (_initializing || !IsCurrentSession(_session)) return;
@@ -472,7 +456,6 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         if (MusicStatus.Text == "播放中…") MusicStatus.Text = "";
     }
 
-    /// <summary>回放/播放结束（自然结束或手动停止）复位按钮文案（AudioService 回调在线程池线程）。</summary>
     void OnPlaybackStopped(int session, int playback)
     {
         if (session != Volatile.Read(ref _session) || Dispatcher.HasShutdownStarted) return;
@@ -485,8 +468,6 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         });
     }
 
-    // ═══ 通过态 ═══
-
     void PassButton_Click(object sender, RoutedEventArgs e)
     {
         if (IsCurrentSession(_session)) SetPassed(true);
@@ -498,7 +479,6 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         if (Passed) SetPassed(false);
     }
 
-    /// <summary>更新测试状态行（通过 = 绿色「✓ 已确认通过」）并通知导航圆点/自动跳转。</summary>
     void SetPassed(bool passed)
     {
         Passed = passed;

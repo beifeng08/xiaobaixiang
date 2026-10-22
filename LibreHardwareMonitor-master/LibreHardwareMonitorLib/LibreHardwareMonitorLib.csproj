@@ -1,4 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- Copyright (c) 2026 beifeng08 -->
+<!-- Licensed under the MIT License. See LICENSE in the project root. -->
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net472;netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
     <Platforms>x64;x86;ARM64</Platforms>
@@ -24,14 +26,13 @@
     <NoWarn>$(NoWarn);CA1416</NoWarn>
   </PropertyGroup>
 
-  <!-- AOT/Trimming compatibility for modern .NET -->
   <PropertyGroup Condition="'$(TargetFramework)' != 'net472' AND '$(TargetFramework)' != 'netstandard2.0'">
     <IsAotCompatible>true</IsAotCompatible>
     <IsTrimmable>true</IsTrimmable>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
     <EnableAotAnalyzer>true</EnableAotAnalyzer>
-    <!-- Suppress known AOT warnings from System.Management WMI usage and OpCode dynamic code -->
+    
     <NoWarn>$(NoWarn);IL2026;IL3050;IL2075;IL2070</NoWarn>
   </PropertyGroup>
 

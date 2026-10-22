@@ -1,11 +1,6 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,7 +22,7 @@ internal class BatteryGroup : IGroup
 
     public unsafe BatteryGroup(ISettings settings)
     {
-        // No implementation for battery information on Unix systems
+        
         if (Software.OperatingSystem.IsUnix)
             return;
 
@@ -110,8 +105,7 @@ internal class BatteryGroup : IGroup
                                                                 &bytesReturned,
                                                                 null))
                                     {
-                                        // Only batteries count.
-
+                                        
                                         if ((bi.Capabilities & PInvoke.BATTERY_SYSTEM_BATTERY) == PInvoke.BATTERY_SYSTEM_BATTERY)
                                         {
                                             bqi.InformationLevel = BATTERY_QUERY_INFORMATION_LEVEL.BatteryDeviceName;
@@ -136,7 +130,6 @@ internal class BatteryGroup : IGroup
 #endif
     }
 
-    /// <inheritdoc />
     public IReadOnlyList<IHardware> Hardware => _hardware;
 
 #if WINDOWS
@@ -169,14 +162,12 @@ internal class BatteryGroup : IGroup
     }
 #endif
 
-    /// <inheritdoc />
     public void Close()
     {
         foreach (Battery battery in _hardware)
             battery.Close();
     }
 
-    /// <inheritdoc />
     public string GetReport()
     {
         StringBuilder reportBuilder = new();

@@ -1,10 +1,13 @@
-﻿using System.Runtime.InteropServices;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using System.Runtime.InteropServices;
 
 namespace LibreHardwareMonitor.Interop;
 
 internal static class Ipmi
 {
-    // Ported from ipmiutil
+    
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     internal struct Sdr
     {

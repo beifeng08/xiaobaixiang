@@ -1,21 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
 
-namespace Aga.Controls.Tree.NodeControls
-{
-	public class NodeControlValueEventArgs : NodeEventArgs
-	{
-		private object _value;
-		public object Value
-		{
-			get { return _value; }
-			set { _value = value; }
-		}
-
-		public NodeControlValueEventArgs(TreeNodeAdv node)
-			:base(node)
-		{
-		}
-	}
-}
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Aga.Controls.Tree.NodeControls
+{
+	public class NodeControlValueEventArgs : NodeEventArgs
+	{
+		private object _value;
+		public object Value
+		{
+			get { return _value; }
+			set { _value = value; }
+		}
+
+		public NodeControlValueEventArgs(TreeNodeAdv node)
+			:base(node)
+		{
+		}
+	}
+}

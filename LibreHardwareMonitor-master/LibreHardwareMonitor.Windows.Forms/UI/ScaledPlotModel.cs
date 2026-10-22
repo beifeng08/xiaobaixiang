@@ -1,4 +1,7 @@
-﻿using OxyPlot;
+﻿// Copyright (c) 2026 beifeng08
+// Licensed under the MIT License. See LICENSE in the project root.
+
+using OxyPlot;
 using OxyPlot.Legends;
 
 namespace LibreHardwareMonitor.Windows.Forms.UI;

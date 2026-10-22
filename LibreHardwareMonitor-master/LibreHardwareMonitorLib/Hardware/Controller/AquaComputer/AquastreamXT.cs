@@ -1,21 +1,12 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using HidSharp;
 
 namespace LibreHardwareMonitor.Hardware.Controller.AquaComputer;
-//TODO:
-//Check tested and fix unknown variables in Update()
-//Check if property "Variant" is valid interpreted
-//Implement Fan Control in SetControl()
 
 internal sealed class AquastreamXT : Hardware
 {
@@ -93,7 +84,6 @@ internal sealed class AquastreamXT : Hardware
         }
     }
 
-    //TODO: Check if valid
     public string Variant
     {
         get
@@ -120,7 +110,6 @@ internal sealed class AquastreamXT : Hardware
         base.Close();
     }
 
-    //TODO: Check tested and fix unknown variables
     public override void Update()
     {
         try
@@ -133,31 +122,26 @@ internal sealed class AquastreamXT : Hardware
             return;
         }
 
-
         if (_rawData[0] != 0x4)
             return;
 
-        //var rawSensorsFan = BitConverter.ToUInt16(rawData, 1);                        //unknown - redundant?
-        //var rawSensorsExt = BitConverter.ToUInt16(rawData, 3);                        //unknown - redundant?
-        //var rawSensorsWater = BitConverter.ToUInt16(rawData, 5);                      //unknown - redundant?
+        _voltages[0].Value = BitConverter.ToUInt16(_rawData, 7) / 61f; 
+        _voltages[1].Value = BitConverter.ToUInt16(_rawData, 9) / 61f; 
+        _pumpPower.Value = _voltages[1].Value * BitConverter.ToInt16(_rawData, 11) / 625f; 
 
-        _voltages[0].Value = BitConverter.ToUInt16(_rawData, 7) / 61f; //External Fan Voltage: tested - OK
-        _voltages[1].Value = BitConverter.ToUInt16(_rawData, 9) / 61f; //Pump Voltage: tested - OK
-        _pumpPower.Value = _voltages[1].Value * BitConverter.ToInt16(_rawData, 11) / 625f; //Pump Voltage * Pump Current: tested - OK
+        _temperatures[0].Value = BitConverter.ToUInt16(_rawData, 13) / 100f; 
+        _temperatures[1].Value = BitConverter.ToUInt16(_rawData, 15) / 100f; 
+        _temperatures[2].Value = BitConverter.ToUInt16(_rawData, 17) / 100f; 
 
-        _temperatures[0].Value = BitConverter.ToUInt16(_rawData, 13) / 100f; //External Fan VRM Temperature: untested
-        _temperatures[1].Value = BitConverter.ToUInt16(_rawData, 15) / 100f; //External Temperature Sensor: untested
-        _temperatures[2].Value = BitConverter.ToUInt16(_rawData, 17) / 100f; //Internal Water Temperature Sensor: tested - OK
+        _frequencies[0].Value = (1f / BitConverter.ToInt16(_rawData, 19)) * 750000; 
+        _rpmSensors[1].Value = _frequencies[0].Value * 60f; 
+        _frequencies[1].Value = (1f / BitConverter.ToUInt16(_rawData, 21)) * 750000; 
 
-        _frequencies[0].Value = (1f / BitConverter.ToInt16(_rawData, 19)) * 750000; //Pump Frequency: tested - OK
-        _rpmSensors[1].Value = _frequencies[0].Value * 60f; //Pump RPM: tested - OK
-        _frequencies[1].Value = (1f / BitConverter.ToUInt16(_rawData, 21)) * 750000; //Pump Max Frequency: tested - OK
+        _pumpFlow.Value = BitConverter.ToUInt32(_rawData, 23); 
 
-        _pumpFlow.Value = BitConverter.ToUInt32(_rawData, 23); //Internal Pump Flow Sensor: unknown
+        _rpmSensors[0].Value = BitConverter.ToUInt32(_rawData, 27); 
 
-        _rpmSensors[0].Value = BitConverter.ToUInt32(_rawData, 27); //External Fan RPM: untested
-
-        _fanControl.Value = 100f / byte.MaxValue * _rawData[31]; //External Fan Control: tested, External Fan Voltage scales by this value - OK
+        _fanControl.Value = 100f / byte.MaxValue * _rawData[31]; 
     }
 
     [Flags]

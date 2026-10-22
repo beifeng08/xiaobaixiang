@@ -1,31 +1,17 @@
 ﻿// Copyright (c) 2026 beifeng08
 // Licensed under the MIT License. See LICENSE in the project root.
 
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// Copyright (C) LibreHardwareMonitor and Contributors.
-// All Rights Reserved.
-
 using System.Diagnostics;
 using System.Threading;
 using LibreHardwareMonitor.PawnIo;
 
 namespace LibreHardwareMonitor.Hardware.Motherboard.Lpc.EC;
 
-/// <summary>
-/// An unsafe but universal implementation for the ACPI Embedded Controller IO interface for Windows
-/// </summary>
-/// <remarks>
-/// It is unsafe because of possible race condition between this application and the PC firmware when
-/// writing to the EC registers. For a safe approach ACPI/WMI methods have to be used, but those are
-/// different for each motherboard model.
-/// </remarks>
 public class WindowsEmbeddedControllerIO : IEmbeddedControllerIO
 {
     private const int FailuresBeforeSkip = 20;
     private const int MaxRetries = 5;
 
-    // implementation
     private const int WaitSpins = 50;
 
     private readonly LpcAcpiEc _pawnModule;
@@ -51,15 +37,13 @@ public class WindowsEmbeddedControllerIO : IEmbeddedControllerIO
         byte bank = 0;
         byte prevBank = SwitchBank(bank);
 
-        // oops... somebody else is working with the EC too
         Trace.WriteLineIf(prevBank != 0, "Concurrent access to the ACPI EC detected.\nRace condition possible.");
 
-        // read registers minimizing bank switches.
         for (int i = 0; i < registers.Length; i++)
         {
             byte regBank = (byte)(registers[i] >> 8);
             byte regIndex = (byte)(registers[i] & 0xFF);
-            // registers are sorted by bank
+            
             if (regBank > bank)
             {
                 bank = SwitchBank(regBank);
@@ -148,7 +132,6 @@ public class WindowsEmbeddedControllerIO : IEmbeddedControllerIO
             return true;
         }
 
-        // Try OBF with reduced timeout
         for (int i = 0; i < MaxRetries; i++)
         {
             byte status = ReadIOPort(Port.Command);
@@ -161,8 +144,6 @@ public class WindowsEmbeddedControllerIO : IEmbeddedControllerIO
             Thread.Sleep(1);
         }
 
-        // ASUS workaround: Wait for IBF to clear instead of OBF
-        // Testing on Z170 Pro Gaming shows IBF clears in 1-3ms when data is ready
         for (int i = 0; i < WaitSpins; i++)
         {
             byte status = ReadIOPort(Port.Command);
@@ -245,7 +226,6 @@ public class WindowsEmbeddedControllerIO : IEmbeddedControllerIO
 
     private delegate bool WriteOp<in TParam>(byte register, TParam p);
 
-    // see the ACPI specification chapter 12
     private enum Port : byte
     {
         Command = 0x66,
@@ -254,20 +234,20 @@ public class WindowsEmbeddedControllerIO : IEmbeddedControllerIO
 
     private enum Command : byte
     {
-        Read = 0x80, // RD_EC
-        Write = 0x81, // WR_EC
-        BurstEnable = 0x82, // BE_EC
-        BurstDisable = 0x83, // BD_EC
-        Query = 0x84 // QR_EC
+        Read = 0x80, 
+        Write = 0x81, 
+        BurstEnable = 0x82, 
+        BurstDisable = 0x83, 
+        Query = 0x84 
     }
 
     private enum Status : byte
     {
-        OutputBufferFull = 0x01, // EC_OBF
-        InputBufferFull = 0x02, // EC_IBF
-        Command = 0x08, // CMD
-        BurstMode = 0x10, // BURST
-        SciEventPending = 0x20, // SCI_EVT
-        SmiEventPending = 0x40 // SMI_EVT
+        OutputBufferFull = 0x01, 
+        InputBufferFull = 0x02, 
+        Command = 0x08, 
+        BurstMode = 0x10, 
+        SciEventPending = 0x20, 
+        SmiEventPending = 0x40 
     }
 }
