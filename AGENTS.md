@@ -43,10 +43,10 @@ LibreHardwareMonitor 源码（MPL-2.0，本项目内改名 XiaobaiHardwareMonito
 │   ├── XiaobaiHardwareMonitorLib/         # 采集库，插件以 ProjectReference 引用（须 x64）
 │   ├── XiaobaiHardwareMonitor.Windows.Forms/  # 上游 GUI 外壳 + TestScripts/（WMI 探针脚本）
 │   └── Aga.Controls/                      # WinForms 树控件依赖（相对路径被上一项引用）
-├── prime95/                   # ★ GIMPS Prime95 源码（xiaobaiprime.sln，C++/MFC）
+├── xiaobaiprime/              # ★ GIMPS Prime95 源码（prime95/xiaobaiprime.sln，C++/MFC）
 │   ├── *.c / *.h / *.cpp      # 计算内核、通信、GCD 等（根层为上游原布局）
 │   ├── gwnum/                 # 大数运算汇编内核
-│   ├── winnt/ prime95/ res/   # Windows 平台层 / MFC GUI（XiaobaiPrime*.cpp）/ 资源
+│   ├── winnt/ prime95/ res/   # Windows 平台层 / MFC GUI（保持上游子目录名 prime95）/ 资源
 │   └── macosx/ macosx64/      # 上游保留的其它平台工程
 ├── prime95-build/             # prime95 叠加构建工作区（不进 slnx）
 │   ├── xiaobaiprime.yanji.vcxproj  # 项目自有工程：依赖指向 deps/，输出 xiaobaiprime.exe
@@ -57,9 +57,9 @@ LibreHardwareMonitor 源码（MPL-2.0，本项目内改名 XiaobaiHardwareMonito
 └── publish/                   # 发布产物（self-contained 便携包，plugins/ 在根下）
 ```
 
-构建边界：`white-toolkit/` 与 `prime95/` 各自可在其目录内独立构建；根 `验机软件.slnx`
+构建边界：`white-toolkit/` 与 `xiaobaiprime/` 各自可在其目录内独立构建；根 `验机软件.slnx`
 只引用宿主、PluginSdk、Plugins、`white-toolkit/XiaobaiHardwareMonitorLib`，不引入
-`white-toolkit/XiaobaiHardwareMonitor.sln` 与 `prime95/`（后者需 MSVC/MFC）。
+`white-toolkit/XiaobaiHardwareMonitor.sln` 与 `xiaobaiprime/`（后者需 MSVC/MFC）。
 
 ## 构建 / 运行 / 发布
 

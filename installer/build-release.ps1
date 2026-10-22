@@ -31,7 +31,7 @@ $licenses = Join-Path $payload "licenses"
 New-Item -ItemType Directory $licenses | Out-Null
 Copy-Item (Join-Path $libraryDirectory "LICENSE") (Join-Path $licenses "LibreHardwareMonitor-MPL-2.0.txt")
 Copy-Item (Join-Path $libraryDirectory "LibreHardwareMonitorLib/Resources/PawnIo/COPYING") (Join-Path $licenses "PawnIO-COPYING.txt")
-$required = @("$hostName.exe", "coreclr.dll", "hostfxr.dll", "YanJi.PluginSdk.dll", "Tools/furmark/FurMark.exe", "Tools/furmark/coreclr.dll", "Tools/prime95/prime95.exe", "Tools/pawnio/PawnIO_setup.exe", "plugins/disk/CdmHost/CdmHost.exe", "plugins/disk/CdmHost/CdmResource/diskspd/diskspd64.exe")
+$required = @("$hostName.exe", "coreclr.dll", "hostfxr.dll", "YanJi.PluginSdk.dll", "Tools/furmark/FurMark.exe", "Tools/furmark/coreclr.dll", "Tools/xiaobaiprime/xiaobaiprime.exe", "Tools/pawnio/PawnIO_setup.exe", "plugins/disk/CdmHost/CdmHost.exe", "plugins/disk/CdmHost/CdmResource/diskspd/diskspd64.exe")
 foreach ($relative in $required) { if (!(Test-Path (Join-Path $payload $relative) -PathType Leaf)) { throw "Missing package payload: $relative" } }
 $pluginIds = @("config", "keyboard", "screen", "av", "stress", "disk")
 $actualPluginIds = @(Get-ChildItem (Join-Path $payload "plugins") -Directory | Select-Object -ExpandProperty Name)

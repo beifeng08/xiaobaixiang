@@ -35,5 +35,5 @@ csproj 的 `PackageLicense` 指向、上游 CI 的 `github.repository` 发布门
 ## 两者的构建边界
 
 - `white-toolkit/XiaobaiHardwareMonitor.sln` 可在本目录独立构建（.NET SDK）。
-- `prime95/xiaobaiprime.sln` 需 MSVC + MFC；本仓库当前环境未验证其编译，只做了静态一致性核对。
+- `xiaobaiprime/prime95/xiaobaiprime.sln` 需 MSVC + MFC；本仓库当前环境未验证其编译，只做了静态一致性核对。
 - 根 `验机软件.slnx` 只引用 `white-toolkit/XiaobaiHardwareMonitorLib`，不引入上述两个独立解决方案。
