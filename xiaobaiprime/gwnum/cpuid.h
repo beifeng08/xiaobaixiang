@@ -1,6 +1,13 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| Copyright 1995-2017 Mersenne Research, Inc.  All rights reserved
+| Author:  George Woltman
+| Email: woltman@alum.mit.edu
+|
+| This file contains routines to determine the CPU type and speed.
+| Plus, as a bonus, you get 3 routines to portably access the high
+| resolution timer.
++---------------------------------------------------------------------*/
+
 #ifndef _CPUID_H
 #define _CPUID_H
 

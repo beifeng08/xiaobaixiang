@@ -1,6 +1,11 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+// EcmDlg.h : header file
+//
+//  Copyright 2000-2021 Mersenne Research, Inc. All rights reserved.
+//
+
+/////////////////////////////////////////////////////////////////////////////
+// CEcmDlg dialog
+
 class CEcmDlg : public CDialog
 {
 

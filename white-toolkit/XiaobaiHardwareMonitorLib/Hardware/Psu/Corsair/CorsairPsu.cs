@@ -1,5 +1,9 @@
-﻿// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
+﻿// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+// Copyright (C) 2020 Wilken Gottwalt<wilken.gottwalt@posteo.net>
+// Copyright (C) LibreHardwareMonitor and Contributors.
+// All Rights Reserved.
+// Implemented after the Linux kernel driver corsair_psu by Wilken Gottwalt and contributers
 
 using System.Collections.Generic;
 using System.Globalization;

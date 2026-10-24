@@ -1,5 +1,19 @@
-// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+/**************************************************************
+ *
+ *  gwdbldbl.cpp
+ *
+ *  This file contains all the gwnum initialization routines that require
+ *  extended precision floating point.  We want to initialize our sin/cos
+ *  and FFT weight arrays with doubles that are as accurate as possible.
+ *
+ *  This is the only C++ routine in the gwnum library.  Since gwnum is
+ *  a C based library, we declare all routines here as extern "C".
+ *
+ *  Copyright 2005-2023 Mersenne Research, Inc.  All rights reserved.
+ *
+ **************************************************************/
+
+/* Include files */
 
 #include "gwdbldbl.h"
 #include <cstring>

@@ -1,6 +1,12 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| pair.h
+|
+| This file contains forward declarations for pair.cpp
+| 
+|  Copyright 2021 Mersenne Research, Inc.
+|  All Rights Reserved.
++---------------------------------------------------------------------*/
+
 #ifndef _PAIR_H
 #define _PAIR_H
 

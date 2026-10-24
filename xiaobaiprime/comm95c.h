@@ -1,6 +1,9 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/* Copyright 1995-2021 Mersenne Research, Inc. */
+/* Author:  George Woltman */
+/* Email: woltman@alum.mit.edu */
+
+/* Handle differences between Windows and Linux runtime libraries */
+
 #define __read(a,b,c)	_read(a,b,(unsigned int)(c))			
 #define __write(a,b,c)	_write(a,b,(unsigned int)(c))			
 

@@ -1,6 +1,20 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| gwthread.h
+|
+| This file contains the headers and definitions that are used to implement
+| multi-threading.  Specifically, threads, mutexes, and events.
+|
+| Gwnum math routines use these routines to implement multi-threaded
+| multiplications.  However, you can use these routines without using
+| the rest of the gwnum package if you so desire.
+|
+| NOTE:  MFC users may not be able to use the thread creation routines
+| because we call the C runtime library thread create rather than the
+| MFC thread create routine. 
+|
+|  Copyright 2006-2023 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
 #ifndef _GWTHREAD_H
 #define _GWTHREAD_H
 

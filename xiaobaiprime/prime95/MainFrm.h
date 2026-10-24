@@ -1,6 +1,7 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+// MainFrm.h : interface of the CMainFrame class
+// Copyright 1995-2020 Mersenne Research, Inc.  All rights reserved
+//
+/////////////////////////////////////////////////////////////////////////////
 const int MYWM_TRAYMESSAGE = WM_APP + 100;
 
 #define ID_WINDOW_POSITION              0xE136

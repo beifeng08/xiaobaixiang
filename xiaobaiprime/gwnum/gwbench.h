@@ -1,6 +1,18 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| gwbench.h
+|
+| This file contains routines to read, write, and use benchmarking data stored
+| in the gwnum.txt INI file.
+|
+| Benchmarking data lets us select the fastest FFT implementation for every CPU.
+| By default, gwnum picks a default FFT implementation based on the CPU architecture.
+| We can fine-tune performance by benchmarking the different FFT implementations
+| on the end user machine looking for an FFT implementation that is faster than the
+| default selection.
+|
+| Copyright 2017-2024 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
 #ifndef _GWBENCH_H
 #define _GWBENCH_H
 

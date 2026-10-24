@@ -1,5 +1,13 @@
-// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+/*----------------------------------------------------------------------
+| gwthread.cpp
+|
+| This file contains the C++ routines and global variables that are used
+| to implement atomics, multi-threading, mutexes, and locking.
+| 
+|  Copyright 2006-2023 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
+/* Include files */
 
 #include <stdlib.h>
 #ifdef _WIN32

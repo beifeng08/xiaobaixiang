@@ -1,6 +1,18 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| gwini.c
+|
+| This file contains portable routines to read and write "INI" files.  These
+| routines came from prime95.  Thus, there are a few idiosyncracies that may
+| not be useful to a wide audience.
+|
+| NOTE:  These routines only work if you open no more than 10 ini files.  Also,
+| you must not change the working directory at any time during program execution.
+|
+| Copyright 2016-2023 Mersenne Research, Inc.  All rights reserved
++---------------------------------------------------------------------*/
+
+/* Include files */
+
 #ifdef _WIN32
 #include <io.h>
 #include <malloc.h>

@@ -1,6 +1,12 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| polymult.h
+|
+| This file contains the headers and definitions that are used in the
+| polynomial multiplication built upon the gwnum library.
+| 
+|  Copyright 2021-2023 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
 #ifndef _POLYMULT_H
 #define _POLYMULT_H
 

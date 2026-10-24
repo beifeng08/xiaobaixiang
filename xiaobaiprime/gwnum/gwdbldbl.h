@@ -1,6 +1,12 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| gwdbldbl.h
+|
+| This file contains the headers for the gwnum helper routines that use
+| extended-precision floats.
+| 
+|  Copyright 2005-2023 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
 #ifndef _GWDBLDBL_H
 #define _GWDBLDBL_H
 

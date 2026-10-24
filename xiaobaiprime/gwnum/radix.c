@@ -1,6 +1,14 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| radix.c
+|
+| This file contains the C routines for radix conversion when required
+| by gianttogw or gwtogiant.
+| 
+|  Copyright 2020-2023 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
+/* Include files */
+
 #include <stdlib.h>
 #include <math.h>
 #include <memory.h>

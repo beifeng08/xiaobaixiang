@@ -62,7 +62,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
             _sessionCts = new CancellationTokenSource();
             int session = Interlocked.Increment(ref _session);
             CameraBox.IsEnabled = MicBox.IsEnabled = SpkBox.IsEnabled = false;
-            RecordButton.IsEnabled = PlayRecButton.IsEnabled = PlayToneButton.IsEnabled = false;
+            RecordButton.IsEnabled = PlayRecButton.IsEnabled = PlayToneButton.IsEnabled = PlayLocalButton.IsEnabled = false;
             _ = InitAsync(session, _sessionCts.Token);
         };
         Unloaded += (_, _) => Cleanup();
@@ -104,7 +104,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
             finally { _initializing = false; }
             if (previousDevices != (CurrentCamId, CurrentMicId, CurrentSpkId)) ResetPassed();
             if (!IsCurrentSession(session)) return;
-            PlayToneButton.IsEnabled = _spkDevices.Count > 0;
+            PlayLocalButton.IsEnabled = PlayToneButton.IsEnabled = _spkDevices.Count > 0;
             SpeakerStatus.Text = _spkDevices.Count == 0 ? "未检测到音频输出设备" : "";
             if (CurrentMicId != null) StartInput(CurrentMicId);
             else
@@ -195,7 +195,8 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         RecordButton.Content = "录制";
         RecordButton.IsEnabled = false;
         PlayToneButton.Content = "播放测试音";
-        PlayToneButton.IsEnabled = false;
+        PlayToneButton.IsEnabled = PlayLocalButton.IsEnabled = false;
+        PlayLocalButton.Content = "选择本地音乐…";
         PlayRecButton.Content = "回放";
         PlayRecButton.IsEnabled = false;
         MicLevel.Value = 0;
@@ -452,6 +453,41 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         }
     }
 
+    void PlayLocalButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!IsCurrentSession(_session)) return;
+        if (_audio.IsPlaying) { StopPlayback(); return; }
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "选择本地试音文件（不会上传或复制）",
+            Filter = "音频文件|*.mp3;*.wav;*.flac;*.m4a|所有文件|*.*",
+            CheckFileExists = true,
+            Multiselect = false,
+        };
+        if (dialog.ShowDialog(Window.GetWindow(this)) != true || !IsCurrentSession(_session)) return;
+        PlayLocalFile(dialog.FileName);
+    }
+
+    // 与录音回放、合成音共用同一播放会话；路径只用于本次播放，不写报告或配置。
+    void PlayLocalFile(string path)
+    {
+        if (!IsCurrentSession(_session)) return;
+        StopPlayback();
+        int session = _session, playback = ++_playbackGeneration;
+        try
+        {
+            if (!File.Exists(path)) throw new FileNotFoundException("所选文件已不存在，请重新选择。");
+            _audio.Play(path, CurrentSpkId, () => OnPlaybackStopped(session, playback));
+            PlayLocalButton.Content = "停止音乐";
+            SpeakerStatus.Text = "播放中…";
+        }
+        catch (Exception ex)
+        {
+            StopPlayback();
+            SpeakerStatus.Text = "本地音频播放失败：" + ex.Message;
+        }
+    }
+
     void StopPlayback()
     {
         ++_playbackGeneration;
@@ -459,6 +495,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         catch (Exception ex) { SpeakerStatus.Text = "停止播放失败：" + ex.Message; }
         PlayRecButton.Content = "回放";
         PlayToneButton.Content = "播放测试音";
+        PlayLocalButton.Content = "选择本地音乐…";
         if (SpeakerStatus.Text == "播放中…") SpeakerStatus.Text = "";
     }
 
@@ -470,6 +507,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
             if (!IsCurrentSession(session) || playback != _playbackGeneration) return;
             PlayRecButton.Content = "回放";
             PlayToneButton.Content = "播放测试音";
+            PlayLocalButton.Content = "选择本地音乐…";
             if (SpeakerStatus.Text == "播放中…") SpeakerStatus.Text = "";
         });
     }

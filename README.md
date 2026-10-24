@@ -1,60 +1,58 @@
-# 笔吧验机
+# 笔吧验机 · 验机辅助与离线记录
 
-**免费开源的 Windows 硬件验机工具**——二手/新机到手，一键采集硬件信息、逐项人工核对、确认通过。
+**基于 Bibapcs / BibaYanji 二次开发的 Windows 验机辅助工具。** 把设备登记、硬件信息采集、逐项人工检查和离线报告放进同一条流程，帮助新机/二手机到手后的核对与留档。
 
-本项目的能力分两层：应用层（插件框架、核对流程、报告导出、安装器）是本项目的主要工作；底层采集与烤机能力在成熟开源方案上集成——硬件采集基于 LibreHardwareMonitor（MPL-2.0）源码定制，CPU 烤机基于 GIMPS 公开源码构建 prime95，硬盘跑分集成 CrystalDiskMark 引擎，GPU 烤机为 FurMark 负载的 C#/OpenTK 重实现。各组件的上游地址、许可与改动范围见 [`docs/third-party-licenses.md`](docs/third-party-licenses.md) 与 [`docs/provenance.md`](docs/provenance.md)。
+这是既有项目上的流程与报告增强，不是从零实现的硬件检测引擎。应用基础、插件框架及多个检测页面继承自 BibaYanji；底层采集、压力负载与跑分依赖各自上游。改名不计作算法原创，完整来源与本仓库增量见 [来源说明](docs/provenance.md)。
 
-## 核心亮点：多源信息交叉验证
+## 一条可以留档的检查流程
 
-每个硬件字段都由**多个独立来源交叉验证**，单一来源拿不到或读不准时自动降级到下一精度层级，而不是简单显示"未知"：
+1. **登记**：填写设备备注、预期配置；这些内容由操作者录入，不是订单自动识别。
+2. **采集与检查**：查看配置、检查键盘/屏幕/影音设备；按需要运行散热或磁盘测试。
+3. **人工确认**：每项由操作者确认，重测会撤回对应完成状态。
+4. **导出**：保存 JSON 和配套离线网页，保留采集片段、人工状态、缺失项与异常；完整目录无需联网即可查看。
 
-- **显存三级精度**：厂商驱动接口（NVAPI / ADL）直读 → 注册表 `qwMemorySize` → WMI `AdapterRAM`（后者 >4GB 溢出，仅兜底）——规避了 WMI 在大显存显卡上读数溢出的经典问题
-- **CPU 型号**：CPUID 直读优先，WMI 兜底，两源互证
-- **电池**：电池类驱动 IOCTL 优先，`root\WMI` 电池类补充，与 `powercfg /batteryreport` 同源
-- **硬盘**：SMART 直读（NVMe / SATA 分路），无管理员权限时自动降级到系统接口
+**本次工作重点是登记与报告衔接、状态回退、离线交付和来源透明化，不将既有插件架构与采集算法整体算作新增贡献。**
 
-这套**"开源采集层 + Windows 自带接口"的多源降级策略**，把通常被认为"必须闭源库"（HWiNFO 等）才能达到的采集深度做成了可复现的开源实现——这是本项目与主流验机工具的差异所在。
+## 六个内置检查模块
 
-## 功能一览
+| 模块 | 能做什么 | 结果边界 |
+|---|---|---|
+| 配置核对 | 展示 CPU、显卡、内存、硬盘、屏幕、电池等已采集信息 | 部分字段使用主源与条件回退，不等于多个独立来源互证 |
+| 键盘 | 按键高亮、累计与人工确认 | 不替代全部组合键/固件层测试 |
+| 屏幕 | 全屏纯色、多屏人工观察 | 不是专业色彩测量，EDID 估算不是实测色域 |
+| 影音 | 摄像头、麦克风录放、合成试音；可播放用户本地音频 | 声画质量由人工确认，不随包捆绑不明授权录音 |
+| 散热 | 传感器曲线及可选 CPU/GPU 负载 | 缺传感器、驱动不可用或旧值不能视作硬件通过 |
+| 硬盘 | 接入既有 CrystalDiskMark/diskspd 负载及成绩记录 | 注意写入量；当前历史二进制公开分发审核未闭环 |
 
-| 模块 | 能力 |
-|---|---|
-| **配置核对** | CPU/显卡/内存/硬盘/网卡/屏幕/电池 自动采集，与订单逐项核对；含 SMART 健康度、EDID 色域容积比估算、电池损耗与循环次数 |
-| **键盘测试** | 104 键可视化，按住高亮、松开变绿，进度实时显示 |
-| **屏幕坏点** | 全屏纯色切换（白/红/绿/蓝/黑），多屏逐台检测 |
-| **影音会议** | 摄像头预览、麦克风电平+录制回放、扬声器试音 |
-| **散热测试** | CPU/GPU/双烤三模式，四路温度功耗实时折线；烤机进程无窗口后台运行，多层兜底不留残留 |
-| **硬盘跑分** | 集成 CrystalDiskMark 引擎，SEQ1M + RND4K 四项，成绩 JSON/CSV 落盘 |
+## 使用与预览范围
 
-## 技术关键
+- Windows 10/11 x64；主程序需要管理员权限。只安装可信插件：插件与宿主同进程、同权限运行。
+- 便携版必须完整解压后启动 `验机软件.exe`，不要只移动 EXE。自包含版本无需另装 .NET。
+- 本轮版本是 **0.0.7-preview.1 本机验收预览**，不是公开正式发行。安装器驱动选项默认不勾选；本次验收不安装/重装驱动。
+- 报告可能包含设备标识和人工备注，分享前检查隐私。JSON/网页可编辑，不是防篡改或取证凭证。
+- 人工点“通过”不代表自动认证整机合格；无数据、采集失败、未运行测试都不能当作通过。
+- 本次报告/状态回归及真实离线网页已验收；有效音频播放最终复验因目标设备不在场而暂缓。安装/卸载生命周期、全新系统、驱动重装、满载烤机、磁盘写入及电池边界未验证。
 
-- **插件化架构**：每个验机模块是独立 class library 插件，安装向导可按模块勾选，程序内支持 zip 插件包导入/删除（导入即加载免重启，删除自动重启完成），致谢信息随插件走
-- **采集深度**：NVMe/SATA SMART 直读（健康度/通电时间/介质错误）；EDID 色度坐标估算 sRGB/DCI-P3 容积比；电池数据与 `powercfg /batteryreport` 同源；显存直读规避 WMI 4GB 溢出
-- **烤机负载**：CPU 烤机基于 GIMPS 公开源码构建；GPU 烤机建立在 FurMark 负载的 C#/OpenTK 重实现之上；传感器监控经 PawnIO 内核驱动（官方签名安装器，页面一键静默安装）
-- **工程化**：自包含发布（目标机无需装 .NET）、Inno Setup 中文安装向导、深/浅主题、全局异常落盘
+### 试音曲
 
-## 技术栈
+保留运行时生成的 3 秒 1 kHz 合成音，并支持选择本地 MP3/WAV/FLAC/M4A 文件试听。《Out of Love》尚缺作者、具体录音链接和软件再分发授权，因此不捆绑任何同名录音，也不写“无版权”。用户可选择自己合法取得的本地版本，软件不会复制或上传该文件。
 
-.NET 10 · WPF · LibreHardwareMonitorLib(MPL-2.0) · NAudio · CrystalDiskMark 引擎 · diskspd · OpenTK · prime95(GIMPS) · PawnIO · Inno Setup
+## 构建与回归
 
-## 运行与构建
+需要 .NET SDK 10。保持现有 WPF、C#、PluginSdk 和六插件结构：
 
-- **使用**：到 [Releases](https://github.com/beifeng08/xiaobaixiang/releases) 下载安装包（约 116MB），Windows 10/11 x64，需管理员权限（SMART 与传感器读取需要）
-- **构建**：需 .NET SDK 10，`dotnet build 验机软件.slnx`；开发细节见 `AGENTS.md`
+```text
+dotnet build 验机软件.slnx
+dotnet run --project tests/ReportRegression/ReportRegression.csproj -- <回归输出目录>
+node --test tests/report-web-helpers.test.cjs tests/report-web-helper-contract.test.cjs 验机软件/ReportWeb/regression.test.cjs
+```
 
-## 依赖与致谢
+安装封装入口为 `installer/build-release.ps1`；应使用新输出目录，先提交源码再生成可追溯包。脚本保留第三方原始通知，核对库存固化哈希，并附版本、源码提交、SHA256 与实际负载文件清单。`-ValidateOnly` 仅做许可预检；`-LocalAcceptanceOnly` 不解除公开发行阻断。源码 ZIP 是排除了历史备份、实验副本、缓存和旧验收记录的构建输入快照，仍含构建必需的第三方二进制，不是纯源码或公开再分发批准。直接编译安装脚本同样使用预览身份，驱动默认不勾选、卸载保留用户数据。开发细节见 [AGENTS.md](AGENTS.md)。
 
-采集、烤机与跑分能力建立在成熟开源方案之上：硬件采集基于 LibreHardwareMonitor（MPL-2.0）源码定制，CPU 烤机基于 GIMPS prime95 公开源码构建，硬盘跑分集成 CrystalDiskMark 引擎与 diskspd，GPU 烤机为 FurMark 负载的 C#/OpenTK 重实现，传感器访问经 PawnIO，影音模块用 NAudio。
+## 来源与许可
 
-**组件清单、上游地址、许可条款与随包落位只在 [`docs/third-party-licenses.md`](docs/third-party-licenses.md) 维护一份**，本文不再重列表格。改名映射与逐文件 diff 见 `docs/provenance.md`；程序内「插件管理 → 致谢」按插件列出声明的组件（删除插件即删对应条目）。
+- 应用基础：Bibapcs / BibaYanji，保留其 MIT 署名；本仓库新增/修改部分在适用范围内采用 MIT。
+- 采集库：LibreHardwareMonitor 及其贡献者，目录/程序集曾改名为 XiaobaiHardwareMonitor，部分代码标识为 SysCore；原许可仍适用。
+- 其他组件：GIMPS Prime95、FurMark-Python 衍生 C#/OpenTK 负载、PawnIO、CrystalDiskMark/diskspd、NAudio 等，各自沿用许可。
 
-## 开源协议
-
-本项目自身代码按 **MIT** 开源，全文见根目录 [`LICENSE`](LICENSE)。
-
-第三方组件不在此授权范围内，各自沿用原许可，清单见 [`docs/third-party-licenses.md`](docs/third-party-licenses.md)；
-安装包里每份第三方原文只出现在 `licenses\` 子目录，根目录只有本项目的 `LICENSE.txt`。
-
----
-
-_开发手册见 `AGENTS.md`（工程细节）与 `AGENTS-AI.md`（AI 协作约定）。_
+[根 LICENSE](LICENSE) 不覆盖第三方代码。详见 [来源与贡献边界](docs/provenance.md)、[第三方许可与发行阻断](docs/third-party-licenses.md) 及 `installer/legal/inventory.json`。保留上游文件内通知，不以“统一品牌”替换作者。

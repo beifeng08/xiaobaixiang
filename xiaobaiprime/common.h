@@ -1,6 +1,12 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| common.h
+|
+| This file contains handy #defines that I use in all my projects
+| 
+|  Copyright 2005-2023 Mersenne Research, Inc.
+|  All Rights Reserved.
++---------------------------------------------------------------------*/
+
 #ifndef _COMMON_H
 #define _COMMON_H
 

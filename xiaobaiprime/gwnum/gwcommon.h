@@ -1,6 +1,11 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| gwcommon.h
+|
+| This file contains handy #defines that I use in all my projects
+| 
+|  Copyright 2005-2021 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
 #ifndef _GWCOMMON_H
 #define _GWCOMMON_H
 

@@ -1,6 +1,15 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| gwnum.c
+|
+| This file contains the C routines and global variables that are used
+| in the multi-precision arithmetic routines.  That is, all routines
+| that deal with the gwnum data type.
+| 
+|  Copyright 2002-2024 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
+/* Include files and a forward declaration! */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>

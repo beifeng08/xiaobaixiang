@@ -1,6 +1,11 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| Copyright 2020-2023 Mersenne Research, Inc.  All rights reserved
+|
+| This file contains routines to certify a PRP proof.
++---------------------------------------------------------------------*/
+
+/* Cert state to be written to / read from certify save files */
+
 struct cert_state {
 	int	thread_num;		
 	gwhandle gwdata;

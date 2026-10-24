@@ -1,0 +1,28 @@
+# Only affects source archives; historical files remain in the working tree and Git history.
+/_backup export-ignore
+/_backup/** export-ignore
+/_refactor2 export-ignore
+/_refactor2/** export-ignore
+/docs/review export-ignore
+/docs/review/** export-ignore
+/README.md.bak-* export-ignore
+**/__pycache__/ export-ignore
+*.pyc export-ignore
+/hardware-evidence/src/main/csharp/build-and-integration-2026-10-14.json export-ignore
+/hardware-evidence/src/main/csharp/validation.json export-ignore
+/hardware-evidence/tests/result-demo-verification-2026-10-14.json export-ignore
+/Plan export-ignore
+/Plan/** export-ignore
+/.ai-memory export-ignore
+/.ai-memory/** export-ignore
+
+# Pinned license originals must retain their collected bytes across Git clones and archives.
+/installer/legal/*.txt -text
+/installer/legal/*.rtf -text
+/FurMark/Assets/LICENSE.FurMark.txt -text
+/white-toolkit/LICENSE -text
+/white-toolkit/XiaobaiHardwareMonitorLib/Resources/PawnIo/COPYING -text
+/white-toolkit/XiaobaiHardwareMonitorLib/Hardware/Psu/Corsair/CorsairPsuGroup.cs -text
+/white-toolkit/XiaobaiHardwareMonitorLib/Hardware/Psu/Msi/MsiPsuGroup.cs -text
+/验机软件/Tools/pawnio/COPYING.GPLv2 -text
+/验机软件/Tools/xiaobaiprime/license.txt -text

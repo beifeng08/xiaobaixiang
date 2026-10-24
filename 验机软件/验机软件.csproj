@@ -12,9 +12,9 @@
     <AssemblyName>验机软件</AssemblyName>
     <RootNamespace>YanJi</RootNamespace>
     <!-- 默认版本 = 最近一次封装的版本；build-release.ps1 发布时用 -p:Version 覆盖 -->
-    <Version>0.0.6-preview.1</Version>
-    <Product>笔记本电脑验机</Product>
-    <Description>笔吧验机：主程序外壳 + plugins/ 插件模块（配置核对/键盘测试/屏幕坏点/影音会议/散热测试/验机结束）</Description>
+    <Version>0.0.7-preview.1</Version>
+    <Product>笔吧验机 · 验机辅助与离线记录</Product>
+    <Description>基于 BibaYanji 二次开发的 Windows 验机辅助工具：登记、采集、人工确认及 JSON / 离线网页报告。非自动认证工具。</Description>
   </PropertyGroup>
 
   <ItemGroup>

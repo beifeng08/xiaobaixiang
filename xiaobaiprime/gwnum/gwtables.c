@@ -1,6 +1,14 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| gwtables.c
+|
+| This file contains the C routines to build sin/cos and weights tables
+| that the FFT assembly code needs.
+| 
+|  Copyright 2002-2023 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
+/* Include files */
+
 #include <stdlib.h>
 #include <math.h>
 #include <memory.h>

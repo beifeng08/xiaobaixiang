@@ -1,6 +1,37 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*
+ * Primenet communication routines for all operating systems
+ * Uses sockets and HTTP
+ */ 
+
+/*
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+// PARTICULAR PURPOSE.
+//
+// Copyright (c) 1997-2023 Mersenne Research, Inc. All Rights Reserved.
+//
+//  MODULE:   primenet.c
+//
+//  PURPOSE:  Implements PrimeNet Version 4 and 5 API as HTTP network client
+//
+//  AUTHOR:   Peter Hunter, on the basis of work by Scott Kurowski (v3 API)
+//            Michiel van Loon, OS/2 adaptations 
+//            Kurowski 5/1998, 4.0 API support for MPrime 16.x
+//            Kurowski 9/1999, 4.0 API changes for MPrime 19.x
+//	      Woltman 1/2002, Windows support and bug fixes
+//	      Woltman 10/2005, Version 5 API support, CURL library
+//	      Woltman 9/2017, Added interim residues to AP msg, added PRP support
+//	      Woltman 9/2019, Added PRP dblchk support
+//	      Woltman 6/2020, Added PRP Proof support, removed sockets support
+//
+//  ASSUMPTIONS: 1. less than 4k of data is sent or received per call
+//               2. HTTP/1.1
+//               3. PrimeNet Version 5 or later API on server and client
+*/
+
+/* Linux defines, adapted for OS/2, FreeBSD, and Windows */
+
 #define CURL_STATICLIB
 
 #ifdef __WATCOMC__
