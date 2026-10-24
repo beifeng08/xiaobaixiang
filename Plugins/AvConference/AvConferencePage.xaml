@@ -89,14 +89,12 @@
                         <ComboBox x:Name="SpkBox" Grid.Column="1"/>
                     </Grid>
                     <WrapPanel Margin="0,8,0,0" VerticalAlignment="Center">
-                        <Button x:Name="PlayMusicButton" Content="播放音乐" Click="PlayMusicButton_Click"
+                        <Button x:Name="PlayToneButton" Content="播放测试音" Click="PlayToneButton_Click"
                                 Style="{DynamicResource PrimaryButton}"
-                                ToolTip="通过所选设备播放试音曲"/>
+                                ToolTip="通过所选设备播放 1 kHz 测试音（3 秒）"/>
                     </WrapPanel>
-                    <TextBlock x:Name="MusicStatus" Margin="2,6,0,0" TextWrapping="Wrap"
+                    <TextBlock x:Name="SpeakerStatus" Margin="2,6,0,0" TextWrapping="Wrap"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
-                    <TextBlock Margin="0,10,0,0" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}"
-                               Text="试音曲「不死のバイオレット」Copyright© 幻月遠征隊，使用已经著作权人同意。"/>
                 </StackPanel>
             </Border>
 

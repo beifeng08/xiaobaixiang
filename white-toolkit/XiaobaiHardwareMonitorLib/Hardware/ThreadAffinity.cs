@@ -1,60 +1,60 @@
-﻿// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
-
-using System;
-using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.System.SystemInformation;
-using XiaobaiHardwareMonitor.Interop;
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
-namespace XiaobaiHardwareMonitor.Hardware;
-
-internal static class ThreadAffinity
-{
-    
-    static ThreadAffinity()
-    {
-        ProcessorGroupCount = Software.OperatingSystem.IsUnix ? 1 : PInvoke.GetActiveProcessorGroupCount();
-
-        if (ProcessorGroupCount < 1)
-            ProcessorGroupCount = 1;
-    }
-
-    public static int ProcessorGroupCount { get; }
-
-    public static unsafe GroupAffinity Set(GroupAffinity affinity)
-    {
-        if (affinity == GroupAffinity.Undefined)
-            return GroupAffinity.Undefined;
-
-        if (Software.OperatingSystem.IsUnix)
-        {
-            if (affinity.Group > 0)
-                throw new ArgumentOutOfRangeException(nameof(affinity));
-
-            ulong result = 0;
-            if (LibC.sched_getaffinity(0, (IntPtr)8, ref result) != 0)
-                return GroupAffinity.Undefined;
-
-            ulong mask = affinity.Mask;
-            return LibC.sched_setaffinity(0, (IntPtr)8, ref mask) != 0
-                ? GroupAffinity.Undefined
-                : new GroupAffinity(0, result);
-        }
-
-        ulong maxValue = IntPtr.Size == 8 ? ulong.MaxValue : uint.MaxValue;
-        if (affinity.Mask > maxValue)
-            throw new ArgumentOutOfRangeException(nameof(affinity));
-
-        var groupAffinity = new GROUP_AFFINITY { Group = affinity.Group, Mask = (UIntPtr)affinity.Mask };
-        GROUP_AFFINITY previousGroupAffinity = new();
-
-        IntPtr currentThread = PInvoke.GetCurrentThread();
-
-        return PInvoke.SetThreadGroupAffinity(new HANDLE(currentThread),
-                                              &groupAffinity,
-                                              &previousGroupAffinity)
-            ? new GroupAffinity(previousGroupAffinity.Group, previousGroupAffinity.Mask)
-            : GroupAffinity.Undefined;
-    }
-}
+using System;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.SystemInformation;
+using SysCore.Interop;
+
+namespace SysCore.Hardware;
+
+internal static class ThreadAffinity
+{
+    
+    static ThreadAffinity()
+    {
+        ProcessorGroupCount = Software.OperatingSystem.IsUnix ? 1 : PInvoke.GetActiveProcessorGroupCount();
+
+        if (ProcessorGroupCount < 1)
+            ProcessorGroupCount = 1;
+    }
+
+    public static int ProcessorGroupCount { get; }
+
+    public static unsafe GroupAffinity Set(GroupAffinity affinity)
+    {
+        if (affinity == GroupAffinity.Undefined)
+            return GroupAffinity.Undefined;
+
+        if (Software.OperatingSystem.IsUnix)
+        {
+            if (affinity.Group > 0)
+                throw new ArgumentOutOfRangeException(nameof(affinity));
+
+            ulong result = 0;
+            if (LibC.sched_getaffinity(0, (IntPtr)8, ref result) != 0)
+                return GroupAffinity.Undefined;
+
+            ulong mask = affinity.Mask;
+            return LibC.sched_setaffinity(0, (IntPtr)8, ref mask) != 0
+                ? GroupAffinity.Undefined
+                : new GroupAffinity(0, result);
+        }
+
+        ulong maxValue = IntPtr.Size == 8 ? ulong.MaxValue : uint.MaxValue;
+        if (affinity.Mask > maxValue)
+            throw new ArgumentOutOfRangeException(nameof(affinity));
+
+        var groupAffinity = new GROUP_AFFINITY { Group = affinity.Group, Mask = (UIntPtr)affinity.Mask };
+        GROUP_AFFINITY previousGroupAffinity = new();
+
+        IntPtr currentThread = PInvoke.GetCurrentThread();
+
+        return PInvoke.SetThreadGroupAffinity(new HANDLE(currentThread),
+                                              &groupAffinity,
+                                              &previousGroupAffinity)
+            ? new GroupAffinity(previousGroupAffinity.Group, previousGroupAffinity.Mask)
+            : GroupAffinity.Undefined;
+    }
+}

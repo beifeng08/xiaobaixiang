@@ -1,16 +1,19 @@
-param(
+﻿param(
     [Parameter(Mandatory = $true)][string]$IsccPath,
     [Parameter(Mandatory = $true)][string]$OutputDirectory,
-    [string]$PackageVersion = "0.0.5-preview.1",
-    [string]$PackageFileVersion = "0.0.5.0"
+    [string]$PackageVersion = "0.0.6-preview.1",
+    [string]$PackageFileVersion = "0.0.6.0"
 )
 $ErrorActionPreference = "Stop"
 $repo = Split-Path $PSScriptRoot -Parent
 $output = [IO.Path]::GetFullPath($OutputDirectory)
 $publish = Join-Path $repo "publish"
+# 唯一来源地址：manifest 与 START-HERE 都引用它，换仓只需改这一处
+$repoUrl = "https://github.com/beifeng08/xiaobaixiang"
 $hostDirectory = Get-ChildItem $repo -Directory | Where-Object { Test-Path (Join-Path $_.FullName "app.manifest") } | Select-Object -First 1
 $hostName = $hostDirectory.Name
-$libraryDirectory = Join-Path $repo "LibreHardwareMonitor-master"
+# 第三方硬件库：目录已由 LibreHardwareMonitor-master 收拢改名为 white-toolkit（见 docs/provenance.md）
+$libraryDirectory = Join-Path $repo "white-toolkit"
 $dotnet = (Get-Command dotnet -ErrorAction Stop).Source
 if (!(Test-Path $IsccPath -PathType Leaf)) { throw "ISCC.exe not found: $IsccPath" }
 if (Test-Path $output) { throw "Output directory must be new to avoid stale files: $output" }
@@ -25,12 +28,36 @@ function Run-Dotnet([string[]]$Arguments) {
 $payload = Join-Path $output "BibaInspection-$PackageVersion-win-x64"
 Run-Dotnet @("publish", (Join-Path $repo "FurMark/FurMark.csproj"), "-p:PublishProfile=FolderProfile", "-p:GeneratePackageOnBuild=false", "--nologo")
 Run-Dotnet @("publish", (Join-Path $hostDirectory.FullName "$hostName.csproj"), "-p:PublishProfile=FolderProfile", "-p:GeneratePackageOnBuild=false", "-p:Version=$PackageVersion", "-p:PublishDir=$payload/", "--nologo")
-# Include redistribution notices and the exact source revision with both package forms.
+# 许可落位规则见 docs/third-party-licenses.md：
+# 安装根下只放本项目 LICENSE.txt（MIT 主许可证）；第三方原文统一进 licenses/，
+# 每个组件在包内恰好一份，Tools/、plugins/ 里不留重复副本。
 Copy-Item (Join-Path $repo "LICENSE") (Join-Path $payload "LICENSE.txt")
 $licenses = Join-Path $payload "licenses"
 New-Item -ItemType Directory $licenses | Out-Null
-Copy-Item (Join-Path $libraryDirectory "LICENSE") (Join-Path $licenses "LibreHardwareMonitor-MPL-2.0.txt")
-Copy-Item (Join-Path $libraryDirectory "LibreHardwareMonitorLib/Resources/PawnIo/COPYING") (Join-Path $licenses "PawnIO-COPYING.txt")
+# 表驱动：组件 → 安装包 licenses\ 下的文件名 = 仓库内唯一一份原文。
+# 文件名与 docs/third-party-licenses.md 的「安装包内位置」列一一对应，改一处必须同时改另一处。
+$thirdPartyLicenses = [ordered]@{
+    "MPL-2.0-LibreHardwareMonitor.txt" = "$libraryDirectory/LICENSE"
+    "GIMPS-Prime95-EULA.txt"           = "$repo/$hostName/Tools/xiaobaiprime/license.txt"
+    "MIT-FurMark.txt"                  = "$repo/FurMark/Assets/LICENSE.FurMark.txt"
+    "LGPL-2.1-PawnIO.txt"              = "$libraryDirectory/XiaobaiHardwareMonitorLib/Resources/PawnIo/COPYING"
+    "PawnIO-GPL-2.0.txt"               = "$repo/$hostName/Tools/pawnio/COPYING.GPLv2"
+}
+foreach ($name in $thirdPartyLicenses.Keys) {
+    $source = $thirdPartyLicenses[$name]
+    if (!(Test-Path $source -PathType Leaf)) { throw "Missing third-party license source: $source" }
+    Copy-Item $source (Join-Path $licenses $name)
+}
+# 业务目录里的同名副本删掉：同一组件只应出现在 licenses/（Aga.Controls 仅源码，不随包）
+foreach ($relative in @("Tools/furmark/Assets/LICENSE.FurMark.txt", "Tools/xiaobaiprime/license.txt", "Tools/pawnio/COPYING.GPLv2")) {
+    $duplicate = Join-Path $payload $relative
+    if (Test-Path $duplicate -PathType Leaf) { Remove-Item $duplicate -Force }
+}
+# 根目录只允许本项目 LICENSE.txt；licenses/ 文件数必须与清单一致（多一份即重复声明，少一份即漏发）
+$rootLicenses = @(Get-ChildItem $payload -File | Where-Object { $_.Name -match "(?i)licen|copying|notice" -and $_.Name -ne "LICENSE.txt" })
+if ($rootLicenses.Count -gt 0) { throw "Third-party license must not sit at package root: $($rootLicenses.Name -join ', ')" }
+$packagedLicenses = @(Get-ChildItem $licenses -File)
+if ($packagedLicenses.Count -ne $thirdPartyLicenses.Count) { throw "licenses/ must hold exactly $($thirdPartyLicenses.Count) files, found $($packagedLicenses.Count)" }
 $required = @("$hostName.exe", "coreclr.dll", "hostfxr.dll", "YanJi.PluginSdk.dll", "Tools/furmark/FurMark.exe", "Tools/furmark/coreclr.dll", "Tools/xiaobaiprime/xiaobaiprime.exe", "Tools/pawnio/PawnIO_setup.exe", "plugins/disk/CdmHost/CdmHost.exe", "plugins/disk/CdmHost/CdmResource/diskspd/diskspd64.exe")
 foreach ($relative in $required) { if (!(Test-Path (Join-Path $payload $relative) -PathType Leaf)) { throw "Missing package payload: $relative" } }
 $pluginIds = @("config", "keyboard", "screen", "av", "stress", "disk")
@@ -49,9 +76,9 @@ if ($LASTEXITCODE -ne 0) { throw "Cannot resolve source revision" }
 $dirty = @(& git -C $repo status --porcelain)
 if ($dirty.Count -gt 0) { throw "Commit source changes before producing a traceable release" }
 [IO.File]::WriteAllText((Join-Path $payload "preview-mode"), "")
-$manifest = [ordered]@{ version = $PackageVersion; createdAt = [DateTimeOffset]::Now.ToString("o"); source = "https://github.com/beifeng08/BibaYanji"; sourceRevision = $revision; sourceDirty = ($dirty.Count -gt 0); plugins = $pluginIds; platform = "win-x64"; runtime = "self-contained .NET 10"; batteryAcceptance = "user-owned"; distribution = "local preview, not public release" }
+$manifest = [ordered]@{ version = $PackageVersion; createdAt = [DateTimeOffset]::Now.ToString("o"); source = $repoUrl; sourceRevision = $revision; sourceDirty = ($dirty.Count -gt 0); plugins = $pluginIds; platform = "win-x64"; runtime = "self-contained .NET 10"; batteryAcceptance = "user-owned"; distribution = "local preview, not public release" }
 $manifest | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $payload "release-manifest.json") -Encoding UTF8
-@("BibaInspection $PackageVersion / win-x64", "Run: extract the complete directory and start the main EXE as administrator.", "Six plugins and .NET runtime are included. Do not move the EXE alone.", "This is a local acceptance preview. Battery edge-case acceptance belongs to the user.", "The preview uses its own AppId/directory and settings/plugin queue. Disk result storage remains shared; uninstall preserves user data.", "Monitor acceptance does not imply a completed stress, driver reinstall or fresh-machine test.", "Source: https://github.com/beifeng08/BibaYanji (see release-manifest.json)") | Set-Content (Join-Path $payload "START-HERE.txt") -Encoding UTF8
+@("BibaInspection $PackageVersion / win-x64", "Run: extract the complete directory and start the main EXE as administrator.", "Six plugins and .NET runtime are included. Do not move the EXE alone.", "This is a local acceptance preview. Battery edge-case acceptance belongs to the user.", "The preview uses its own AppId/directory and settings/plugin queue. Disk result storage remains shared; uninstall preserves user data.", "Monitor acceptance does not imply a completed stress, driver reinstall or fresh-machine test.", "Source: $repoUrl (see release-manifest.json)") | Set-Content (Join-Path $payload "START-HERE.txt") -Encoding UTF8
 & $IsccPath "/Qp" "/DBlockThreads=4" "/DPreview=1" "/DPackageVersion=$PackageVersion" "/DPackageFileVersion=$PackageFileVersion" "/DPublishSource=$payload" "/O$output" (Join-Path $PSScriptRoot "setup.iss")
 if ($LASTEXITCODE -ne 0) { throw "Inno Setup compilation failed: $LASTEXITCODE" }
 $zip = Join-Path $output "BibaInspection-$PackageVersion-win-x64-portable.zip"

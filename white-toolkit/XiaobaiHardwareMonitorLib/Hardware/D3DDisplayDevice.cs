@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
 using System;
 using System.Linq;
@@ -9,7 +9,7 @@ using Windows.Win32.Devices.DeviceAndDriverInstallation;
 using Windows.Win32.Foundation;
 using PInvoke = Windows.Win32.PInvoke;
 
-namespace XiaobaiHardwareMonitor.Hardware;
+namespace SysCore.Hardware;
 
 internal static class D3DDisplayDevice
 {

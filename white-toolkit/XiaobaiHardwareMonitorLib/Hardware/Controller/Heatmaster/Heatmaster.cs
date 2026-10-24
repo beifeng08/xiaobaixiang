@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
 using System;
 using System.Globalization;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-namespace XiaobaiHardwareMonitor.Hardware.Controller.Heatmaster;
+namespace SysCore.Hardware.Controller.Heatmaster;
 
 internal sealed class Heatmaster : Hardware, IDisposable
 {

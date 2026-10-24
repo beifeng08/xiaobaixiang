@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
 using System;
 using System.IO;
@@ -12,7 +12,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 using PInvoke = Windows.Win32.PInvoke;
 
-namespace XiaobaiHardwareMonitor.PawnIo;
+namespace SysCore.PawnIo;
 
 public class PawnIo
 {

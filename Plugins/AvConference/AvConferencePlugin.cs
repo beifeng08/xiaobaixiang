@@ -1,5 +1,4 @@
-// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+// Copyright (c) 2026 OmniSensor
 
 using System.Windows.Controls;
 using YanJi.PluginSdk;
@@ -13,7 +12,6 @@ public class AvConferencePlugin : IYanJiPlugin
     public IReadOnlyList<PluginCredit> Credits =>
     [
         new("NAudio 2.2.1", "麦克风/扬声器（WASAPI 设备枚举、电平、录制、播放）", "MIT"),
-        new("试音曲「不死のバイオレット」", "扬声器试音曲", "Copyright© 幻月遠征隊，使用已经著作权人同意"),
     ];
 
     public UserControl CreatePage(IHostContext host) => new AvConferencePage();

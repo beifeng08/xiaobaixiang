@@ -38,7 +38,7 @@ LibreHardwareMonitor 源码（MPL-2.0，本项目内改名 XiaobaiHardwareMonito
 │   ├── StressTest/            # 散热测试（烤机+传感器监控）    id=stress    order=50
 │   └── DiskMark/              # 硬盘跑分（CDM 源码集成 CdmHost） id=disk      order=80
 ├── FurMark/                   # GPU 烤机工具工程（构建后拷到 验机软件/Tools/furmark/）
-├── white-toolkit/             # ★ 硬件采集库（XiaobaiHardwareMonitor，MPL-2.0 衍生）
+├── white-toolkit/             # ★ 硬件采集库（XiaobaiHardwareMonitor，基于上游改名，MPL-2.0）
 │   ├── XiaobaiHardwareMonitor.sln         # 本目录独立可构建，Directory.Build.props 在此
 │   ├── XiaobaiHardwareMonitorLib/         # 采集库，插件以 ProjectReference 引用（须 x64）
 │   ├── XiaobaiHardwareMonitor.Windows.Forms/  # 上游 GUI 外壳 + TestScripts/（WMI 探针脚本）

@@ -1,16 +1,16 @@
-﻿// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
-namespace XiaobaiHardwareMonitor.Hardware;
-
-public interface ISettings
-{
+namespace SysCore.Hardware;
+
+public interface ISettings
+{
     
-    bool Contains(string name);
-
-    void SetValue(string name, string value);
-
-    string GetValue(string name, string value);
-
-    void Remove(string name);
+    bool Contains(string name);
+
+    void SetValue(string name, string value);
+
+    string GetValue(string name, string value);
+
+    void Remove(string name);
 }

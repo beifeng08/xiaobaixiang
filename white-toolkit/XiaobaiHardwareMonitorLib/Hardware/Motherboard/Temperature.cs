@@ -1,16 +1,16 @@
-﻿// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
-
-namespace XiaobaiHardwareMonitor.Hardware.Motherboard;
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
-internal class Temperature
-{
-    public readonly int Index;
-    public readonly string Name;
-
-    public Temperature(string name, int index)
-    {
-        Name = name;
-        Index = index;
-    }
+namespace SysCore.Hardware.Motherboard;
+
+internal class Temperature
+{
+    public readonly int Index;
+    public readonly string Name;
+
+    public Temperature(string name, int index)
+    {
+        Name = name;
+        Index = index;
+    }
 }

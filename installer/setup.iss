@@ -1,6 +1,8 @@
 ﻿; 笔吧验机 安装向导脚本（Inno Setup 6，中文界面）
-; 构建："%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" installer\setup.iss
-; 源 = publish\ 整目录（self-contained 便携包）；产物 = installer\笔吧验机Setup-v0.0.4.exe
+; 构建（单独编译）："%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" installer\setup.iss
+;   源 = 下方 PublishSource 默认的 ..\publish（整目录 self-contained 便携包），产物落在本目录
+; 构建（完整发布）：installer\build-release.ps1 传入 /DPublishSource=<新打包负载> 与 /O<输出目录>，
+;   产物文件名 = 笔吧验机Setup-v<PackageVersion>.exe，另出 portable zip 与 SHA256SUMS.txt
 ; 注意：OutputBaseFilename 不能含多余的点（"Setup-0.0.2" 的 ".0" 会被 Inno 当扩展名剥掉），用 v0.0.2 形式
 ;
 ; 插件化结构：主程序 = 验机软件.exe + 运行时 + YanJi.PluginSdk.dll（组件 main，固定必装）；
@@ -106,9 +108,9 @@ Name: "pawnio"; Description: "安装 PawnIO 内核驱动（CPU/主板传感器�
 #endif
 
 [Files]
-; 主程序：除 plugins\ 与 Tools\ 外的全部内容（exe + 运行时 + PluginSdk + 依赖）。
+; 主程序：除 plugins\、Tools\、licenses\ 外的全部内容（exe + 运行时 + PluginSdk + 依赖）。
 ; 注意不能带 createallsubdirs：它会把被 Excludes 排除的目录也空建出来（Tools\ 空目录就是这么来的）
-Source: "{#PublishSource}\*"; DestDir: "{app}"; Excludes: "plugins\*,Tools\*"; Components: main; Flags: ignoreversion recursesubdirs
+Source: "{#PublishSource}\*"; DestDir: "{app}"; Excludes: "plugins\*,Tools\*,licenses\*"; Components: main; Flags: ignoreversion recursesubdirs
 ; 模块插件：每插件一个目录一个组件
 Source: "{#PublishSource}\plugins\config\*"; DestDir: "{app}\plugins\config"; Components: config; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#PublishSource}\plugins\keyboard\*"; DestDir: "{app}\plugins\keyboard"; Components: keyboard; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -118,6 +120,11 @@ Source: "{#PublishSource}\plugins\stress\*"; DestDir: "{app}\plugins\stress"; Co
 Source: "{#PublishSource}\plugins\disk\*"; DestDir: "{app}\plugins\disk"; Components: disk; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 烤机工具负载只有散热测试用：随 stress 组件安装（不勾散热可省约 130MB）
 Source: "{#PublishSource}\Tools\*"; DestDir: "{app}\Tools"; Components: stress; Flags: ignoreversion recursesubdirs createallsubdirs
+; 第三方许可：随主程序固定安装，全部落在 {app}\licenses\；安装根目录只有本项目 LICENSE.txt。
+; 清单与命名见 docs/third-party-licenses.md，打包脚本按同一张表填充此目录（多一份即重复声明，少一份即漏发）。
+; skipifsourcedoesntexist 只为兼容「拿旧 publish 单独编译」的场景；正式发布走 build-release.ps1，
+; 那里会校验 licenses/ 文件数与清单严格一致，缺一个就中止。
+Source: "{#PublishSource}\licenses\*"; DestDir: "{app}\licenses"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 
 [Icons]
 Name: "{group}\{#ProductName}"; Filename: "{app}\验机软件.exe"; Check: WizardIsTaskSelected('startmenu')

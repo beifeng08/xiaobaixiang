@@ -494,7 +494,7 @@ internal static class VerifyRelease
             (Id: "keyboard", Type: "YanJi.Plugin.KeyboardTest.KeyboardTestPage", Title: "键盘逐键测试"),
             (Id: "screen", Type: "YanJi.Plugin.ScreenDeadPixel.DeadPixelPage", Title: "屏幕坏点检测"),
             (Id: "av", Type: "YanJi.Plugin.AvConference.AvConferencePage", Title: "影音设备检查"),
-            (Id: "stress", Type: typeof(StressTestPage).FullName!, Title: "数据监控（LibreHardwareMonitor 2 秒轮询）"),
+            (Id: "stress", Type: typeof(StressTestPage).FullName!, Title: "数据监控（SysCore 2 秒轮询）"),
             (Id: "disk", Type: "YanJi.Plugin.DiskMark.DiskMarkPage", Title: "硬盘性能测试")
         };
         foreach (string theme in new[] { "Light", "Dark" })

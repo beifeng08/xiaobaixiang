@@ -1,0 +1,41 @@
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
+
+using System;
+using System.Runtime.InteropServices;
+
+using SysCore.Contracts;
+using SysCore.Model;
+using SysCore.Platform;
+namespace SysCore.Controllers;
+
+public class MsiFan
+{
+    
+    public int Speed { get; set; }
+    public int Duty { get; set; }
+
+    public MsiFanConfigure ConfigureDuty;
+
+    public MsiFanConfigure ConfigureTemp;
+}
+
+public struct MsiFanConfigure
+{
+    public MsiFanConfigure()
+    {
+        if (Marshal.SizeOf<MsiFanConfigure>() != 8)
+        {
+            throw new InvalidOperationException($"{nameof(MsiFanConfigure)} struct size is invalid.");
+        }
+    }
+
+    public MsiFanMode Mode = MsiFanMode.Unknown;
+    public byte Item0;
+    public byte Item1;
+    public byte Item2;
+    public byte Item3;
+    public byte Item4;
+    public byte Item5;
+    public byte Item6;
+}

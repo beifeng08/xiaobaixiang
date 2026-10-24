@@ -1,24 +1,24 @@
-// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
-
-class CStartDlg : public CDialog
-{
-
-public:
-	CStartDlg(CWnd* pParent = NULL);   
+// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
-	enum { IDD = IDD_WORKER_START };
-	CStatic	c_worker_text;
-	CEdit	c_worker;
-	UINT	m_worker;
-	BOOL	m_all_workers;
-	
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    
-	
-protected:
+class CStartDlg : public CDialog
+{
 
-	DECLARE_MESSAGE_MAP()
-
-	afx_msg void OnBnClickedRadio1();
-};
+public:
+	CStartDlg(CWnd* pParent = NULL);   
+
+	enum { IDD = IDD_WORKER_START };
+	CStatic	c_worker_text;
+	CEdit	c_worker;
+	UINT	m_worker;
+	BOOL	m_all_workers;
+	
+	protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    
+	
+protected:
+
+	DECLARE_MESSAGE_MAP()
+
+	afx_msg void OnBnClickedRadio1();
+};

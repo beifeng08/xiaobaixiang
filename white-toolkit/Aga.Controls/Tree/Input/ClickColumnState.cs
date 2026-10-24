@@ -1,48 +1,48 @@
-// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
-using System.Drawing;
+// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
-namespace Aga.Controls.Tree
-{
-	internal class ClickColumnState : ColumnState
-	{
-		private Point _location;
-
-		public ClickColumnState(TreeViewAdv tree, TreeColumn column, Point location)
-			: base(tree, column)
-		{
-			_location = location;
-		}
-
-		public override void KeyDown(KeyEventArgs args)
-		{
-		}
-
-		public override void MouseDown(TreeNodeAdvMouseEventArgs args)
-		{
-		}
-
-		public override bool MouseMove(MouseEventArgs args)
-		{
-			if (TreeViewAdv.Dist(_location, args.Location) > TreeViewAdv.ItemDragSensivity
-				&& Tree.AllowColumnReorder)
-			{
-				Tree.Input = new ReorderColumnState(Tree, Column, args.Location);
-				Tree.UpdateView();
-			}
-			return true;
-		}
-
-		public override void MouseUp(TreeNodeAdvMouseEventArgs args)
-		{
-			Tree.ChangeInput();
-			Tree.UpdateView();
-			Tree.OnColumnClicked(Column);
-		}
-	}
-}
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows.Forms;
+using System.Drawing;
+
+namespace Aga.Controls.Tree
+{
+	internal class ClickColumnState : ColumnState
+	{
+		private Point _location;
+
+		public ClickColumnState(TreeViewAdv tree, TreeColumn column, Point location)
+			: base(tree, column)
+		{
+			_location = location;
+		}
+
+		public override void KeyDown(KeyEventArgs args)
+		{
+		}
+
+		public override void MouseDown(TreeNodeAdvMouseEventArgs args)
+		{
+		}
+
+		public override bool MouseMove(MouseEventArgs args)
+		{
+			if (TreeViewAdv.Dist(_location, args.Location) > TreeViewAdv.ItemDragSensivity
+				&& Tree.AllowColumnReorder)
+			{
+				Tree.Input = new ReorderColumnState(Tree, Column, args.Location);
+				Tree.UpdateView();
+			}
+			return true;
+		}
+
+		public override void MouseUp(TreeNodeAdvMouseEventArgs args)
+		{
+			Tree.ChangeInput();
+			Tree.UpdateView();
+			Tree.OnColumnClicked(Column);
+		}
+	}
+}

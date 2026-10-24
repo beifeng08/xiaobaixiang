@@ -1,61 +1,61 @@
-﻿// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
-using System;
-using System.Windows.Forms;
-using XiaobaiHardwareMonitor.Windows.Forms.Utilities;
-
-namespace XiaobaiHardwareMonitor.Windows.Forms.UI;
-
-public class UserOption
-{
-    private readonly string _name;
-    private bool _value;
-    private readonly ToolStripMenuItem _menuItem;
-    private event EventHandler _changed;
-    private readonly PersistentSettings _settings;
-
-    public UserOption(string name, bool value, ToolStripMenuItem menuItem, PersistentSettings settings)
-    {
-        _settings = settings;
-        _name = name;
-        _value = name != null ? settings.GetValue(name, value) : value;
-        _menuItem = menuItem;
-        _menuItem.Checked = _value;
-        _menuItem.Click += MenuItem_Click;
-    }
-
-    private void MenuItem_Click(object sender, EventArgs e)
-    {
-        Value = !Value;
-    }
-
-    public bool Value
-    {
-        get { return _value; }
-        set
-        {
-            if (_value != value)
-            {
-                _value = value;
-                if (_name != null)
-                    _settings.SetValue(_name, value);
-                _menuItem.Checked = value;
-                _changed?.Invoke(this, null);
-            }
-        }
-    }
-
-    public event EventHandler Changed
-    {
-        add
-        {
-            _changed += value;
-            _changed?.Invoke(this, null);
-        }
-        remove
-        {
-            _changed -= value;
-        }
-    }
-}
+using System;
+using System.Windows.Forms;
+using SysCore.Windows.Forms.Utilities;
+
+namespace SysCore.Windows.Forms.UI;
+
+public class UserOption
+{
+    private readonly string _name;
+    private bool _value;
+    private readonly ToolStripMenuItem _menuItem;
+    private event EventHandler _changed;
+    private readonly PersistentSettings _settings;
+
+    public UserOption(string name, bool value, ToolStripMenuItem menuItem, PersistentSettings settings)
+    {
+        _settings = settings;
+        _name = name;
+        _value = name != null ? settings.GetValue(name, value) : value;
+        _menuItem = menuItem;
+        _menuItem.Checked = _value;
+        _menuItem.Click += MenuItem_Click;
+    }
+
+    private void MenuItem_Click(object sender, EventArgs e)
+    {
+        Value = !Value;
+    }
+
+    public bool Value
+    {
+        get { return _value; }
+        set
+        {
+            if (_value != value)
+            {
+                _value = value;
+                if (_name != null)
+                    _settings.SetValue(_name, value);
+                _menuItem.Checked = value;
+                _changed?.Invoke(this, null);
+            }
+        }
+    }
+
+    public event EventHandler Changed
+    {
+        add
+        {
+            _changed += value;
+            _changed?.Invoke(this, null);
+        }
+        remove
+        {
+            _changed -= value;
+        }
+    }
+}

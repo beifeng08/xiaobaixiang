@@ -312,16 +312,16 @@
     <ClCompile Include="WorkerDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="hlp\xiaobaiprime.hhc" />
-    <None Include="hlp\xiaobaiprime.hhk" />
-    <CustomBuild Include="hlp\xiaobaiprime.hhp">
+    <None Include="hlp\Prime95.hhc" />
+    <None Include="hlp\Prime95.hhk" />
+    <CustomBuild Include="hlp\Prime95.hhp">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Making help file...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">start /wait hhc "hlp\xiaobaiprime.hhp"
-if not exist "hlp\xiaobaiprime.chm" goto :HelpError
-copy "hlp\xiaobaiprime.chm" "$(OutDir)xiaobaiprime.chm"
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">start /wait hhc "hlp\Prime95.hhp"
+if not exist "hlp\Prime95.chm" goto :HelpError
+copy "hlp\Prime95.chm" "$(OutDir)xiaobaiprime.chm"
 goto :HelpDone
 :HelpError
-echo hlp\xiaobaiprime.hhp(1) : error:Problem encountered creating help file
+echo hlp\Prime95.hhp(1) : error:Problem encountered creating help file
 echo.
 :HelpDone
 echo.
@@ -329,12 +329,12 @@ echo.
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">hlp\HTMLDefines.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)$(ProjectName).chm;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Making help file...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">start /wait hhc "hlp\xiaobaiprime.hhp"
-if not exist "hlp\xiaobaiprime.chm" goto :HelpError
-copy "hlp\xiaobaiprime.chm" "$(OutDir)xiaobaiprime.chm"
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">start /wait hhc "hlp\Prime95.hhp"
+if not exist "hlp\Prime95.chm" goto :HelpError
+copy "hlp\Prime95.chm" "$(OutDir)xiaobaiprime.chm"
 goto :HelpDone
 :HelpError
-echo hlp\xiaobaiprime.hhp(1) : error:Problem encountered creating help file
+echo hlp\Prime95.hhp(1) : error:Problem encountered creating help file
 echo.
 :HelpDone
 echo.
@@ -342,12 +342,12 @@ echo.
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">hlp\HTMLDefines.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)$(ProjectName).chm;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Making help file...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">start /wait hhc "hlp\xiaobaiprime.hhp"
-if not exist "hlp\xiaobaiprime.chm" goto :HelpError
-copy "hlp\xiaobaiprime.chm" "$(OutDir)xiaobaiprime.chm"
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">start /wait hhc "hlp\Prime95.hhp"
+if not exist "hlp\Prime95.chm" goto :HelpError
+copy "hlp\Prime95.chm" "$(OutDir)xiaobaiprime.chm"
 goto :HelpDone
 :HelpError
-echo hlp\xiaobaiprime.hhp(1) : error:Problem encountered creating help file
+echo hlp\Prime95.hhp(1) : error:Problem encountered creating help file
 echo.
 :HelpDone
 echo.
@@ -355,12 +355,12 @@ echo.
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">hlp\HTMLDefines.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)$(ProjectName).chm;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Making help file...</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">start /wait hhc "hlp\xiaobaiprime.hhp"
-if not exist "hlp\xiaobaiprime.chm" goto :HelpError
-copy "hlp\xiaobaiprime.chm" "$(OutDir)xiaobaiprime.chm"
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">start /wait hhc "hlp\Prime95.hhp"
+if not exist "hlp\Prime95.chm" goto :HelpError
+copy "hlp\Prime95.chm" "$(OutDir)xiaobaiprime.chm"
 goto :HelpDone
 :HelpError
-echo hlp\xiaobaiprime.hhp(1) : error:Problem encountered creating help file
+echo hlp\Prime95.hhp(1) : error:Problem encountered creating help file
 echo.
 :HelpDone
 echo.

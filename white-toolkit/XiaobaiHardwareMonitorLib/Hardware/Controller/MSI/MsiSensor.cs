@@ -1,24 +1,24 @@
-﻿// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
-namespace XiaobaiHardwareMonitor.Hardware.Controller.MSI;
-
-internal delegate float GetMsiSensorValue(MsiFanControl msi);
-
-internal class MsiSensor : Sensor
-{
-    private readonly GetMsiSensorValue _getValue;
-
-    public MsiSensor(string name, int index, SensorType sensorType, Hardware hardware, ISettings settings, GetMsiSensorValue getValue)
-        : base(name, index, sensorType, hardware, settings)
-    {
-        _getValue = getValue;
-    }
-
-    internal void Update(MsiFanControl msi)
-    {
-        float value = _getValue(msi);
-
-        Value = value;
-    }
-}
+namespace SysCore.Hardware.Controller.MSI;
+
+internal delegate float GetMsiSensorValue(MsiFanControl msi);
+
+internal class MsiSensor : Sensor
+{
+    private readonly GetMsiSensorValue _getValue;
+
+    public MsiSensor(string name, int index, SensorType sensorType, Hardware hardware, ISettings settings, GetMsiSensorValue getValue)
+        : base(name, index, sensorType, hardware, settings)
+    {
+        _getValue = getValue;
+    }
+
+    internal void Update(MsiFanControl msi)
+    {
+        float value = _getValue(msi);
+
+        Value = value;
+    }
+}

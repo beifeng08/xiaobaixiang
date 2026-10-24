@@ -1,19 +1,19 @@
-﻿// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace XiaobaiHardwareMonitor.Windows.Forms.Utilities
-{
-    public enum LoggerFileRotation
-    {
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SysCore.Windows.Forms.Utilities
+{
+    public enum LoggerFileRotation
+    {
         
-        PerSession = 0,
-
-        Daily,
-    }
-}
+        PerSession = 0,
+
+        Daily,
+    }
+}

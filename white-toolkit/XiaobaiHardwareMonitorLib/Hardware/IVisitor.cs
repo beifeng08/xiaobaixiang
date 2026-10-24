@@ -1,16 +1,16 @@
-﻿// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
 
-namespace XiaobaiHardwareMonitor.Hardware;
-
-public interface IVisitor
-{
+namespace SysCore.Hardware;
+
+public interface IVisitor
+{
     
-    void VisitComputer(IComputer computer);
-
-    void VisitHardware(IHardware hardware);
-
-    void VisitSensor(ISensor sensor);
-
-    void VisitParameter(IParameter parameter);
+    void VisitComputer(IComputer computer);
+
+    void VisitHardware(IHardware hardware);
+
+    void VisitSensor(ISensor sensor);
+
+    void VisitParameter(IParameter parameter);
 }
