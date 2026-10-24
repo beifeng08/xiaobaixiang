@@ -69,6 +69,7 @@ function Run-Dotnet([string[]]$Arguments) {
 }
 # Existing upstream order is significant: first publish self-contained FurMark, then the host.
 $payload = Join-Path $output "BibaInspection-$PackageVersion-win-x64"
+Run-Dotnet @("restore", (Join-Path $repo "$hostName.slnx"), "--nologo")
 Run-Dotnet @("publish", (Join-Path $repo "FurMark/FurMark.csproj"), "-p:PublishProfile=FolderProfile", "-p:GeneratePackageOnBuild=false", "--nologo")
 Run-Dotnet @("publish", (Join-Path $hostDirectory.FullName "$hostName.csproj"), "-p:PublishProfile=FolderProfile", "-p:GeneratePackageOnBuild=false", "-p:Version=$PackageVersion", "-p:PublishDir=$payload/", "--nologo")
 # Preserve upstream notices in their original payload locations as well as this indexed copy.

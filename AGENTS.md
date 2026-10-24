@@ -223,7 +223,7 @@ public interface IHostContext                       // 宿主注入 CreatePage
 
 ## 本地预览封装与验收（2026-10-15）
 
-- `installer/build-release.ps1` 将 FurMark→宿主/六插件自包含发布到新目录，核对六插件与关键原生负载，再调用 Inno 生成预览 EXE、ZIP、源码快照、SHA256。要求干净提交；许可库存有 blocked 时默认拒绝，`-LocalAcceptanceOnly` 仅允许本机验收，不是再分发豁免。保留原始通知，按库存逐份复制并验证哈希，不再固定五份或删除业务目录通知。源码归档使用命令级 `core.autocrlf=false` / `core.eol=lf`，确保归档文本与提交 blob 字节一致，不修改用户全局 Git 配置。脚本受执行策略阻止时不修改策略。
+- `installer/build-release.ps1` 先还原根解决方案的全部插件依赖，再将 FurMark→宿主/六插件自包含发布到新目录，核对六插件与关键原生负载，再调用 Inno 生成预览 EXE、ZIP、源码快照、SHA256。要求干净提交；许可库存有 blocked 时默认拒绝，`-LocalAcceptanceOnly` 仅允许本机验收，不是再分发豁免。保留原始通知，按库存逐份复制并验证哈希，不再固定五份或删除业务目录通知。源码归档使用命令级 `core.autocrlf=false` / `core.eol=lf`，确保归档文本与提交 blob 字节一致，不修改用户全局 Git 配置。脚本受执行策略阻止时不修改策略。
 - `installer/setup.iss` 支持 `Preview`、`MeetingPreview`、`PackageVersion`、`PackageFileVersion`、`PublishSource` 预处理参数；本次交付强制预览身份，直接编译也要求 preview-mode 及构建脚本生成的精确许可列表；`Preview + MeetingPreview` 使用 BibaInspection.MeetingPreview / BibaInspectionMeetingPreview，避免覆盖既有普通预览；预览驱动安装默认不勾选，卸载保留用户数据。
 - 预览负载含 `preview-mode` 标记；宿主设置及插件待处理队列改用 `%APPDATA%/YanJiPreview`，正式版继续 `%APPDATA%/YanJi`。硬盘跑分结果仍共享，不能宣称所有数据完全隔离。
 - `installer/VerifyRelease.csproj` 是独立自包含验收程序，不加入产品解决方案；以 `PayloadDir` 指向待验目录，驱动真实 MainWindow、插件加载和采集。先要求 PawnIO 已运行，并将 `AllowAutomaticDriverStart=false`，不安装/启动驱动，不启动烤机。图表对照最新真实样本，检查切页/重启/关闭；另跑产品 EXE 入口冒烟。可加 `--soak-seconds 10800` 做三小时持续监控，逐次落盘 samples.ndjson，每10秒记录进程资源、每5分钟输出进度，采样中断超过30秒即失败；仍不能识别上游未抛异常的旧传感器值。
