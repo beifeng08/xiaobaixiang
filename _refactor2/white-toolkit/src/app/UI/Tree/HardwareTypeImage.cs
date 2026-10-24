@@ -1,0 +1,74 @@
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
+
+using System.Drawing;
+using System.Collections.Generic;
+using SysCore.Contracts;
+using SysCore.Model;
+using SysCore.Platform;
+
+namespace SysCore.Windows.Forms.UI;
+
+public class HardwareTypeImage
+{
+    private readonly IDictionary<HardwareType, Image> _images = new Dictionary<HardwareType, Image>();
+
+    private HardwareTypeImage() { }
+
+    public static HardwareTypeImage Instance { get; } = new HardwareTypeImage();
+
+    public Image GetImage(HardwareType hardwareType)
+    {
+        if (_images.TryGetValue(hardwareType, out Image image))
+            return image;
+
+        switch (hardwareType)
+        {
+            case HardwareType.Cpu:
+                image = Infrastructure.EmbeddedResources.GetImage("cpu.png");
+                break;
+            case HardwareType.GpuNvidia:
+                image = Infrastructure.EmbeddedResources.GetImage("nvidia.png");
+                break;
+            case HardwareType.GpuAmd:
+                image = Infrastructure.EmbeddedResources.GetImage("amd.png");
+                break;
+            case HardwareType.GpuIntel:
+                image = Infrastructure.EmbeddedResources.GetImage("intel.png");
+                break;
+            case HardwareType.Storage:
+                image = Infrastructure.EmbeddedResources.GetImage("hdd.png");
+                break;
+            case HardwareType.Motherboard:
+                image = Infrastructure.EmbeddedResources.GetImage("mainboard.png");
+                break;
+            case HardwareType.SuperIO:
+            case HardwareType.EmbeddedController:
+                image = Infrastructure.EmbeddedResources.GetImage("chip.png");
+                break;
+            case HardwareType.Memory:
+                image = Infrastructure.EmbeddedResources.GetImage("ram.png");
+                break;
+            case HardwareType.Network:
+                image = Infrastructure.EmbeddedResources.GetImage("nic.png");
+                break;
+            case HardwareType.Cooler:
+                image = Infrastructure.EmbeddedResources.GetImage("fan.png");
+                break;
+            case HardwareType.Psu:
+                image = Infrastructure.EmbeddedResources.GetImage("power-supply.png");
+                break;
+            case HardwareType.Battery:
+                image = Infrastructure.EmbeddedResources.GetImage("battery.png");
+                break;
+            case HardwareType.PowerMonitor:
+                image = Infrastructure.EmbeddedResources.GetImage("powermonitor.png");
+                break;
+            default:
+                image = new Bitmap(1, 1);
+                break;
+        }
+        _images.Add(hardwareType, image);
+        return image;
+    }
+}

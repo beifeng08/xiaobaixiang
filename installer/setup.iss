@@ -1,11 +1,13 @@
-; 笔吧验机 安装向导脚本（Inno Setup 6，中文界面）
-; 构建："%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" installer\setup.iss
-; 源 = publish\ 整目录（self-contained 便携包）；产物 = installer\笔吧验机Setup-v0.0.4.exe
+﻿; 笔吧验机 安装向导脚本（Inno Setup 6，中文界面）
+; 构建（单独编译）："%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" installer\setup.iss
+;   源 = 下方 PublishSource 默认的 ..\publish（整目录 self-contained 便携包），产物落在本目录
+; 构建（完整发布）：installer\build-release.ps1 传入 /DPublishSource=<新打包负载> 与 /O<输出目录>，
+;   产物文件名 = 笔吧验机Setup-v<PackageVersion>.exe，另出 portable zip 与 SHA256SUMS.txt
 ; 注意：OutputBaseFilename 不能含多余的点（"Setup-0.0.2" 的 ".0" 会被 Inno 当扩展名剥掉），用 v0.0.2 形式
 ;
 ; 插件化结构：主程序 = 验机软件.exe + 运行时 + YanJi.PluginSdk.dll（组件 main，固定必装）；
 ; 每个验机模块 = publish\plugins\<id>\ 目录（一个可选组件，默认全勾，自定义安装可取消）；
-; Tools\（prime95 + FurMark 自包含 + PawnIO，约 130MB）只有散热测试用，随 stress 组件安装。
+; Tools\（XiaobaiPrime + FurMark 自包含 + PawnIO，约 130MB）只有散热测试用，随 stress 组件安装。
 ; 0.0.2：新增 disk 组件（硬盘跑分，开源）；附加任务新增「安装 PawnIO 驱动」（默认勾选，
 ; 安装末尾静默执行 Tools\pawnio\PawnIO_setup.exe -install -silent（用户零点击，无需重启；
 ; 未装散热组件或系统已装 PawnIO 时自动跳过）。
@@ -91,7 +93,7 @@ Name: "config"; Description: "配置核对（CPU/显卡/内存/硬盘/网卡/屏
 Name: "keyboard"; Description: "键盘测试（104 键可视化）"; Types: full
 Name: "screen"; Description: "屏幕坏点（全屏纯色检测）"; Types: full
 Name: "av"; Description: "影音会议（摄像头/麦克风/扬声器）"; Types: full
-Name: "stress"; Description: "散热测试（CPU/GPU/双烤 + 传感器监控，含 prime95/FurMark 工具）"; Types: full
+Name: "stress"; Description: "散热测试（CPU/GPU/双烤 + 传感器监控，含 XiaobaiPrime/FurMark 工具）"; Types: full
 Name: "disk"; Description: "硬盘跑分（CrystalDiskMark 源码集成，SEQ1M/RND4K 四项）"; Types: full
 
 ; 附加任务默认都勾选（用户可取消）：桌面快捷方式 / 开始菜单项 / PawnIO 驱动
@@ -106,9 +108,9 @@ Name: "pawnio"; Description: "安装 PawnIO 内核驱动（CPU/主板传感器�
 #endif
 
 [Files]
-; 主程序：除 plugins\ 与 Tools\ 外的全部内容（exe + 运行时 + PluginSdk + 依赖）。
+; 主程序：除 plugins\、Tools\、licenses\ 外的全部内容（exe + 运行时 + PluginSdk + 依赖）。
 ; 注意不能带 createallsubdirs：它会把被 Excludes 排除的目录也空建出来（Tools\ 空目录就是这么来的）
-Source: "{#PublishSource}\*"; DestDir: "{app}"; Excludes: "plugins\*,Tools\*"; Components: main; Flags: ignoreversion recursesubdirs
+Source: "{#PublishSource}\*"; DestDir: "{app}"; Excludes: "plugins\*,Tools\*,licenses\*"; Components: main; Flags: ignoreversion recursesubdirs
 ; 模块插件：每插件一个目录一个组件
 Source: "{#PublishSource}\plugins\config\*"; DestDir: "{app}\plugins\config"; Components: config; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#PublishSource}\plugins\keyboard\*"; DestDir: "{app}\plugins\keyboard"; Components: keyboard; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -118,6 +120,11 @@ Source: "{#PublishSource}\plugins\stress\*"; DestDir: "{app}\plugins\stress"; Co
 Source: "{#PublishSource}\plugins\disk\*"; DestDir: "{app}\plugins\disk"; Components: disk; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 烤机工具负载只有散热测试用：随 stress 组件安装（不勾散热可省约 130MB）
 Source: "{#PublishSource}\Tools\*"; DestDir: "{app}\Tools"; Components: stress; Flags: ignoreversion recursesubdirs createallsubdirs
+; 第三方许可：随主程序固定安装，全部落在 {app}\licenses\；安装根目录只有本项目 LICENSE.txt。
+; 清单与命名见 docs/third-party-licenses.md，打包脚本按同一张表填充此目录（多一份即重复声明，少一份即漏发）。
+; skipifsourcedoesntexist 只为兼容「拿旧 publish 单独编译」的场景；正式发布走 build-release.ps1，
+; 那里会校验 licenses/ 文件数与清单严格一致，缺一个就中止。
+Source: "{#PublishSource}\licenses\*"; DestDir: "{app}\licenses"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 
 [Icons]
 Name: "{group}\{#ProductName}"; Filename: "{app}\验机软件.exe"; Check: WizardIsTaskSelected('startmenu')

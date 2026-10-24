@@ -8,7 +8,8 @@ Windows 桌面验机工具（WPF，net10.0-windows10.0.19041.0，.NET SDK 10.0.4
 用户可在安装向导勾选模块、也可在程序内「插件管理」里导入 zip 插件包（0.0.2 起支持多选批量导入）或删除插件（重启生效）。
 
 硬性约束：开源软件，**禁止集成闭源商业软件**（如 HWiNFO）。硬件采集只用
-LibreHardwareMonitor 源码（MPL-2.0）+ Windows 自带接口（WMI / 注册表 / Win32 API）。
+LibreHardwareMonitor 源码（MPL-2.0，本项目内改名 XiaobaiHardwareMonitor）+ Windows 自带接口（WMI / 注册表 / Win32 API）。
+烤机负载为 GIMPS Prime95 源码（本项目内改名 XiaobaiPrime）+ FurMark。
 详细工程背景与硬件采集的坑见 `项目交接文档.md`（先通读再动采集相关代码）。
 
 ## 目录结构
@@ -25,7 +26,7 @@ LibreHardwareMonitor 源码（MPL-2.0）+ Windows 自带接口（WMI / 注册表
 │   │   ├── ThemeManager.cs / TitleBarTheme.cs
 │   ├── Views/PluginManagerWindow   # 插件管理窗口（列表/删除/导入 zip）
 │   ├── Themes/                # Light.xaml / Dark.xaml（令牌）+ Controls.xaml（隐式样式）
-│   └── Tools/                 # 烤机外部 exe 负载（prime95/furmark/pawnio，散热插件用）
+│   └── Tools/                 # 外部负载（xiaobaiprime/furmark/pawnio，散热插件用）
 ├── PluginSdk/                 # ★ 插件契约（YanJi.PluginSdk.dll）：接口 + 共享服务
 │   ├── Contracts.cs           # IYanJiPlugin / IModulePage / IKeyHandlerPage / IReportSection / IPluginShutdown / IHostContext
 │   └── Services/              # DisplayInfoService + EdidParser（多个插件共用才放这里）
@@ -37,11 +38,28 @@ LibreHardwareMonitor 源码（MPL-2.0）+ Windows 自带接口（WMI / 注册表
 │   ├── StressTest/            # 散热测试（烤机+传感器监控）    id=stress    order=50
 │   └── DiskMark/              # 硬盘跑分（CDM 源码集成 CdmHost） id=disk      order=80
 ├── FurMark/                   # GPU 烤机工具工程（构建后拷到 验机软件/Tools/furmark/）
+├── white-toolkit/             # ★ 硬件采集库（XiaobaiHardwareMonitor，基于上游改名，MPL-2.0）
+│   ├── XiaobaiHardwareMonitor.sln         # 本目录独立可构建，Directory.Build.props 在此
+│   ├── XiaobaiHardwareMonitorLib/         # 采集库，插件以 ProjectReference 引用（须 x64）
+│   ├── XiaobaiHardwareMonitor.Windows.Forms/  # 上游 GUI 外壳 + TestScripts/（WMI 探针脚本）
+│   └── Aga.Controls/                      # WinForms 树控件依赖（相对路径被上一项引用）
+├── xiaobaiprime/              # ★ GIMPS Prime95 源码（prime95/xiaobaiprime.sln，C++/MFC）
+│   ├── *.c / *.h / *.cpp      # 计算内核、通信、GCD 等（根层为上游原布局）
+│   ├── gwnum/                 # 大数运算汇编内核
+│   ├── winnt/ prime95/ res/   # Windows 平台层 / MFC GUI（保持上游子目录名 prime95）/ 资源
+│   └── macosx/ macosx64/      # 上游保留的其它平台工程
 ├── prime95-build/             # prime95 叠加构建工作区（不进 slnx）
-├── 集成开源项目代码/           # 开源组件源码（LibreHardwareMonitorLib 被插件项目引用）
+│   ├── xiaobaiprime.yanji.vcxproj  # 项目自有工程：依赖指向 deps/，输出 xiaobaiprime.exe
+│   ├── deps/ stub/ out/       # 第三方依赖（curl/hwloc/gmp/boost）、桩、产物
+│   └── restore-boost/         # Boost 还原辅助工程
+├── docs/review/               # 重构留痕（diff 统计 / 全量 diff / 命名映射表）
 ├── installer/setup.iss        # Inno Setup 安装向导（可选组件 = 逐模块勾选）
 └── publish/                   # 发布产物（self-contained 便携包，plugins/ 在根下）
 ```
+
+构建边界：`white-toolkit/` 与 `xiaobaiprime/` 各自可在其目录内独立构建；根 `验机软件.slnx`
+只引用宿主、PluginSdk、Plugins、`white-toolkit/XiaobaiHardwareMonitorLib`，不引入
+`white-toolkit/XiaobaiHardwareMonitor.sln` 与 `xiaobaiprime/`（后者需 MSVC/MFC）。
 
 ## 构建 / 运行 / 发布
 
@@ -194,7 +212,7 @@ public interface IHostContext                       // 宿主注入 CreatePage
 - **System.Management 双份实现**：NuGet 的 lib/ 下是 74KB PNSE 桩，真身在 runtimes/win（314KB）。
   插件目录里拷到的是桩，运行时靠**宿主 deps.json/TPA** 解析到真身——所以宿主 csproj 保留着
   System.Management 的 PackageReference（宿主代码并不直接用 WMI），**勿删**。
-- **LibreHardwareMonitorLib 必须按 x64 构建**：插件引用它时 ProjectReference 必须带
+- **XiaobaiHardwareMonitorLib 必须按 x64 构建**：插件引用它时 ProjectReference 必须带
   `SetPlatform="Platform=x64"`（CsWin32 部分 API 只在指定架构生成，AnyCPU 会编译失败）。
 - 发布时插件工程不能继承宿主的 RuntimeIdentifier/SelfContained——宿主 BuildPlugins 的
   MSBuild 任务已 `RemoveProperties="RuntimeIdentifier;SelfContained"`，仿建即可。

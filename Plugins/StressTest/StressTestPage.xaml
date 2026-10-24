@@ -1,4 +1,4 @@
-<!-- Copyright (c) 2026 beifeng08 -->
+﻿<!-- Copyright (c) 2026 beifeng08 -->
 <!-- Licensed under the MIT License. See LICENSE in the project root. -->
 
 <UserControl x:Class="YanJi.Plugin.StressTest.StressTestPage"
@@ -140,7 +140,7 @@
                         <Button x:Name="StartButton" Content="开始烤机" Style="{StaticResource PrimaryButton}"
                                 Margin="0,0,8,10" FontSize="13" FontWeight="SemiBold" Padding="16,9"
                                 Click="StartButton_Click"
-                                ToolTip="按所选模式启动 prime95 和/或 FurMark（会另起窗口）"/>
+                                ToolTip="按所选模式启动 XiaobaiPrime 和/或 FurMark（会另起窗口）"/>
                         <Button x:Name="StopButton" Content="停止" Margin="0,0,14,10" IsEnabled="False"
                                 FontSize="13" Padding="16,9" Click="StopButton_Click"
                                 ToolTip="结束全部烤机进程"/>
@@ -226,7 +226,7 @@
             <Border Style="{StaticResource CardBorder}" Width="Auto" CornerRadius="0"
                     Margin="0,0,0,16" Padding="20">
                 <StackPanel>
-                    <TextBlock Text="prime95 设置（CPU 烤机）" Style="{StaticResource SectionTitle}"
+                    <TextBlock Text="XiaobaiPrime 设置（CPU 烤机）" Style="{StaticResource SectionTitle}"
                                FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
                     <Grid Margin="0,14,0,0">
                         <Grid.ColumnDefinitions>

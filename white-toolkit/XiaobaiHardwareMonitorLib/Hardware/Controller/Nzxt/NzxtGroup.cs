@@ -1,0 +1,93 @@
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
+
+using System.Collections.Generic;
+using System.Text;
+using HidSharp;
+
+namespace SysCore.Hardware.Controller.Nzxt;
+
+internal class NzxtGroup : IGroup
+{
+    private readonly List<IHardware> _hardware = new();
+    private readonly StringBuilder _report = new();
+
+    public NzxtGroup(ISettings settings)
+    {
+        _report.AppendLine("Nzxt Hardware");
+        _report.AppendLine();
+
+        foreach (HidDevice dev in DeviceList.Local.GetHidDevices(0x1e71))
+        {
+            string productName = dev.GetProductName();
+
+            switch (dev.ProductID)
+            {
+                case 0x170E: 
+                    var krakenV2 = new KrakenV2(dev, settings);
+                    _report.AppendLine($"Device name: {productName}");
+                    _report.AppendLine($"Firmware version: {krakenV2.FirmwareVersion}");
+                    _report.AppendLine($"{krakenV2.Status}");
+                    _report.AppendLine();
+
+                    if (krakenV2.IsValid)
+                        _hardware.Add(krakenV2);
+
+                    break;
+                case 0x2007: 
+                case 0x2014: 
+                case 0x3008: 
+                case 0x300C: 
+                case 0x300E: 
+                case 0x3012: 
+                    
+                    var krakenV3 = new KrakenV3(dev, settings);
+                    _report.AppendLine($"Device name: {productName}");
+                    _report.AppendLine($"Firmware version: {krakenV3.FirmwareVersion}");
+                    _report.AppendLine($"{krakenV3.Status}");
+                    _report.AppendLine();
+
+                    if (krakenV3.IsValid)
+                        _hardware.Add(krakenV3);
+
+                    break;
+                case 0x1711:
+                    var gridv3 = new GridV3(dev, settings);
+                    _report.AppendLine($"Device name: {productName}");
+                    _report.AppendLine($"Firmware version: {gridv3.FirmwareVersion}");
+                    _report.AppendLine();
+
+                    if (gridv3.IsValid)
+                        _hardware.Add(gridv3);
+
+                    break;
+                default:
+                    _report.AppendLine($"Unknown Hardware PID: {dev.ProductID} Name: {productName}");
+                    _report.AppendLine();
+                    break;
+            }
+        }
+
+        if (_hardware.Count == 0)
+        {
+            _report.AppendLine("No Nzxt Hardware found.");
+            _report.AppendLine();
+        }
+    }
+
+    public IReadOnlyList<IHardware> Hardware => _hardware;
+
+    public void Close()
+    {
+        foreach (IHardware iHardware in _hardware)
+        {
+            if (iHardware is Hardware hardware)
+                hardware.Close();
+        }
+    }
+
+    public string GetReport()
+    {
+        return _report.ToString();
+    }
+}

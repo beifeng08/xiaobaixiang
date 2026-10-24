@@ -1,0 +1,37 @@
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
+
+using Windows.Win32;
+using Windows.Win32.System.SystemInformation;
+
+using SysCore.Contracts;
+using SysCore.Model;
+using SysCore.Platform;
+namespace SysCore.Devices;
+
+internal static unsafe class MemoryWindows
+{
+    public static void Update(TotalMemory memory)
+    {
+        MEMORYSTATUSEX status = new() { dwLength = (uint)sizeof(MEMORYSTATUSEX) };
+
+        if (!PInvoke.GlobalMemoryStatusEx(ref status))
+            return;
+
+        memory.PhysicalMemoryUsed.Value = (float)(status.ullTotalPhys - status.ullAvailPhys) / (1024 * 1024 * 1024);
+        memory.PhysicalMemoryAvailable.Value = (float)status.ullAvailPhys / (1024 * 1024 * 1024);
+        memory.PhysicalMemoryLoad.Value = 100.0f - ((100.0f * status.ullAvailPhys) / status.ullTotalPhys);
+    }
+
+    public static void Update(VirtualMemory memory)
+    {
+        MEMORYSTATUSEX status = new() { dwLength = (uint)sizeof(MEMORYSTATUSEX) };
+
+        if (!PInvoke.GlobalMemoryStatusEx(ref status))
+            return;
+
+        memory.VirtualMemoryUsed.Value = (float)(status.ullTotalPageFile - status.ullAvailPageFile) / (1024 * 1024 * 1024);
+        memory.VirtualMemoryAvailable.Value = (float)status.ullAvailPageFile / (1024 * 1024 * 1024);
+        memory.VirtualMemoryLoad.Value = 100.0f - ((100.0f * status.ullAvailPageFile) / status.ullTotalPageFile);
+    }
+}

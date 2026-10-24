@@ -1,0 +1,944 @@
+﻿// Copyright (c) 2026 OmniSensor
+// 本实现参考了公开文献与社区实践
+
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Globalization;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web;
+using SysCore.Contracts;
+using SysCore.Model;
+using SysCore.Platform;
+using SysCore.Windows.Forms.UI;
+
+using SysCore.Sensors;
+namespace SysCore.Windows.Forms.Infrastructure;
+
+public class HttpServer
+{
+    private readonly HttpListener _listener;
+    private readonly Node _root;
+    private readonly IElement _rootElement;
+    private readonly Version _version = typeof(HttpServer).Assembly.GetName().Version;
+
+    private Task _listenerTask;
+    private CancellationTokenSource _cts;
+
+    public HttpServer(Node node, IElement rootElement, string ip, int port, bool authEnabled = false, string userName = "", string passwordSHA256 = "")
+    {
+        _root = node;
+        _rootElement = rootElement;
+        ListenerIp = ip;
+        ListenerPort = port;
+        AuthEnabled = authEnabled;
+        UserName = userName;
+        PasswordSHA256 = passwordSHA256;
+
+        try
+        {
+            _listener = new HttpListener { IgnoreWriteExceptions = true };
+        }
+        catch (PlatformNotSupportedException)
+        {
+            _listener = null;
+        }
+    }
+
+    ~HttpServer()
+    {
+        if (PlatformNotSupported)
+            return;
+
+        StopHttpListener();
+        try
+        {
+            _listener?.Abort();
+        }
+        catch { }
+    }
+
+    public bool AuthEnabled { get; set; }
+
+    public string ListenerIp { get; set; }
+
+    public int ListenerPort { get; set; }
+
+    public void SetPassword(string plainPassword)
+    {
+        PasswordSHA256 = ComputeSHA256(plainPassword);
+    }
+
+    public bool PlatformNotSupported
+    {
+        get { return _listener == null; }
+    }
+
+    public string UserName { get; set; }
+
+    public string PasswordSHA256 { get; set; }
+
+    public bool StartHttpListener()
+    {
+        if (PlatformNotSupported)
+            return false;
+
+        try
+        {
+            if (_listener.IsListening)
+                return true;
+
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            bool ipFound = false;
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ListenerIp == ip.ToString())
+                {
+                    ipFound = true;
+                    break;
+                }
+            }
+
+            if (!ipFound)
+            {
+                
+                ListenerIp = "+";
+            }
+
+            string prefix = "http://" + ListenerIp + ":" + ListenerPort + "/";
+
+            _listener.Prefixes.Clear();
+            _listener.Prefixes.Add(prefix);
+            _listener.Realm = "OmniSensor Hardware Monitor";
+            _listener.AuthenticationSchemes = AuthEnabled ? AuthenticationSchemes.Basic : AuthenticationSchemes.Anonymous;
+            _listener.Start();
+
+            _cts = new CancellationTokenSource();
+            _listenerTask = Task.Run(() => ProcessRequestsAsync(_cts.Token));
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool StopHttpListener()
+    {
+        if (PlatformNotSupported)
+            return false;
+
+        try
+        {
+            _cts?.Cancel();
+            _listenerTask?.Wait(TimeSpan.FromSeconds(5)); 
+            _listener?.Stop();
+            _cts?.Dispose();
+        }
+        catch (HttpListenerException)
+        { }
+        catch (OperationCanceledException)
+        { }
+        catch (NullReferenceException)
+        { }
+        catch (Exception)
+        { }
+
+        return true;
+    }
+
+    private async Task ProcessRequestsAsync(CancellationToken cancellationToken)
+    {
+        while (_listener.IsListening && !cancellationToken.IsCancellationRequested)
+        {
+            try
+            {
+                var context = await _listener.GetContextAsync();
+                _ = Task.Run(() => HandleContextAsync(context), cancellationToken);
+            }
+            catch (HttpListenerException ex) when (ex.ErrorCode == 50)
+            {
+                
+                System.Diagnostics.Debug.WriteLine($"HttpListener error (code {ex.ErrorCode}): {ex.Message}. Retrying in 5 seconds.");
+                await Task.Delay(5000, cancellationToken);
+            }
+            catch (ObjectDisposedException)
+            {
+                break; 
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Unexpected HttpListener error: {ex.Message}");
+            }
+        }
+    }
+
+    public static IDictionary<string, string> ToDictionary(NameValueCollection col)
+    {
+        IDictionary<string, string> dict = new Dictionary<string, string>();
+        foreach (string k in col.AllKeys)
+        {
+            dict.Add(k, col[k]);
+        }
+
+        return dict;
+    }
+
+    public SensorNode FindSensor(Node node, string id)
+    {
+        if (node is SensorNode sNode)
+        {
+            if (sNode.Sensor.Identifier.ToString() == id)
+                return sNode;
+        }
+
+        foreach (Node child in node.Nodes)
+        {
+            SensorNode s = FindSensor(child, id);
+            if (s != null)
+            {
+                return s;
+            }
+        }
+
+        return null;
+    }
+    public void SetSensorControlValue(SensorNode sNode, string value)
+    {
+        if (sNode.Sensor.Control == null)
+        {
+            throw new ArgumentException("Specified sensor '" + sNode.Sensor.Identifier + "' can not be set");
+        }
+
+        if (value == "null")
+        {
+            sNode.Sensor.Control.SetDefault();
+        }
+        else
+        {
+            sNode.Sensor.Control.SetSoftware(float.Parse(value, CultureInfo.InvariantCulture));
+        }
+    }
+
+    private void HandleSensorRequest(HttpListenerRequest request, Dictionary<string, object> result)
+    {
+        IDictionary<string, string> dict = ToDictionary(HttpUtility.ParseQueryString(request.Url.Query));
+
+        if (dict.ContainsKey("action"))
+        {
+            if (dict.ContainsKey("id"))
+            {
+                SensorNode sNode = FindSensor(_root, dict["id"]);
+
+                if (sNode == null)
+                {
+                    throw new ArgumentException("Unknown id " + dict["id"] + " specified");
+                }
+
+                if (dict["action"] == "ResetMinMax")
+                {
+                    
+                    sNode.Sensor.ResetMin();
+                    sNode.Sensor.ResetMax();
+                    dict["action"] = "Get";
+                }
+
+                switch (dict["action"])
+                {
+                    case "Set" when dict.ContainsKey("value"):
+                        SetSensorControlValue(sNode, dict["value"]);
+                        break;
+                    case "Set":
+                        throw new ArgumentNullException("No value provided");
+                    case "Get":
+                        result["value"] = sNode.Sensor.Value;
+                        result["min"] = sNode.Sensor.Min;
+                        result["max"] = sNode.Sensor.Max;
+                        result["format"] = sNode.Format;
+                        break;
+                    default:
+                        throw new ArgumentException("Unknown action type " + dict["action"]);
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException("No id provided");
+            }
+        }
+        else
+        {
+            throw new ArgumentNullException("No action provided");
+        }
+    }
+
+    private string HandlePostRequest(HttpListenerRequest request)
+    {
+        var result = new Dictionary<string, object> { ["result"] = "ok" };
+
+        try
+        {
+            if (request.Url.Segments.Length == 2)
+            {
+                if (request.Url.Segments[1] == "Sensor")
+                {
+                    HandleSensorRequest(request, result);
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid URL ('" + request.Url.Segments[1] + "'), possible values: ['Sensor']");
+                }
+            }
+            else
+                throw new ArgumentException("Empty URL, possible values: ['Sensor']");
+        }
+        catch (Exception e)
+        {
+            result["result"] = "fail";
+            result["message"] = e.ToString();
+        }
+        return System.Text.Json.JsonSerializer.Serialize(result);
+    }
+
+    private async Task HandleContextAsync(HttpListenerContext context)
+    {
+        HttpListenerRequest request = context.Request;
+        bool authenticated = true;
+
+        if (AuthEnabled)
+        {
+            try
+            {
+                HttpListenerBasicIdentity identity = (HttpListenerBasicIdentity)context.User.Identity;
+                authenticated = (identity.Name == UserName) && (ComputeSHA256(identity.Password) == PasswordSHA256);
+            }
+            catch
+            {
+                authenticated = false;
+            }
+        }
+
+        if (authenticated)
+        {
+            switch (request.HttpMethod)
+            {
+                case "POST":
+                    {
+                        string postResult = HandlePostRequest(request);
+                        await SendResponseAsync(context.Response, postResult, "application/json");
+                        break;
+                    }
+                case "GET":
+                    {
+                        string requestedFile = request.RawUrl.Substring(1);
+
+                        if (requestedFile == "data.json")
+                        {
+                            await SendJsonAsync(context.Response, request);
+                            return;
+                        }
+
+                        if (requestedFile.Contains("images_icon"))
+                        {
+                            await ServeResourceImageAsync(context.Response, requestedFile.Replace("images_icon/", string.Empty));
+                            return;
+                        }
+
+                        if (requestedFile.StartsWith("metrics?") || requestedFile == "metrics")
+                        {
+                            await SendPrometheusAsync(context.Response, request);
+                            return;
+                        }
+
+                        if (requestedFile.Contains("Sensor"))
+                        {
+                            var sensorResult = new Dictionary<string, object>();
+                            HandleSensorRequest(request, sensorResult);
+                            await SendJsonSensorAsync(context.Response, sensorResult);
+                            return;
+                        }
+
+                        if (requestedFile.Contains("ResetAllMinMax"))
+                        {
+                            _rootElement.Accept(new SensorVisitor(delegate (ISensor sensor)
+                            {
+                                sensor.ResetMin();
+                                sensor.ResetMax();
+                            }));
+                            await SendJsonAsync(context.Response, request);
+                            return;
+                        }
+
+                        if (string.IsNullOrEmpty(requestedFile))
+                            requestedFile = "index.html";
+
+                        string[] splits = requestedFile.Split('.');
+                        string ext = splits[splits.Length - 1];
+                        await ServeResourceFileAsync(context.Response, "Web." + requestedFile.Replace('/', '.'), ext);
+                        break;
+                    }
+                default:
+                    {
+                        context.Response.StatusCode = 404;
+                        break;
+                    }
+            }
+        }
+        else
+        {
+            context.Response.StatusCode = 401;
+        }
+
+        if (context.Response.StatusCode == 401)
+        {
+            const string responseString = @"<HTML><HEAD><TITLE>401 Unauthorized</TITLE></HEAD>
+  <BODY><H4>401 Unauthorized</H4>
+  Authorization required.</BODY></HTML> ";
+
+            await SendResponseAsync(context.Response, responseString, "text/html");
+        }
+
+        try
+        {
+            context.Response.Close();
+        }
+        catch
+        {
+            
+        }
+    }
+    private async Task ServeResourceFileAsync(HttpListenerResponse response, string name, string ext)
+    {
+        
+        name = Assembly.GetExecutingAssembly().GetName().Name + ".Resources." +
+               name.Replace("custom-theme", "custom_theme");
+
+        string[] names = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+
+        for (int i = 0; i < names.Length; i++)
+        {
+            if (names[i].Replace('\\', '.') == name)
+            {
+                using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(names[i]);
+
+                response.ContentType = GetContentType("." + ext);
+                response.ContentLength64 = stream.Length;
+                byte[] buffer = new byte[512 * 1024];
+                try
+                {
+                    int len;
+                    while ((len = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                    {
+                        await response.OutputStream.WriteAsync(buffer, 0, len);
+                    }
+
+                    await response.OutputStream.FlushAsync();
+                    response.OutputStream.Close();
+                    response.Close();
+                }
+                catch (HttpListenerException)
+                { }
+                catch (InvalidOperationException)
+                { }
+
+                return;
+            }
+        }
+
+        response.StatusCode = 404;
+        response.Close();
+    }
+
+    private async Task ServeResourceImageAsync(HttpListenerResponse response, string name)
+    {
+        name = Assembly.GetExecutingAssembly().GetName().Name + ".Resources." + name;
+
+        string[] names = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+
+        for (int i = 0; i < names.Length; i++)
+        {
+            if (names[i].Replace('\\', '.') == name)
+            {
+                using Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(names[i]);
+
+                using Image image = Image.FromStream(stream);
+                response.ContentType = "image/png";
+                try
+                {
+                    using var ms = new MemoryStream();
+                    image.Save(ms, ImageFormat.Png);
+                    byte[] buffer = ms.ToArray();
+                    await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+                    response.OutputStream.Close();
+                }
+                catch (HttpListenerException)
+                { }
+
+                response.Close();
+                return;
+            }
+        }
+
+        response.StatusCode = 404;
+        response.Close();
+    }
+
+    private async Task SendJsonAsync(HttpListenerResponse response, HttpListenerRequest request = null)
+    {
+        Dictionary<string, object> json = new();
+
+        int nodeIndex = 0;
+
+        json["id"] = nodeIndex++;
+        json["Version"] = $"{_version.Major}.{_version.Minor}.{_version.Build}";
+        json["Text"] = "Sensor";
+        json["Min"] = "Min";
+        json["Value"] = "Value";
+        json["Max"] = "Max";
+        json["ImageURL"] = string.Empty;
+
+        json["Children"] = new List<object> { GenerateJsonForNode(_root, ref nodeIndex) };
+
+        byte[] buffer = Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(
+            json,
+            new System.Text.Json.JsonSerializerOptions
+            {
+                NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals, 
+            }
+        ));
+
+        bool acceptGzip;
+        try
+        {
+            acceptGzip = (request != null) && (request.Headers["Accept-Encoding"].IndexOf("gzip", StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+        catch
+        {
+            acceptGzip = false;
+        }
+
+        response.AddHeader("Cache-Control", "no-cache");
+        response.AddHeader("Access-Control-Allow-Origin", "*");
+        response.ContentType = "application/json";
+
+        try
+        {
+            if (acceptGzip)
+            {
+                response.AddHeader("Content-Encoding", "gzip");
+                using var ms = new MemoryStream();
+                using (var zip = new GZipStream(ms, CompressionMode.Compress, true))
+                    await zip.WriteAsync(buffer, 0, buffer.Length);
+
+                buffer = ms.ToArray();
+            }
+
+            response.ContentLength64 = buffer.Length;
+            await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+            response.OutputStream.Close();
+        }
+        catch (HttpListenerException)
+        { }
+
+        response.Close();
+    }
+
+    private string GeneratePrometheusResponse(Node node, Dictionary<string, int> prometheusSettings)
+    {
+        string responseStr = "";
+        string lastTagName = "";
+
+        var units = new Dictionary<SensorType, (string, double)>
+        {
+           { SensorType.Clock, ("hertz", 1000000)},                           
+           { SensorType.Conductivity, ("seconds_per_centimeter", 0.000001) }, 
+           { SensorType.Control, ("percent", 1) },
+           { SensorType.Current, ("amperes", 1) },
+           { SensorType.Data, ("bytes", 1000000000) },                        
+           { SensorType.Energy, ("watthour", 0.001) },
+           { SensorType.Factor, ("", 1) },
+           { SensorType.Fan, ("rpm", 1) },
+           { SensorType.Flow, ("liters_per_hour", 1) },
+           { SensorType.Frequency, ("hertz", 1) },
+           { SensorType.Humidity, ("percent", 1) },
+           { SensorType.Level, ("percent", 1) },
+           { SensorType.Load, ("percent", 1) },
+           { SensorType.Noise, ("decibels", 1) },
+           { SensorType.Power, ("watts", 1) },
+           { SensorType.SmallData, ("bytes", 1024*1024) },                    
+           { SensorType.Temperature, ("celsius", 1) },
+           { SensorType.Throughput, ("bytes_per_second", 1) },
+           { SensorType.TimeSpan, ("seconds", 1) },
+           { SensorType.Timing, ("seconds", 0.000000001 ) },                  
+           { SensorType.Voltage, ("volts", 1) },
+        };
+
+        for (int i = 0; i < node.Nodes.Count; i++)
+        {
+            if (node.Nodes[i].GetType().Name == "HardwareNode")
+            {
+                responseStr += GeneratePrometheusResponse(node.Nodes[i], prometheusSettings);
+            }
+
+            if (node.Nodes[i].GetType().Name == "TypeNode")
+            {
+                string tagHardware = "";
+                string valueHardwareName = "";
+                string valueHardwareId = ((HardwareNode)node).Hardware.Identifier.ToString();
+
+                if (((HardwareNode)node).Hardware.Parent != null)
+                {
+                    tagHardware = ((HardwareNode)node).Hardware.Parent.HardwareType.ToString();
+                    valueHardwareName = ((HardwareNode)node).Hardware.Parent.Name;
+                }
+                else
+                {
+                    tagHardware = ((HardwareNode)node).Hardware.HardwareType.ToString();
+                    valueHardwareName = node.Text;
+                }
+
+                string valueHardwareAlias = $"{valueHardwareName} ({valueHardwareId})";
+
+                foreach (SensorNode sensor in node.Nodes[i].Nodes)
+                {
+                    string valueSensorName = sensor.Text.Replace("#", String.Empty);
+
+                    string tagSensorType = sensor.Sensor.SensorType.ToString();
+
+                    double factor = 1;
+                    string tagSensorUnits = "";
+
+                    if (units.ContainsKey(sensor.Sensor.SensorType))
+                    {
+                        factor = units[sensor.Sensor.SensorType].Item2;
+                        tagSensorUnits = (units[sensor.Sensor.SensorType].Item1.Length == 0 ? String.Empty : "_" + units[sensor.Sensor.SensorType].Item1);
+                    }
+                    
+                    else
+                    {
+                        responseStr += $"# HELP {tagHardware}_{tagSensorType}:{valueSensorName} This Sensor type is not defined in the prometheus adapter [{sensor.Sensor.SensorType}]\n";
+                    }
+
+                    string tagName = $"lhm_{tagHardware}_{tagSensorType}{tagSensorUnits}";
+                    tagName = tagName.ToLower();
+
+                    string valueSensorId = sensor.Sensor.Identifier.ToString().Substring(valueHardwareId.Length);
+                    string valueSensorAlias = $"{valueSensorName} ({valueSensorId})";
+                    string valueHost = _root.Text;
+
+                    string tagLine = $$"""{{tagName}} {"sensorName"="{{valueSensorName}}", "sensorAlias"="{{valueSensorAlias}}", "hardwareName"="{{valueHardwareName}}", "hardwareAlias"="{{valueHardwareAlias}}", "sensorId"="{{valueSensorId}}", "hardwareId"="{{valueHardwareId}}", "host"="{{valueHost}}"}""";
+
+                    if (lastTagName != tagName)
+                    {
+                        responseStr += $"# TYPE {tagName} gauge\n";
+                        lastTagName = tagName;
+                    }
+
+                    int counter = 0;
+                    foreach (SensorValue val in sensor.Sensor.Values.Reverse())
+                    {
+                        if (counter++ > prometheusSettings["archivelength"])
+                            break;
+
+                        if (float.IsNaN(val.Value))
+                        {
+                            
+                            responseStr += $"# HELP {tagLine} has an invalid value and was skipped.\n";
+                        }
+                        else
+                        {
+                            if (counter == 1 && prometheusSettings["lastvalue"] == 0)
+                                continue; 
+
+                            if (prometheusSettings["timestamps"] == 1)
+                            {
+                                responseStr += $"{tagLine} {(val.Value * factor).ToString(CultureInfo.InvariantCulture)} {((DateTimeOffset)val.Time).ToUnixTimeMilliseconds()}\n";
+                            }
+                            else
+                            {
+                                responseStr += $"{tagLine} {(val.Value * factor).ToString(CultureInfo.InvariantCulture)}\n";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return responseStr;
+    }
+
+    private async Task SendPrometheusAsync(HttpListenerResponse response, HttpListenerRequest request = null)
+    {
+        Dictionary<string, int> prometheusSettings = new Dictionary<string, int>();
+        
+        prometheusSettings["archivelength"] = 0;
+        prometheusSettings["timestamps"] = 0;
+        prometheusSettings["lastvalue"] = 1;
+
+        if (request != null && request.QueryString != null && request.QueryString.Count > 0)
+        {
+            int archive = 0, timestamps = 0, lastvalue = 1;
+            
+            foreach (string key in request.QueryString.AllKeys)
+            {
+                switch (key)
+                {
+                    case "timestamps":
+                        int.TryParse(request.QueryString[key], out timestamps);     
+
+                        if (timestamps < 0 || timestamps > 1)
+                            timestamps = 0;     
+
+                        if (archive > 0)
+                            timestamps = 1;     
+
+                        break;
+                    case "archivelength":
+                        int.TryParse(request.QueryString[key], out archive);
+                        archive = Math.Min(10, archive); 
+                        archive = Math.Max(0, archive); 
+
+                        if (archive == 0 && lastvalue == 0)
+                            archive = 1; 
+
+                        if (archive > 0)
+                            timestamps = 1; 
+
+                        break;
+                    case "lastvalue":
+                        int.TryParse(request.QueryString[key], out lastvalue);
+
+                        if (lastvalue < 0 || lastvalue > 1)
+                            lastvalue = 1; 
+
+                        if (lastvalue == 0 && archive  == 0)
+                        {
+                            archive = 1;
+                            timestamps = 1;
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            prometheusSettings["archivelength"] = archive;
+            prometheusSettings["timestamps"] = timestamps;
+            prometheusSettings["lastvalue"] = lastvalue;
+        }
+
+        string responseContent = GeneratePrometheusResponse(_root, prometheusSettings);
+        response.AddHeader("Cache-Control", "no-cache");
+        response.AddHeader("Access-Control-Allow-Origin", "*");
+
+        response.AddHeader("X-archivelength", prometheusSettings["archivelength"].ToString());
+        response.AddHeader("X-timestamps", prometheusSettings["timestamps"].ToString());
+        response.AddHeader("X-lastvalue", prometheusSettings["lastvalue"].ToString());
+
+        await SendResponseAsync(response, responseContent, "text/plain");
+    }
+
+    private async Task SendJsonSensorAsync(HttpListenerResponse response, Dictionary<string, object> sensorData)
+    {
+        
+        string responseContent = System.Text.Json.JsonSerializer.Serialize(sensorData);
+        response.AddHeader("Cache-Control", "no-cache");
+        response.AddHeader("Access-Control-Allow-Origin", "*");
+        await SendResponseAsync(response, responseContent, "application/json");
+    }
+        
+    private Dictionary<string, object> GenerateJsonForNode(Node n, ref int nodeIndex)
+    {
+        Dictionary<string, object> jsonNode = new()
+        {
+            ["id"] = nodeIndex++,
+            ["Text"] = n.Text,
+            ["Min"] = string.Empty,
+            ["Value"] = string.Empty,
+            ["Max"] = string.Empty
+        };
+
+        switch (n)
+        {
+            case SensorNode sensorNode:
+                jsonNode["SensorId"] = sensorNode.Sensor.Identifier.ToString();
+                jsonNode["Type"] = sensorNode.Sensor.SensorType.ToString();
+
+                jsonNode["Min"] = sensorNode.Min;
+                jsonNode["Value"] = sensorNode.Value;
+                jsonNode["Max"] = sensorNode.Max;
+
+                jsonNode["RawMin"] = sensorNode.Sensor.Min;
+                jsonNode["RawValue"] = sensorNode.Sensor.Value;
+                jsonNode["RawMax"] = sensorNode.Sensor.Max;
+
+                jsonNode["ImageURL"] = "images/transparent.png";
+                break;
+            case HardwareNode hardwareNode:
+                jsonNode["HardwareId"] = hardwareNode.Hardware.Identifier.ToString();
+                jsonNode["ImageURL"] = "images_icon/" + GetHardwareImageFile(hardwareNode);
+                break;
+            case TypeNode typeNode:
+                jsonNode["ImageURL"] = "images_icon/" + GetTypeImageFile(typeNode);
+                break;
+            default:
+                jsonNode["ImageURL"] = "images_icon/computer.png";
+                break;
+        }
+
+        List<object> children = new();
+        foreach (Node child in n.Nodes)
+        {
+            children.Add(GenerateJsonForNode(child, ref nodeIndex));
+        }
+
+        jsonNode["Children"] = children;
+
+        return jsonNode;
+    }
+
+    private static string GetContentType(string extension)
+    {
+        switch (extension)
+        {
+            case ".avi": return "video/x-msvideo";
+            case ".css": return "text/css";
+            case ".doc": return "application/msword";
+            case ".gif": return "image/gif";
+            case ".htm":
+            case ".html": return "text/html";
+            case ".jpg":
+            case ".jpeg": return "image/jpeg";
+            case ".js": return "application/x-javascript";
+            case ".mp3": return "audio/mpeg";
+            case ".png": return "image/png";
+            case ".pdf": return "application/pdf";
+            case ".ppt": return "application/vnd.ms-powerpoint";
+            case ".zip": return "application/zip";
+            case ".txt": return "text/plain";
+            default: return "application/octet-stream";
+        }
+    }
+    private static string GetHardwareImageFile(HardwareNode hn)
+    {
+        switch (hn.Hardware.HardwareType)
+        {
+            case HardwareType.Cpu:
+                return "cpu.png";
+            case HardwareType.GpuNvidia:
+                return "nvidia.png";
+            case HardwareType.GpuAmd:
+                return "ati.png";
+            case HardwareType.GpuIntel:
+                return "intel.png";
+            case HardwareType.Storage:
+                return "hdd.png";
+            case HardwareType.Motherboard:
+                return "mainboard.png";
+            case HardwareType.SuperIO:
+                return "chip.png";
+            case HardwareType.Memory:
+                return "ram.png";
+            case HardwareType.Cooler:
+                return "fan.png";
+            case HardwareType.Network:
+                return "nic.png";
+            case HardwareType.Psu:
+                return "power-supply.png";
+            case HardwareType.Battery:
+                return "battery.png";
+            case HardwareType.PowerMonitor:
+                return "powermonitor.png";
+            default:
+                return "cpu.png";
+        }
+    }
+
+    private static string GetTypeImageFile(TypeNode tn)
+    {
+        switch (tn.SensorType)
+        {
+            case SensorType.Voltage:
+            case SensorType.Current:
+                return "voltage.png";
+            case SensorType.Clock:
+            case SensorType.Timing:
+                return "clock.png";
+            case SensorType.Load:
+                return "load.png";
+            case SensorType.Temperature:
+                return "temperature.png";
+            case SensorType.Fan:
+                return "fan.png";
+            case SensorType.Flow:
+                return "flow.png";
+            case SensorType.Control:
+                return "control.png";
+            case SensorType.Level:
+                return "level.png";
+            case SensorType.Power:
+                return "power.png";
+            case SensorType.Noise:
+                return "loudspeaker.png";
+            case SensorType.Conductivity:
+                return "voltage.png";
+            case SensorType.Throughput:
+                return "throughput.png";
+            case SensorType.Humidity:
+                return "flow.png";
+            default:
+                return "power.png";
+        }
+    }
+
+    private string ComputeSHA256(string text)
+    {
+        using SHA256 hash = SHA256.Create();
+        return string.Concat(hash
+                            .ComputeHash(Encoding.UTF8.GetBytes(text))
+                            .Select(item => item.ToString("x2")));
+    }
+
+    public void Quit()
+    {
+        if (PlatformNotSupported)
+            return;
+
+        StopHttpListener();
+        try
+        {
+            _listener?.Abort();
+        }
+        catch { }
+    }
+
+    private static async Task SendResponseAsync(HttpListenerResponse response, string content, string contentType)
+    {
+        byte[] buffer = Encoding.UTF8.GetBytes(content);
+        response.ContentType = contentType;
+        response.ContentLength64 = buffer.Length;
+
+        try
+        {
+            await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+            response.OutputStream.Close();
+        }
+        catch (HttpListenerException)
+        { }
+    }
+
+}

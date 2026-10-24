@@ -1,0 +1,334 @@
+ .github/dependabot.yml                             |   6 +-
+ .github/workflows/master.yml                       |  34 +-
+ .github/workflows/pull requests.yml                |  32 +-
+ Directory.Build.props                              |   4 +-
+ .../TestScripts/LiquidCool.py                      | 104 ----
+ .../TestScripts/basicrest.py                       |  71 ---
+ .../TestScripts/basicwmi.py                        |  17 -
+ .../Hardware/Gpu/IntelDiscreteGpu.cs               | 632 ---------------------
+ .../Hardware/Gpu/IntelIntegratedGpu.cs             | 280 ---------
+ LibreHardwareMonitorLib/main.nuget.target          |  33 --
+ README.md                                          | 220 +++----
+ .../Program.cs                                     |   8 +-
+ .../Resources/PawnIO_setup.exe                     | Bin
+ .../images/ui-bg_flat_0_aaaaaa_40x100.png          | Bin
+ .../images/ui-bg_glass_55_fbf9ee_1x400.png         | Bin
+ .../images/ui-bg_glass_65_ffffff_1x400.png         | Bin
+ .../images/ui-bg_glass_75_dadada_1x400.png         | Bin
+ .../images/ui-bg_glass_75_e6e6e6_1x400.png         | Bin
+ .../images/ui-bg_glass_75_ffffff_1x400.png         | Bin
+ .../ui-bg_highlight-soft_75_cccccc_1x100.png       | Bin
+ .../images/ui-bg_inset-soft_95_fef1ec_1x100.png    | Bin
+ .../images/ui-icons_222222_256x240.png             | Bin
+ .../images/ui-icons_2e83ff_256x240.png             | Bin
+ .../images/ui-icons_454545_256x240.png             | Bin
+ .../images/ui-icons_888888_256x240.png             | Bin
+ .../images/ui-icons_cd0a0a_256x240.png             | Bin
+ .../css/custom-theme/jquery-ui-1.8.16.custom.css   |   0
+ .../Resources/Web/css/jquery.treeTable.css         |   0
+ .../Resources/Web/css/ohm_web.css                  |   0
+ .../Resources/Web/favicon.ico                      | Bin
+ .../Resources/Web/images/toggle-collapse-dark.png  | Bin
+ .../Resources/Web/images/toggle-collapse-light.png | Bin
+ .../Resources/Web/images/toggle-expand-dark.png    | Bin
+ .../Resources/Web/images/toggle-expand-light.png   | Bin
+ .../Resources/Web/images/transparent.png           | Bin
+ .../Resources/Web/index.html                       |   0
+ .../Resources/Web/js/jquery-1.7.2.js               |   0
+ .../Resources/Web/js/jquery-1.7.2.min.js           |   0
+ .../Web/js/jquery-ui-1.8.16.custom.min.js          |   0
+ .../Resources/Web/js/jquery.tmpl.js                |   0
+ .../Resources/Web/js/jquery.tmpl.min.js            |   0
+ .../Resources/Web/js/jquery.treeTable.min.js       |   0
+ .../Resources/Web/js/knockout-2.1.0.js             |   0
+ .../Resources/Web/js/knockout-2.1.0.min.js         |   0
+ .../Resources/Web/js/knockout.mapping-latest.js    |   0
+ .../Web/js/knockout.mapping-latest.min.js          |   0
+ .../Resources/Web/js/ohm_web.js                    |   0
+ .../Resources/amd.png                              | Bin
+ .../Resources/app.manifest                         |   0
+ .../Resources/ati.png                              | Bin
+ .../Resources/bar.png                              | Bin
+ .../Resources/barback.png                          | Bin
+ .../Resources/battery.png                          | Bin
+ .../Resources/chip.png                             | Bin
+ .../Resources/clock.png                            | Bin
+ .../Resources/computer.png                         | Bin
+ .../Resources/control.png                          | Bin
+ .../Resources/cpu.png                              | Bin
+ .../Resources/current.png                          | Bin
+ .../Resources/data.png                             | Bin
+ .../Resources/factor.png                           | Bin
+ .../Resources/fan.png                              | Bin
+ .../Resources/flow.png                             | Bin
+ .../Resources/gadget.png                           | Bin
+ .../Resources/gadget.xcf                           | Bin
+ .../Resources/hdd.png                              | Bin
+ .../Resources/humidity.png                         | Bin
+ .../Resources/icon.ico                             | Bin
+ .../Resources/icon.xcf                             | Bin
+ .../Resources/intel.png                            | Bin
+ .../Resources/level.png                            | Bin
+ .../Resources/load.png                             | Bin
+ .../Resources/loudspeaker.png                      | Bin
+ .../Resources/mainboard.png                        | Bin
+ .../Resources/nic.png                              | Bin
+ .../Resources/nvidia.png                           | Bin
+ .../Resources/power-supply.png                     | Bin
+ .../Resources/power.png                            | Bin
+ .../Resources/powermonitor.png                     | Bin
+ .../Resources/ram.png                              | Bin
+ .../Resources/smallicon.ico                        | Bin
+ .../Resources/temperature.png                      | Bin
+ .../Resources/throughput.png                       | Bin
+ .../Resources/time.png                             | Bin
+ .../Resources/voltage.png                          | Bin
+ .../TestScripts/LiquidCool.py                      | 109 ++++
+ .../__pycache__/LiquidCool.cpython-313.pyc         | Bin 0 -> 4618 bytes
+ .../__pycache__/basicrest.cpython-313.pyc          | Bin 0 -> 3151 bytes
+ .../__pycache__/basicwmi.cpython-313.pyc           | Bin 0 -> 647 bytes
+ .../TestScripts/basicrest.py                       |  74 +++
+ .../TestScripts/basicwmi.py                        |  19 +
+ .../UI/AboutBox.Designer.cs                        |   6 +-
+ .../UI/AboutBox.cs                                 |   6 +-
+ .../UI/AboutBox.resx                               |   0
+ .../UI/AuthForm.Designer.cs                        |   4 +-
+ .../UI/AuthForm.cs                                 |   4 +-
+ .../UI/AuthForm.resx                               |   0
+ .../UI/Gadget.cs                                   |   4 +-
+ .../UI/GadgetWindow.cs                             |   4 +-
+ .../UI/HardwareNode.cs                             |   6 +-
+ .../UI/HardwareTypeImage.cs                        |   4 +-
+ .../UI/IExpandPersistNode.cs                       |   2 +-
+ .../UI/InterfacePortForm.Designer.cs               |   2 +-
+ .../UI/InterfacePortForm.cs                        |   2 +-
+ .../UI/InterfacePortForm.resx                      |   0
+ .../UI/MainForm.Designer.cs                        | 108 ++--
+ .../UI/MainForm.cs                                 |  18 +-
+ .../UI/MainForm.resx                               |   0
+ .../UI/Node.cs                                     |   2 +-
+ .../UI/NodeToolTipProvider.cs                      |   2 +-
+ .../UI/NotifyIconAdv.cs                            |   4 +-
+ .../UI/ParameterForm.Designer.cs                   |   2 +-
+ .../UI/ParameterForm.cs                            |   4 +-
+ .../UI/ParameterForm.resx                          |   0
+ .../UI/PlotPanel.cs                                |   8 +-
+ .../UI/ScaledPlotModel.cs                          |   2 +-
+ .../UI/SensorGadget.cs                             |  10 +-
+ .../UI/SensorNode.cs                               |   6 +-
+ .../UI/SensorNotifyIcon.cs                         |   8 +-
+ .../UI/ShowDesktop.cs                              |   4 +-
+ .../UI/SplitContainerAdv.cs                        |   4 +-
+ .../UI/StartupManager.cs                           |  16 +-
+ .../UI/SystemTray.cs                               |   8 +-
+ .../UI/Theme.cs                                    |   6 +-
+ .../UI/Themes/BlackTheme.cs                        |   2 +-
+ .../UI/Themes/DarkTheme.cs                         |   2 +-
+ .../UI/Themes/LightTheme.cs                        |   2 +-
+ .../UI/Themes/ThemedHScrollIndicator.cs            |   2 +-
+ .../UI/Themes/ThemedToolStripRenderer.cs           |   2 +-
+ .../UI/Themes/ThemedVScrollIndicator.cs            |   2 +-
+ .../UI/ToolStripRadioButtonMenuItem.cs             |   2 +-
+ .../UI/TreeModel.cs                                |   2 +-
+ .../UI/TypeNode.cs                                 |   6 +-
+ .../UI/UnitManager.cs                              |   4 +-
+ .../UI/UpdateVisitor.cs                            |   4 +-
+ .../UI/UserOption.cs                               |   4 +-
+ .../UI/UserRadioGroup.cs                           |   4 +-
+ .../Utilities/EmbeddedResources.cs                 |   6 +-
+ .../Utilities/HttpServer.cs                        |  12 +-
+ .../Utilities/IconFactory.cs                       |   2 +-
+ .../Utilities/Logger.cs                            |   6 +-
+ .../Utilities/LoggerFileRotation.cs                |   2 +-
+ .../Utilities/PersistentSettings.cs                |   4 +-
+ .../XiaobaiHardwareMonitor.Windows.Forms.csproj    |  14 +-
+ ...rdwareMonitor.sln => XiaobaiHardwareMonitor.sln |   4 +-
+ .../Hardware/Battery/Battery.cs                    |   4 +-
+ .../Hardware/Battery/BatteryChemistry.cs           |   2 +-
+ .../Hardware/Battery/BatteryGroup.cs               |   4 +-
+ .../Hardware/CompositeSensor.cs                    |   2 +-
+ .../Hardware/Computer.cs                           |  42 +-
+ .../Hardware/Control.cs                            |   2 +-
+ .../Hardware/Controller/AeroCool/AeroCoolGroup.cs  |   2 +-
+ .../Hardware/Controller/AeroCool/P7-H1.cs          |   2 +-
+ .../Controller/AquaComputer/AquaComputerGroup.cs   |   2 +-
+ .../Controller/AquaComputer/AquastreamUltimate.cs  |   2 +-
+ .../Controller/AquaComputer/AquastreamXT.cs        |   2 +-
+ .../Hardware/Controller/AquaComputer/D5Next.cs     |   2 +-
+ .../Hardware/Controller/AquaComputer/Farbwerk.cs   |   2 +-
+ .../Controller/AquaComputer/Farbwerk360.cs         |   2 +-
+ .../Controller/AquaComputer/HighFlowNext.cs        |   2 +-
+ .../Hardware/Controller/AquaComputer/MPS.cs        |   2 +-
+ .../Hardware/Controller/AquaComputer/Octo.cs       |   2 +-
+ .../Hardware/Controller/AquaComputer/Quadro.cs     |   2 +-
+ .../Controller/Arctic/ArcticFanController.cs       |   4 +-
+ .../Hardware/Controller/Arctic/ArcticGroup.cs      |   4 +-
+ .../Hardware/Controller/Arctic/README.MD           |   0
+ .../Hardware/Controller/Heatmaster/Heatmaster.cs   |   8 +-
+ .../Controller/Heatmaster/HeatmasterGroup.cs       |   4 +-
+ .../Hardware/Controller/MSI/MsiConstants.cs        |   2 +-
+ .../Controller/MSI/MsiCoreLiquidController.cs      |   2 +-
+ .../Hardware/Controller/MSI/MsiDevice.cs           |   2 +-
+ .../Hardware/Controller/MSI/MsiFan.cs              |   2 +-
+ .../Hardware/Controller/MSI/MsiFanControl.cs       |   2 +-
+ .../Hardware/Controller/MSI/MsiFanMode.cs          |   2 +-
+ .../Hardware/Controller/MSI/MsiGroup.cs            |   2 +-
+ .../Hardware/Controller/MSI/MsiSensor.cs           |   2 +-
+ .../Hardware/Controller/Nzxt/GridV3.cs             |   2 +-
+ .../Hardware/Controller/Nzxt/KrakenV2.cs           |   4 +-
+ .../Hardware/Controller/Nzxt/KrakenV3.cs           |   4 +-
+ .../Hardware/Controller/Nzxt/NzxtGroup.cs          |   2 +-
+ .../Controller/Razer/RazerFanController.cs         |   2 +-
+ .../Hardware/Controller/Razer/RazerGroup.cs        |   2 +-
+ .../Hardware/Controller/TBalancer/TBalancer.cs     |   4 +-
+ .../Controller/TBalancer/TBalancerGroup.cs         |   6 +-
+ .../Hardware/CoreType.cs                           |   2 +-
+ .../Hardware/Cpu/Amd0FCpu.cs                       |   4 +-
+ .../Hardware/Cpu/Amd10Cpu.cs                       |   4 +-
+ .../Hardware/Cpu/Amd17Cpu.cs                       |   6 +-
+ .../Hardware/Cpu/AmdCpu.cs                         |   2 +-
+ .../Hardware/Cpu/CpuGroup.cs                       |   4 +-
+ .../Hardware/Cpu/CpuId.cs                          |   2 +-
+ .../Hardware/Cpu/CpuLoad.cs                        |   2 +-
+ .../Hardware/Cpu/GenericCpu.cs                     |   2 +-
+ .../Hardware/Cpu/IntelCpu.cs                       |   6 +-
+ .../Hardware/D3DDisplayDevice.cs                   |   4 +-
+ .../Hardware/FirmwareTable.cs                      |   2 +-
+ .../Hardware/Gpu/AmdGpu.cs                         |   4 +-
+ .../Hardware/Gpu/AmdGpuGroup.cs                    |   6 +-
+ .../Hardware/Gpu/GenericGpu.cs                     |   2 +-
+ .../Hardware/Gpu/IntelDiscreteGpu.cs               | 632 +++++++++++++++++++++
+ .../Hardware/Gpu/IntelGpuGroup.cs                  |   8 +-
+ .../Hardware/Gpu/IntelIntegratedGpu.cs             | 280 +++++++++
+ .../Hardware/Gpu/NvidiaGpu.cs                      |   8 +-
+ .../Hardware/Gpu/NvidiaGroup.cs                    |   4 +-
+ .../Hardware/GroupAffinity.cs                      |   2 +-
+ .../Hardware/Hardware.cs                           |   2 +-
+ .../Hardware/HardwareType.cs                       |   2 +-
+ .../Hardware/IComputer.cs                          |   2 +-
+ .../Hardware/IControl.cs                           |   2 +-
+ .../Hardware/IElement.cs                           |   2 +-
+ .../Hardware/IGroup.cs                             |   2 +-
+ .../Hardware/IHardware.cs                          |   2 +-
+ .../Hardware/IHardwareChanged.cs                   |   2 +-
+ .../Hardware/IParameter.cs                         |   2 +-
+ .../Hardware/ISensor.cs                            |   2 +-
+ .../Hardware/ISensorLimits.cs                      |   2 +-
+ .../Hardware/ISettings.cs                          |   2 +-
+ .../Hardware/IVisitor.cs                           |   2 +-
+ .../Hardware/Identifier.cs                         |   2 +-
+ .../Hardware/Memory/DimmMemory.cs                  |   4 +-
+ .../Hardware/Memory/MemoryGroup.cs                 |   4 +-
+ .../Hardware/Memory/MemoryLinux.cs                 |   2 +-
+ .../Hardware/Memory/MemoryWindows.cs               |   2 +-
+ .../Hardware/Memory/Sensors/SpdThermalSensor.cs    |   2 +-
+ .../Hardware/Memory/TotalMemory.cs                 |   2 +-
+ .../Hardware/Memory/VirtualMemory.cs               |   2 +-
+ .../Hardware/Motherboard/Control.cs                |   4 +-
+ .../Hardware/Motherboard/Fan.cs                    |   4 +-
+ .../Hardware/Motherboard/Identification.cs         |   4 +-
+ .../Hardware/Motherboard/Lpc/Chip.cs               |   4 +-
+ .../Lpc/EC/ChromeOSEmbeddedController.cs           |   2 +-
+ .../Lpc/EC/ChromeOSEmbeddedControllerIO.cs         |   4 +-
+ .../Motherboard/Lpc/EC/EmbeddedController.cs       |   2 +-
+ .../Motherboard/Lpc/EC/EmbeddedControllerReader.cs |   2 +-
+ .../Motherboard/Lpc/EC/EmbeddedControllerSource.cs |   2 +-
+ .../Motherboard/Lpc/EC/IEmbeddedControllerIO.cs    |   2 +-
+ .../Lpc/EC/WindowsEmbeddedController.cs            |   2 +-
+ .../Lpc/EC/WindowsEmbeddedControllerIO.cs          |   4 +-
+ .../Motherboard/Lpc/EcioPortGigabyteController.cs  |   2 +-
+ .../Hardware/Motherboard/Lpc/F718XX.cs             |   2 +-
+ .../Motherboard/Lpc/IGigabyteController.cs         |   2 +-
+ .../Hardware/Motherboard/Lpc/ISuperIO.cs           |   2 +-
+ .../Hardware/Motherboard/Lpc/IT879xEcioPort.cs     |   2 +-
+ .../Hardware/Motherboard/Lpc/IT87XX.cs             |   4 +-
+ .../Hardware/Motherboard/Lpc/Ipmi.cs               |   4 +-
+ .../Motherboard/Lpc/IsaBridgeGigabyteController.cs |   4 +-
+ .../Hardware/Motherboard/Lpc/LMSensors.cs          |   4 +-
+ .../Hardware/Motherboard/Lpc/LpcIO.cs              |   6 +-
+ .../Hardware/Motherboard/Lpc/LpcPort.cs            |   2 +-
+ .../Hardware/Motherboard/Lpc/Nct677X.cs            |   2 +-
+ .../Hardware/Motherboard/Lpc/W836XX.cs             |   2 +-
+ .../Hardware/Motherboard/Manufacturer.cs           |   2 +-
+ .../Hardware/Motherboard/Model.cs                  |   4 +-
+ .../Hardware/Motherboard/Motherboard.cs            |  10 +-
+ .../Hardware/Motherboard/MotherboardGroup.cs       |   2 +-
+ .../Hardware/Motherboard/SuperIOHardware.cs        |  10 +-
+ .../Hardware/Motherboard/Temperature.cs            |   4 +-
+ .../Hardware/Motherboard/Voltage.cs                |   4 +-
+ .../Hardware/Mutexes.cs                            |   2 +-
+ .../Hardware/Network/Network.cs                    |   2 +-
+ .../Hardware/Network/NetworkGroup.cs               |   2 +-
+ .../Hardware/OpCode.cs                             |   2 +-
+ .../Hardware/Parameter.cs                          |   2 +-
+ .../Hardware/ParameterDescription.cs               |   2 +-
+ .../Hardware/PowerMonitor/IPowerMonitor.cs         |   2 +-
+ .../Hardware/PowerMonitor/PowerMonitorGroup.cs     |   2 +-
+ .../Hardware/PowerMonitor/SharedSerialPort.cs      |   2 +-
+ .../Hardware/PowerMonitor/WireViewPro2.cs          |   4 +-
+ .../Hardware/PowerMonitor/WireViewPro2Sensor.cs    |   4 +-
+ .../Hardware/Psu/Corsair/CorsairPsu.cs             |   2 +-
+ .../Hardware/Psu/Corsair/CorsairPsuGroup.cs        |   2 +-
+ .../Hardware/Psu/Corsair/UsbApi.cs                 |   2 +-
+ .../Hardware/Psu/Msi/MsiPsu.cs                     |   2 +-
+ .../Hardware/Psu/Msi/MsiPsuGroup.cs                |   2 +-
+ .../Hardware/Psu/Msi/UsbApi.cs                     |   2 +-
+ .../Hardware/Psu/ProtocolError.cs                  |   2 +-
+ .../Hardware/RyzenSMU.cs                           |   4 +-
+ .../Hardware/SMBios.cs                             |   6 +-
+ .../Hardware/Sensor.cs                             |   4 +-
+ .../Hardware/SensorVisitor.cs                      |   2 +-
+ .../Hardware/Storage/ISmart.cs                     |   2 +-
+ .../Hardware/Storage/SmartAttribute.cs             |   2 +-
+ .../Hardware/Storage/StorageDevice.cs              |   2 +-
+ .../Hardware/Storage/StorageDeviceSensor.cs        |   2 +-
+ .../Hardware/Storage/StorageGroup.cs               |   2 +-
+ .../Hardware/ThreadAffinity.cs                     |   6 +-
+ .../Interop/AtiAdlxx.cs                            |   4 +-
+ .../Interop/ByteExtensions.cs                      |   2 +-
+ .../Interop/Ftd2xx.cs                              |   2 +-
+ .../Interop/IntelGcl.cs                            |   4 +-
+ .../Interop/Ipmi.cs                                |   2 +-
+ .../Interop/LibC.cs                                |   2 +-
+ .../Interop/NvApi.cs                               |   2 +-
+ .../Interop/NvidiaML.cs                            |   6 +-
+ .../Interop/PowerMonitor/DeviceData.cs             |   2 +-
+ .../Interop/PowerMonitor/Stm32PortFinder.cs        |   2 +-
+ .../Interop/PowerMonitor/StructureConversion.cs    |   2 +-
+ .../Interop/PowerMonitor/WireViewPro2Constants.cs  |   2 +-
+ .../Interop/PowerMonitor/WireViewPro2Enums.cs      |   2 +-
+ .../Interop/PowerMonitor/WireViewPro2Structures.cs |   2 +-
+ .../NativeMethods.txt                              |   0
+ .../PawnIo/AmdFamily0F.cs                          |   6 +-
+ .../PawnIo/AmdFamily10.cs                          |   6 +-
+ .../PawnIo/AmdFamily17.cs                          |   4 +-
+ .../PawnIo/IntelMsr.cs                             |   6 +-
+ .../PawnIo/IsaBridgeEc.cs                          |   4 +-
+ .../PawnIo/LpcACPIEC.cs                            |   4 +-
+ .../PawnIo/LpcCrOS.cs                              |   4 +-
+ .../PawnIo/LpcIO.cs                                |   4 +-
+ .../PawnIo/Nvidia.cs                               |   6 +-
+ .../PawnIo/PawnIo.cs                               |   8 +-
+ .../PawnIo/RyzenSmu.cs                             |   6 +-
+ .../RAMSPDToolkitDriver.cs                         |   4 +-
+ .../Resources/PawnIo/AMDFamily0F.bin               | Bin
+ .../Resources/PawnIo/AMDFamily10.bin               | Bin
+ .../Resources/PawnIo/AMDFamily17.bin               | Bin
+ .../Resources/PawnIo/COPYING                       |   0
+ .../Resources/PawnIo/IntelMSR.bin                  | Bin
+ .../Resources/PawnIo/IsaBridgeEC.bin               | Bin
+ .../Resources/PawnIo/LpcACPIEC.bin                 | Bin
+ .../Resources/PawnIo/LpcCrOSEC.bin                 | Bin
+ .../Resources/PawnIo/LpcIO.bin                     | Bin
+ .../Resources/PawnIo/Nvidia.bin                    | Bin
+ .../Resources/PawnIo/README                        |   0
+ .../Resources/PawnIo/RyzenSMU.bin                  | Bin
+ .../Resources/PawnIo/SmbusI801.bin                 | Bin
+ .../Resources/PawnIo/SmbusIntelSkylakeIMC.bin      | Bin
+ .../Resources/PawnIo/SmbusNCT6793.bin              | Bin
+ .../Resources/PawnIo/SmbusPIIX4.bin                | Bin
+ .../Resources/packageicon.png                      | Bin
+ .../Software/OperatingSystem.cs                    |   2 +-
+ .../XiaobaiHardwareMonitorLib.csproj               |  10 +-
+ XiaobaiHardwareMonitorLib/main.nuget.target        |  33 ++
+ 333 files changed, 1749 insertions(+), 1737 deletions(-)

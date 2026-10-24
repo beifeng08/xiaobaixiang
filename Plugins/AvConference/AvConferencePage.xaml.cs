@@ -1,5 +1,4 @@
-// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+// Copyright (c) 2026 OmniSensor
 
 using System.IO;
 using System.Windows;
@@ -12,8 +11,10 @@ namespace YanJi.Plugin.AvConference;
 
 public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage, YanJi.PluginSdk.IReportSection
 {
-    const string MusicFileName = "不死のバイオレット - 幻月遠征隊.mp3";
     const int RecordLimitSec = 15;
+    // 扬声器测试音：运行时合成，不依赖任何随包音频素材
+    const int TestToneSeconds = 3;
+    const int TestToneFrequency = 1000;
 
     readonly CameraService _camera = new();
     readonly AudioService _audio = new();
@@ -61,7 +62,7 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
             _sessionCts = new CancellationTokenSource();
             int session = Interlocked.Increment(ref _session);
             CameraBox.IsEnabled = MicBox.IsEnabled = SpkBox.IsEnabled = false;
-            RecordButton.IsEnabled = PlayRecButton.IsEnabled = PlayMusicButton.IsEnabled = false;
+            RecordButton.IsEnabled = PlayRecButton.IsEnabled = PlayToneButton.IsEnabled = false;
             _ = InitAsync(session, _sessionCts.Token);
         };
         Unloaded += (_, _) => Cleanup();
@@ -103,9 +104,8 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
             finally { _initializing = false; }
             if (previousDevices != (CurrentCamId, CurrentMicId, CurrentSpkId)) ResetPassed();
             if (!IsCurrentSession(session)) return;
-            PlayMusicButton.IsEnabled = _spkDevices.Count > 0;
-            MusicStatus.Text = _spkDevices.Count == 0 ? "未检测到音频输出设备"
-                : !File.Exists(MusicPath()) ? "未找到试音曲文件（应随程序一同发布）" : "";
+            PlayToneButton.IsEnabled = _spkDevices.Count > 0;
+            SpeakerStatus.Text = _spkDevices.Count == 0 ? "未检测到音频输出设备" : "";
             if (CurrentMicId != null) StartInput(CurrentMicId);
             else
             {
@@ -163,8 +163,19 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         };
     }
 
-    static string MusicPath() => Path.Combine(
-            Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!, MusicFileName);
+    // 合成测试音：3 秒 1 kHz 正弦波，16-bit PCM；两端各 50 ms 淡入淡出避免爆音
+    static string TestTonePath()
+    {
+        string path = Path.Combine(Path.GetTempPath(), "yanji_speaker_test.wav");
+        using var writer = new NAudio.Wave.WaveFileWriter(path, new NAudio.Wave.WaveFormat(44100, 16, 1));
+        int total = 44100 * TestToneSeconds, fade = 44100 / 20;
+        for (int i = 0; i < total; i++)
+        {
+            double envelope = Math.Min(1.0, Math.Min(i, total - i) / (double)fade);
+            writer.WriteSample((float)(Math.Sin(2 * Math.PI * TestToneFrequency * i / 44100.0) * 0.25 * envelope));
+        }
+        return path;
+    }
 
     void Cleanup()
     {
@@ -183,19 +194,19 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         ++_playbackGeneration;
         RecordButton.Content = "录制";
         RecordButton.IsEnabled = false;
-        PlayMusicButton.Content = "播放音乐";
-        PlayMusicButton.IsEnabled = false;
+        PlayToneButton.Content = "播放测试音";
+        PlayToneButton.IsEnabled = false;
         PlayRecButton.Content = "回放";
         PlayRecButton.IsEnabled = false;
         MicLevel.Value = 0;
         MicStatus.Text = "";
-        MusicStatus.Text = "";
+        SpeakerStatus.Text = "";
         _wb = null;
         PreviewImage.Source = null;
         try { _audio.StopInput(); }
         catch (Exception ex) { MicStatus.Text = "停止麦克风失败：" + ex.Message; }
         try { _audio.StopPlay(); }
-        catch (Exception ex) { MusicStatus.Text = "停止播放失败：" + ex.Message; }
+        catch (Exception ex) { SpeakerStatus.Text = "停止播放失败：" + ex.Message; }
         try { if (File.Exists(_recordFile)) File.Delete(_recordFile); }
         catch {  }
     }
@@ -423,26 +434,21 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         StopPlayback();
     }
 
-    void PlayMusicButton_Click(object sender, RoutedEventArgs e)
+    void PlayToneButton_Click(object sender, RoutedEventArgs e)
     {
         if (!IsCurrentSession(_session)) return;
         if (_audio.IsPlaying) { StopPlayback(); return; }
-        if (!File.Exists(MusicPath()))
-        {
-            MusicStatus.Text = "未找到试音曲文件（应随程序一同发布）";
-            return;
-        }
-        PlayMusicButton.Content = "停止";
+        PlayToneButton.Content = "停止";
         int session = _session, playback = ++_playbackGeneration;
         try
         {
-            _audio.Play(MusicPath(), CurrentSpkId, () => OnPlaybackStopped(session, playback));
-            MusicStatus.Text = "播放中…";
+            _audio.Play(TestTonePath(), CurrentSpkId, () => OnPlaybackStopped(session, playback));
+            SpeakerStatus.Text = "播放中…";
         }
         catch (Exception ex)
         {
             StopPlayback();
-            MusicStatus.Text = "播放失败：" + ex.Message;
+            SpeakerStatus.Text = "播放失败：" + ex.Message;
         }
     }
 
@@ -450,10 +456,10 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
     {
         ++_playbackGeneration;
         try { _audio.StopPlay(); }
-        catch (Exception ex) { MusicStatus.Text = "停止播放失败：" + ex.Message; }
+        catch (Exception ex) { SpeakerStatus.Text = "停止播放失败：" + ex.Message; }
         PlayRecButton.Content = "回放";
-        PlayMusicButton.Content = "播放音乐";
-        if (MusicStatus.Text == "播放中…") MusicStatus.Text = "";
+        PlayToneButton.Content = "播放测试音";
+        if (SpeakerStatus.Text == "播放中…") SpeakerStatus.Text = "";
     }
 
     void OnPlaybackStopped(int session, int playback)
@@ -463,8 +469,8 @@ public partial class AvConferencePage : UserControl, YanJi.PluginSdk.IModulePage
         {
             if (!IsCurrentSession(session) || playback != _playbackGeneration) return;
             PlayRecButton.Content = "回放";
-            PlayMusicButton.Content = "播放音乐";
-            if (MusicStatus.Text == "播放中…") MusicStatus.Text = "";
+            PlayToneButton.Content = "播放测试音";
+            if (SpeakerStatus.Text == "播放中…") SpeakerStatus.Text = "";
         });
     }
 
