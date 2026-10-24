@@ -1,6 +1,9 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
+// Used by Prime95.rc
+//
+// Copyright 1995-2023 Mersenne Research, Inc.  All rights reserved
+//
 #define IDH_PRIMENET                    11
 #define IDH_WORKERS                     12
 #define IDH_VACATION                    13

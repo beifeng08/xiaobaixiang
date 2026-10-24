@@ -1,5 +1,7 @@
-﻿// Copyright (c) 2026 beifeng08
-// Licensed under the MIT License. See LICENSE in the project root.
+﻿// Pminus1Dlg.cpp : implementation file
+//
+//  Copyright 2000-2023 Mersenne Research, Inc. All rights reserved.
+//
 
 #include "stdafx.h"
 #include "XiaobaiPrime.h"

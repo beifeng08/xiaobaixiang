@@ -1,0 +1,2483 @@
+{
+  "schemaVersion": 1,
+  "baseline": "e2e649f68505cbc7be838b46d2247409ae35d729",
+  "branch": "release/inspection-preview-0.0.7",
+  "targetPlatform": "win-x64",
+  "statusMeaning": {
+    "ready": "本项在所述版本或仓库基线下的许可与通知材料已收集并可定位；不是整包批准分发。licenseFiles 已接入安装器复制校验，子组件 ready 不解除其父二进制的 blocked。",
+    "blocked": "精确二进制来源、版本对应、完整第三方通知或相应源码义务仍有缺口；不得据此清单宣称发布闭环。"
+  },
+  "scopeNotes": [
+    "本清单由原文收集阶段建立，后续收尾已修复来源通知、产品文案及安装器；不把材料收集等同公开发行批准。",
+    "installer/build-release.ps1 已按 licenseFiles 逐份复制并核对SHA256；仍有blocked时仅可显式生成本机验收包，禁止公开发行。",
+    "初始依赖取证由目标 csproj、原基线工作树 project.assets.json 与当时输出交叉核对。inputEvidence 保留初始快照哈希，不代表本次构建产物；后续交付已在目标工作树构建与发布，成品身份以 release-manifest.json 为准。nuget-cache:/ 与 baseline-worktree:/ 是逻辑来源标识，不是可直接打开的磁盘路径。",
+    "原工作树与目标工作树硬件库 csproj 字节不同，但 PackageReference 属性列表一致；目标 net10.0 与 win-x64 资产、插件整体复制目录的实际原生资产均纳入核对。",
+    "许可文件是包内原件、官方完整文件或明确说明范围的连续原文节选；不补写作者、版权年份或虚构授权。",
+    "MPL-2.0 共用 white-toolkit/LICENSE 全文；DiskInfoToolkit、BlackSharp.Core、RAMSPDToolkit-NDD 各保留独立通知与由 NuGet nuspec 锁定的精确源码提交。",
+    ".NET 与 OpenTK 内嵌第三方材料保留完整上游通知，其内容不能简单等同主库的 MIT。",
+    "Blocked 项的 sourceUrl 只代表已核实的上游参考，不代表已经证明仓库中二进制来自该源码。",
+    "安装器的签名验证、相应源码供应、LGPL 重链接及完整发行包检查不在本次原文收集任务内；有来源缺口者保留 blocked。",
+    "Microsoft.Windows.CsWin32、Win32Metadata、Win32Docs、WDK metadata 与 ILLink 是 PrivateAssets 构建/生成工具，未作为独立成品分发，不以工具包冒充运行时依赖。System.CodeDom 的实际成品来自 WindowsDesktop 框架，仍单列。",
+    "Aga.Controls 仅上游 WinForms 源码子项目，未进入宿主/插件项目引用和当前安装负载，故未作为随包 DLL 列入。Microsoft.AspNetCore.App.Runtime 虽在还原下载列表中出现，但当前宿主/工具框架不引用且无实际分发证据，不冒充实际依赖。",
+    "硬件库为多目标工程；本次仅核对 net10.0 与 net10.0/win-x64 的发布链。System.Buffers 4.6.1、System.Memory 4.6.3、System.Numerics.Vectors 4.6.1、System.Runtime.CompilerServices.Unsafe 6.1.2、System.Security.AccessControl 6.0.0、System.Security.Principal.Windows 5.0.0 仅出现在 net472/netstandard2.0 目标，未作为本次 NuGet 随包依赖列项；自包含框架中的同名组件由框架完整通知覆盖。",
+    "原生串口子包与主包通知只有 LF/CRLF 差异；分别保存真实包内字节，不通过改写原文来消除校验差异。",
+    "distributedAssets 保留依赖取证阶段的候选包内资产（包括未选中的 RID），不表示每项都进入最终负载。最终是否随包以成品 payload-files.json 的相对路径和字节哈希为准；fixed-artifact-evidence.json 另对七个固定历史二进制作库存哈希核对。"
+  ],
+  "components": [
+    {
+      "id": "LibreHardwareMonitor-XiaobaiHardwareMonitor",
+      "version": "0.9.6-local-e2e649f",
+      "license": "MPL-2.0; file-level GNU-v2 notices in CorsairPsuGroup.cs and MsiPsuGroup.cs",
+      "sourceUrl": "https://github.com/beifeng08/xiaobaixiang/tree/e2e649f68505cbc7be838b46d2247409ae35d729/white-toolkit",
+      "licenseFiles": [
+        "white-toolkit/LICENSE",
+        "验机软件/Tools/pawnio/COPYING.GPLv2",
+        "white-toolkit/XiaobaiHardwareMonitorLib/Hardware/Psu/Corsair/CorsairPsuGroup.cs",
+        "white-toolkit/XiaobaiHardwareMonitorLib/Hardware/Psu/Msi/MsiPsuGroup.cs"
+      ],
+      "status": "ready",
+      "notes": "两个PSU Group文件保留历史GNU v2通知并附GPLv2全文；不将全树概括为单一MPL。此处ready只表示材料可定位，组合发行适用义务仍须核准。仓库内改名分支；版本见 white-toolkit/Directory.Build.props，来源边界见 docs/provenance.md 的“LibreHardwareMonitor 改名副本”与“构建和发行边界”节。精确可交付源码是本地基线，不虚称上游正式 0.9.6 发行；发布方仍须实际提供该改动版本源码。",
+      "evidence": [
+        "white-toolkit/Directory.Build.props",
+        "white-toolkit/XiaobaiHardwareMonitorLib/XiaobaiHardwareMonitorLib.csproj",
+        "docs/provenance.md"
+      ]
+    },
+    {
+      "id": "FurMark-Python-derived-CSharp-port",
+      "version": "1.0.0-local-e2e649f",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/beifeng08/xiaobaixiang/tree/e2e649f68505cbc7be838b46d2247409ae35d729/FurMark",
+      "licenseFiles": [
+        "FurMark/Assets/LICENSE.FurMark.txt"
+      ],
+      "status": "ready",
+      "notes": "本项目的 C#/OpenTK 毛球重实现及随带贴图，不是 Geeks3D 商业 FurMark 发行。复用原署名和许可，不复制另一份。OpenTK、GLFW、StbImageSharp 单独列项。",
+      "evidence": [
+        "FurMark/FurMark.csproj",
+        "FurMark/Assets/LICENSE.FurMark.txt"
+      ]
+    },
+    {
+      "id": "PawnIO-setup",
+      "version": "2.2.0.0",
+      "license": "LicenseRef-GPL-2.0-or-later-PawnIO-device-IO-exception",
+      "sourceUrl": "https://github.com/namazso/PawnIO/tree/5cdf470831fdfff3f7f1d06363ca6b230f3bf35a",
+      "licenseFiles": [
+        "验机软件/Tools/pawnio/COPYING.GPLv2",
+        "installer/legal/PawnIO-2.2.0.NOTICE.txt"
+      ],
+      "status": "blocked",
+      "notes": "版本来自只读 PE 资源；官方 2.2.0 README 许可节含版权及设备 I/O 组合例外，既有 COPYING.GPLv2 本身没有该例外。已补通知，但未确认此安装器的官方发行下载记录、哈希对应和相应源码供应，保留 blocked。",
+      "artifacts": [
+        {
+          "path": "验机软件/Tools/pawnio/PawnIO_setup.exe",
+          "sha256": "1f519a22e47187f70a1379a48ca604981c4fcf694f4e65b734aaa74a9fba3032"
+        }
+      ]
+    },
+    {
+      "id": "PawnIO-embedded-modules",
+      "version": "unknown-local-e2e649f",
+      "license": "LGPL-2.1",
+      "sourceUrl": "https://github.com/beifeng08/xiaobaixiang/tree/e2e649f68505cbc7be838b46d2247409ae35d729/white-toolkit/XiaobaiHardwareMonitorLib/Resources/PawnIo",
+      "licenseFiles": [
+        "white-toolkit/XiaobaiHardwareMonitorLib/Resources/PawnIo/COPYING",
+        "installer/legal/PawnIO-2.2.0.NOTICE.txt"
+      ],
+      "status": "blocked",
+      "notes": "csproj 明确嵌入多个 .bin，既有 LGPL-2.1 全文可复用。每个 .bin 的精确上游构建版本、对应源码及重链接/替换条件未核实；不能把安装器 2.2.0 当成全部模块版本。许可类别沿用既有组件声明，未据此确认所有 .bin 的授权。",
+      "evidence": [
+        "white-toolkit/XiaobaiHardwareMonitorLib/XiaobaiHardwareMonitorLib.csproj:61-76",
+        "docs/third-party-licenses.md#主要组件"
+      ]
+    },
+    {
+      "id": "GIMPS-Prime95-XiaobaiPrime",
+      "version": "30.19-build-1-local",
+      "license": "LicenseRef-GIMPS-Prime95-EULA",
+      "sourceUrl": "http://mersenne.org/freesoft/",
+      "licenseFiles": [
+        "验机软件/Tools/xiaobaiprime/license.txt"
+      ],
+      "status": "blocked",
+      "notes": "EULA 原文声明 30.19；本地 EXE 文件版本 30,19,1,0，产品版本 30,19,0,0。仓库有改名源码与叠加 vcxproj，但缺本 EXE 精确构建/发行来源证明。curl、GMP、hwloc、Boost 与 cJSON 分别列项；GIMPS EULA 不覆盖这些组件。",
+      "artifacts": [
+        {
+          "path": "验机软件/Tools/xiaobaiprime/xiaobaiprime.exe",
+          "sha256": "67b82fe5437ac96e62c97b11c6434b185de0ae6651ecd5d7b8af3a1a46a7ee15"
+        }
+      ],
+      "evidence": [
+        "prime95-build/xiaobaiprime.yanji.vcxproj:45",
+        "prime95-build/xiaobaiprime.yanji.vcxproj:67",
+        "docs/provenance.md#prime95-与其他负载"
+      ]
+    },
+    {
+      "id": "CrystalDiskMark-CdmHost",
+      "version": "9.0.3-claimed-unverified",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/hiyohiyo/CrystalDiskMark/tree/6be68235c6a22684b76f228dbfa96986a0d52e8d",
+      "licenseFiles": [
+        "installer/legal/CrystalDiskMark.NOTICE-reference.txt"
+      ],
+      "status": "blocked",
+      "notes": "DiskMarkPlugin.cs 声明 9.0.3，但仓库只有 CdmHost 成品且无 PE 版本。已保存官方 DiskBench.cpp 的作者/许可原文头，仅为参考通知，不是完整 MIT 授权全文。该官方提交说明为 9.0.0 且更新 diskspd 2.2，本包 diskspd 实为 2.0.20a，不能强行配对。需对应 9.0.3 的真实源包/宿主构建证据及完整随包许可。",
+      "artifacts": [
+        {
+          "path": "Plugins/DiskMark/CdmHost/CdmHost.exe",
+          "sha256": "1b7d22fefdad26d2e7bc32e7c05bc6768100b35e1aa2cd2aaa3b245b449d8468"
+        }
+      ],
+      "evidence": [
+        "Plugins/DiskMark/DiskMarkPlugin.cs",
+        "Plugins/DiskMark/YanJi.Plugin.DiskMark.csproj:23"
+      ]
+    },
+    {
+      "id": "diskspd",
+      "version": "2.0.20a",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/microsoft/diskspd/tree/a796c20fda87a793b2032d31d253ded1fff29dbb",
+      "licenseFiles": [
+        "installer/legal/diskspd-2.0.20a.LICENSE.txt"
+      ],
+      "status": "blocked",
+      "notes": "PE 文件/产品版本均为 2.0.20a，原始名 diskspd.exe；许可来自官方 v2.0.20a 标签对应提交。尚未将该二进制哈希对到官方发行/可复现构建，故不宣称来源闭环；没有下载或执行二进制。",
+      "artifacts": [
+        {
+          "path": "Plugins/DiskMark/CdmHost/CdmResource/diskspd/diskspd64.exe",
+          "sha256": "fbac959a3a7e8cfee32e5b1db65c441cada03baa24f3a1571e5c87e8f6002388"
+        }
+      ]
+    },
+    {
+      "id": "curl-libcurl",
+      "version": "8.21.0",
+      "license": "curl",
+      "sourceUrl": "https://github.com/curl/curl/tree/curl-8_21_0",
+      "licenseFiles": [
+        "installer/legal/curl-8.21.0.COPYING.txt"
+      ],
+      "status": "blocked",
+      "notes": "DLL PE 版本 8.21.0，构建工程指向 curl-8.21.0_7-win64-mingw。官方 curl 主许可已取，但缺此构建包的真实下载/哈希记录及全部内嵌依赖通知。静态发现 LibreSSL 4.3.2、SSH-2.0-libssh2_1.11.1、nghttp2/nghttp3/ngtcp2、brotli/zstd/zlib 标识，分别记为 blocked；不能以 curl 主许可代替。",
+      "artifacts": [
+        {
+          "path": "验机软件/Tools/xiaobaiprime/libcurl-x64.dll",
+          "sha256": "f2f610f061036394148e1aa19e7310488a165db7d134d45f1582858e47ca9d7c"
+        }
+      ],
+      "evidence": [
+        "prime95-build/xiaobaiprime.yanji.vcxproj:45",
+        "prime95-build/xiaobaiprime.yanji.vcxproj:67"
+      ]
+    },
+    {
+      "id": "GMP-libgmp-gw1",
+      "version": "unknown-6.2.0-string-vs-6.2.1-header",
+      "license": "NOASSERTION",
+      "sourceUrl": "https://www.gnu.org/licenses/",
+      "licenseFiles": [
+        "installer/legal/GMP-LGPL-3.0.txt",
+        "installer/legal/GMP-GPL-3.0.txt"
+      ],
+      "status": "blocked",
+      "notes": "仓库 deps/gmp.h 定义 6.2.1，并声明 LGPL-3.0-or-later OR GPL-2.0-or-later；随包 DLL 无 PE 版本且静态字符串为 6.2.0。未确定该 gw1 构建的源码、修改和实际授权。已收集 LGPL3 及其所并入 GPL3 标准全文，仅为待核实的许可路径，不认定 DLL 已适用其中任一项。GNU 官网下载失败后从 GNU GCC 官方镜像原文取得，非自行生成。",
+      "artifacts": [
+        {
+          "path": "验机软件/Tools/xiaobaiprime/libgmp-gw1.dll",
+          "sha256": "817a628a2f8fadc696527d8246d3b1bde10aa3fc95fd13ebf0f58d9ff68ffdec"
+        }
+      ],
+      "evidence": [
+        "prime95-build/deps/gmp.h",
+        "prime95-build/deps/libgmp-gw1.def"
+      ]
+    },
+    {
+      "id": "hwloc-libhwloc-15",
+      "version": "2.8.0-observed",
+      "license": "BSD-3-Clause",
+      "sourceUrl": "https://github.com/open-mpi/hwloc/tree/hwloc-2.8.0",
+      "licenseFiles": [
+        "installer/legal/hwloc-2.8.0.COPYING.txt"
+      ],
+      "status": "blocked",
+      "notes": "构建工程和 DLL 静态字符串均指向 2.8.0；已保存官方该标签 COPYING。仍缺具体 Windows 构建下载/哈希、编译选项、附带库和相应完整通知，不能仅凭版本字符串认定来源一致。",
+      "artifacts": [
+        {
+          "path": "验机软件/Tools/xiaobaiprime/libhwloc-15.dll",
+          "sha256": "8de3dec1a892d0c4aa5a5985ab2ba7c6346f228d7651e287bedf3936f0936fb1"
+        }
+      ],
+      "evidence": [
+        "prime95-build/xiaobaiprime.yanji.vcxproj:45",
+        "prime95-build/xiaobaiprime.yanji.vcxproj:67"
+      ]
+    },
+    {
+      "id": "Boost",
+      "version": "1.76.0-declared",
+      "license": "BSL-1.0",
+      "sourceUrl": "https://github.com/boostorg/boost/tree/boost-1.76.0",
+      "licenseFiles": [
+        "installer/legal/Boost-1.76.0.LICENSE.txt"
+      ],
+      "status": "blocked",
+      "notes": "restore-boost.csproj 与叠加工程指向 Boost 1.76.0，pair.cpp 使用头文件。已取官方全文，但缓存/构建依赖缺失，无法证明现有 XiaobaiPrime EXE 确由该版本头文件构建。",
+      "evidence": [
+        "prime95-build/restore-boost/restore-boost.csproj:9",
+        "prime95-build/xiaobaiprime.yanji.vcxproj:45",
+        "xiaobaiprime/pair.cpp"
+      ]
+    },
+    {
+      "id": "cJSON-vendored-in-Prime95",
+      "version": "1.7.13-local-derived",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/DaveGamble/cJSON/tree/v1.7.13",
+      "licenseFiles": [
+        "installer/legal/cJSON-1.7.13.LICENSE.txt"
+      ],
+      "status": "ready",
+      "notes": "本地 cJSON.c/.h 头明确标注衍生自 1.7.13，并保留 Dave Gamble and cJSON contributors 的 2009-2017 MIT 原文；从官方标签收集独立原件。仅确认该源码通知，不解除 Prime95 成品的构建来源阻塞。",
+      "evidence": [
+        "xiaobaiprime/cJSON.c:4-27",
+        "xiaobaiprime/cJSON.h:4-27",
+        "prime95-build/xiaobaiprime.yanji.vcxproj:80"
+      ]
+    },
+    {
+      "id": "curl-bundled-LibreSSL",
+      "version": "4.3.2-observed",
+      "license": "NOASSERTION",
+      "sourceUrl": "https://github.com/curl/curl-for-win",
+      "licenseFiles": [],
+      "status": "blocked",
+      "notes": "libcurl-x64.dll 静态含 LibreSSL 4.3.2 与 LibreSSL 调用错误串。缺对应发行包的混合版权/许可通知、精确源包和构建记录；不能用 curl COPYING 代替，也不把 LibreSSL 错记成 OpenSSL 3。"
+    },
+    {
+      "id": "curl-bundled-libssh2",
+      "version": "1.11.1-observed",
+      "license": "NOASSERTION",
+      "sourceUrl": "https://github.com/curl/curl-for-win",
+      "licenseFiles": [],
+      "status": "blocked",
+      "notes": "libcurl-x64.dll 含 SSH-2.0-libssh2_1.11.1 及 libssh2 运行错误串；缺对应版本原文、源码和构建包通知。"
+    },
+    {
+      "id": "curl-bundled-nghttp2",
+      "version": "unknown",
+      "license": "NOASSERTION",
+      "sourceUrl": "https://github.com/curl/curl-for-win",
+      "licenseFiles": [],
+      "status": "blocked",
+      "notes": "DLL 含 nghttp2/%s 及 nghttp2_session_send 等标识，另有 1.70.0 等版本字符串但未可靠绑定，不据此填写版本。缺对应源码和完整许可通知。"
+    },
+    {
+      "id": "curl-bundled-nghttp3",
+      "version": "unknown",
+      "license": "NOASSERTION",
+      "sourceUrl": "https://github.com/curl/curl-for-win",
+      "licenseFiles": [],
+      "status": "blocked",
+      "notes": "DLL 含 nghttp3/%s、nghttp3_conn_writev_stream 和 nghttp3 源文件名；未可靠绑定版本。缺对应源码和完整许可通知。"
+    },
+    {
+      "id": "curl-bundled-ngtcp2",
+      "version": "unknown",
+      "license": "NOASSERTION",
+      "sourceUrl": "https://github.com/curl/curl-for-win",
+      "licenseFiles": [],
+      "status": "blocked",
+      "notes": "DLL 含 ngtcp2/%s nghttp3/%s；准确版本、构建启用情况和授权通知尚未由具体构建包核实。"
+    },
+    {
+      "id": "curl-bundled-Brotli",
+      "version": "unknown",
+      "license": "NOASSERTION",
+      "sourceUrl": "https://github.com/curl/curl-for-win",
+      "licenseFiles": [],
+      "status": "blocked",
+      "notes": "DLL 含 brotli/%u.%u.%u，待具体构建包确认版本/编译配置/对应通知；不执行 DLL 查询运行时版本。"
+    },
+    {
+      "id": "curl-bundled-Zstandard",
+      "version": "unknown",
+      "license": "NOASSERTION",
+      "sourceUrl": "https://github.com/curl/curl-for-win",
+      "licenseFiles": [],
+      "status": "blocked",
+      "notes": "DLL 含 zstd/%u.%u.%u；缺准确版本、构建包及许可选择/版权通知，不能仅套用主库许可。"
+    },
+    {
+      "id": "curl-bundled-zlib",
+      "version": "unknown",
+      "license": "NOASSERTION",
+      "sourceUrl": "https://github.com/curl/curl-for-win",
+      "licenseFiles": [],
+      "status": "blocked",
+      "notes": "DLL 含 zlib compression 标识；缺准确版本、构建配置及对应通知。.NET WPF 内的 zlib 通知不是此 DLL 版本的来源证据。"
+    },
+    {
+      "id": "native-bundled-MinGW-w64-runtime",
+      "version": "unknown",
+      "license": "NOASSERTION",
+      "sourceUrl": "https://github.com/curl/curl-for-win",
+      "licenseFiles": [],
+      "status": "blocked",
+      "notes": "libcurl、libgmp-gw1、libhwloc 静态字符串含 MinGW-w64 运行时和源码路径，未核实各 DLL 工具链版本、运行时及例外条款。需要其实际构建包通知，不以通用 GPL/LGPL 全文替代。"
+    },
+    {
+      "id": "BlackSharp.Core",
+      "version": "1.1.4",
+      "license": "MPL-2.0",
+      "sourceUrl": "https://github.com/Blacktempel/BlackSharp/tree/c28ce7478f6141fe87b3bb06b7e9e82983808151",
+      "licenseFiles": [
+        "white-toolkit/LICENSE",
+        "installer/legal/BlackSharp.Core-1.1.4.NOTICE.txt"
+      ],
+      "status": "ready",
+      "notes": "实际解析版本来自还原资产；NuGet nuspec 锁定源码提交 c28ce7478f6141fe87b3bb06b7e9e82983808151，不是以 master 代替版本。共用既有 MPL2 全文，独立通知为官方精确提交的连续原文节选，必须与全文和此源码地址一同分发。",
+      "authors": "BlackSharp.Core",
+      "copyright": "Florian K.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/Blacktempel/BlackSharp",
+        "commit": "c28ce7478f6141fe87b3bb06b7e9e82983808151"
+      },
+      "packageUrl": "https://www.nuget.org/packages/BlackSharp.Core/1.1.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/blacksharp.core/1.1.4/blacksharp.core.nuspec",
+        "nuspecSha256": "76890ba8fd9483820e504f694d0bbb6cbc174927af8149b308d42d0a39ea10ea",
+        "nupkgSha256": "f2673fc815666e4b6581aaf06ff225a666ec5b0f784b6d9af5e352f9437c86a1"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/net10.0/BlackSharp.Core.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "DiskInfoToolkit",
+      "version": "2.1.3",
+      "license": "MPL-2.0",
+      "sourceUrl": "https://github.com/Blacktempel/DiskInfoToolkit/tree/7bc6437a854a86b88828433e431bfa5630c7a65d",
+      "licenseFiles": [
+        "white-toolkit/LICENSE",
+        "installer/legal/DiskInfoToolkit-2.1.3.NOTICE.txt"
+      ],
+      "status": "ready",
+      "notes": "实际解析版本来自还原资产；NuGet nuspec 锁定源码提交 7bc6437a854a86b88828433e431bfa5630c7a65d，不是以 master 代替版本。共用既有 MPL2 全文，独立通知为官方精确提交的连续原文节选，必须与全文和此源码地址一同分发。",
+      "authors": "DiskInfoToolkit",
+      "copyright": "Florian K.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/Blacktempel/DiskInfoToolkit",
+        "commit": "7bc6437a854a86b88828433e431bfa5630c7a65d"
+      },
+      "packageUrl": "https://www.nuget.org/packages/DiskInfoToolkit/2.1.3",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/diskinfotoolkit/2.1.3/diskinfotoolkit.nuspec",
+        "nuspecSha256": "cbccc4748bc74363f6d65e0f9fb106e7ad12efeeab7764ace6474871bcd10289",
+        "nupkgSha256": "9ed254b0308feda252d7635bf3caa87b1400cb677591ae0d7de540230aa6aa56"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/net10.0/DiskInfoToolkit.dll",
+          "assetType": "runtime"
+        },
+        {
+          "path": "lib/net10.0/de-DE/DiskInfoToolkit.resources.dll",
+          "assetType": "resource"
+        },
+        {
+          "path": "lib/net10.0/es-ES/DiskInfoToolkit.resources.dll",
+          "assetType": "resource"
+        }
+      ]
+    },
+    {
+      "id": "HidSharp",
+      "version": "2.6.4",
+      "license": "Apache-2.0",
+      "sourceUrl": "https://www.nuget.org/packages/HidSharp/2.6.4",
+      "licenseFiles": [
+        "installer/legal/HidSharp-2.6.4.LICENSE.txt"
+      ],
+      "status": "ready",
+      "notes": "包内 LICENSE.txt 包含 HIDSharp 自身版权通知及 Apache2 全文，原样保存；包内未发现独立 NOTICE。",
+      "authors": "James F. Bellinger",
+      "copyright": "Copyright 2010-2025 James Bellinger",
+      "packageUrl": "https://www.nuget.org/packages/HidSharp/2.6.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/hidsharp/2.6.4/hidsharp.nuspec",
+        "nuspecSha256": "53bbd0f12c642fecb3e8339609636e0be29150411510ab12a0df4634b1d586c2",
+        "nupkgSha256": "cf55d4b4d7b42dc1d8496b7b592ba00d1ecd48a70bc07bd8dabd3e9976d108e7"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netstandard2.0/HidSharp.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "Microsoft.Win32.Registry",
+      "version": "5.0.0",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/Microsoft.Win32.Registry/5.0.0",
+      "licenseFiles": [
+        "installer/legal/Microsoft.Win32.Registry-5.0.0.LICENSE.txt",
+        "installer/legal/Microsoft.Win32.Registry-5.0.0.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "csproj 显式引用但 net10.0 资产为 _._，不另产生包内 DLL；功能由自包含框架提供。为完整披露显式依赖仍保留此项及实际包原文。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "git://github.com/dotnet/runtime",
+        "commit": "cf258a14b70ad9069470a108f13765e0e5988f51"
+      },
+      "packageUrl": "https://www.nuget.org/packages/Microsoft.Win32.Registry/5.0.0",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/microsoft.win32.registry/5.0.0/microsoft.win32.registry.nuspec",
+        "nuspecSha256": "eb8c4b9d4ebe62d8528dec6ab2a752c2e3488f28f882a6c45a33dcc21eacc58e",
+        "nupkgSha256": "f64ca53c67ca65ce7cc85a8d29aefbb2da2672836731e1115e8cd62730dc5080"
+      },
+      "assetEvidence": [
+        "white-toolkit/XiaobaiHardwareMonitorLib/obj/project.assets.json"
+      ],
+      "distributedAssets": []
+    },
+    {
+      "id": "Mono.Posix.NETStandard",
+      "version": "1.0.0",
+      "license": "NOASSERTION",
+      "sourceUrl": "https://www.nuget.org/packages/Mono.Posix.NETStandard/1.0.0",
+      "licenseFiles": [
+        "installer/legal/Mono.Posix.NETStandard-1.0.0.LICENSE-reference.txt"
+      ],
+      "status": "blocked",
+      "notes": "nuspec 只有旧 licenseUrl=https://go.microsoft.com/fwlink/?linkid=869050，实测重定向到 mono/mono main/LICENSE；已保存该文件最近变更提交 12dd9040252e5b9c63b8df9ef53777eb01232405 的官方完整原文，仅为参考。包内跨平台托管/原生 helper 均会随插件整目录复制，但包无源码提交且不能用当前 Mono 综合 LICENSE 证明 1.0.0 每个 helper 的版本与许可；需精确源码及通知。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "packageUrl": "https://www.nuget.org/packages/Mono.Posix.NETStandard/1.0.0",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/mono.posix.netstandard/1.0.0/mono.posix.netstandard.nuspec",
+        "nuspecSha256": "06833942a09ab8a40536ee7c9b7d3b2524e457c1eae2333eb4281ba24b6798c8",
+        "nupkgSha256": "fc5eb593b318fdfbb615c7d6ec29328ee52ba0ac256005cf40555e0ecd509276"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/linux-arm/lib/netstandard2.0/Mono.Posix.NETStandard.dll",
+          "assetType": "runtime",
+          "rid": "linux-arm"
+        },
+        {
+          "path": "runtimes/linux-arm/native/libMonoPosixHelper.so",
+          "assetType": "native",
+          "rid": "linux-arm"
+        },
+        {
+          "path": "runtimes/linux-arm64/lib/netstandard2.0/Mono.Posix.NETStandard.dll",
+          "assetType": "runtime",
+          "rid": "linux-arm64"
+        },
+        {
+          "path": "runtimes/linux-arm64/native/libMonoPosixHelper.so",
+          "assetType": "native",
+          "rid": "linux-arm64"
+        },
+        {
+          "path": "runtimes/linux-armel/lib/netstandard2.0/Mono.Posix.NETStandard.dll",
+          "assetType": "runtime",
+          "rid": "linux-armel"
+        },
+        {
+          "path": "runtimes/linux-armel/native/libMonoPosixHelper.so",
+          "assetType": "native",
+          "rid": "linux-armel"
+        },
+        {
+          "path": "runtimes/linux-x64/lib/netstandard2.0/Mono.Posix.NETStandard.dll",
+          "assetType": "runtime",
+          "rid": "linux-x64"
+        },
+        {
+          "path": "runtimes/linux-x64/native/libMonoPosixHelper.so",
+          "assetType": "native",
+          "rid": "linux-x64"
+        },
+        {
+          "path": "runtimes/linux-x86/lib/netstandard2.0/Mono.Posix.NETStandard.dll",
+          "assetType": "runtime",
+          "rid": "linux-x86"
+        },
+        {
+          "path": "runtimes/linux-x86/native/libMonoPosixHelper.so",
+          "assetType": "native",
+          "rid": "linux-x86"
+        },
+        {
+          "path": "runtimes/osx/lib/netstandard2.0/Mono.Posix.NETStandard.dll",
+          "assetType": "runtime",
+          "rid": "osx"
+        },
+        {
+          "path": "runtimes/osx/native/libMonoPosixHelper.dylib",
+          "assetType": "native",
+          "rid": "osx"
+        },
+        {
+          "path": "runtimes/win-x64/lib/netstandard2.0/Mono.Posix.NETStandard.dll",
+          "assetType": "runtime",
+          "rid": "win-x64"
+        },
+        {
+          "path": "runtimes/win-x64/native/MonoPosixHelper.dll",
+          "assetType": "native",
+          "rid": "win-x64"
+        },
+        {
+          "path": "runtimes/win-x64/native/libMonoPosixHelper.dll",
+          "assetType": "native",
+          "rid": "win-x64"
+        },
+        {
+          "path": "runtimes/win-x86/lib/netstandard2.0/Mono.Posix.NETStandard.dll",
+          "assetType": "runtime",
+          "rid": "win-x86"
+        },
+        {
+          "path": "runtimes/win-x86/native/MonoPosixHelper.dll",
+          "assetType": "native",
+          "rid": "win-x86"
+        },
+        {
+          "path": "runtimes/win-x86/native/libMonoPosixHelper.dll",
+          "assetType": "native",
+          "rid": "win-x86"
+        }
+      ]
+    },
+    {
+      "id": "NAudio.Asio",
+      "version": "2.2.1",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/NAudio.Asio/2.2.1",
+      "licenseFiles": [
+        "installer/legal/NAudio-2.2.1.LICENSE.txt"
+      ],
+      "status": "ready",
+      "notes": "NAudio 2.2.1 包内 license.txt 原样共用；各子包确为 2.2.1 且 nuspec 声明 MIT，逐包保留元数据与实际资产，未以单一总项隐藏传递 DLL。",
+      "authors": "Mark Heath",
+      "copyright": "© Mark Heath 2023",
+      "repositoryMetadata": {
+        "url": "https://github.com/naudio/NAudio"
+      },
+      "packageUrl": "https://www.nuget.org/packages/NAudio.Asio/2.2.1",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/naudio.asio/2.2.1/naudio.asio.nuspec",
+        "nuspecSha256": "59b386e4f1a512def9a7754625da49ea87e3d2dd8302d2cbe75621bc169d4a8a",
+        "nupkgSha256": "aae0c06c2559fbf56bd4b4f4a5cb9aeef158e35c7b536699e4e6b8012a683577"
+      },
+      "assetEvidence": [
+        "Plugins/AvConference/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netstandard2.0/NAudio.Asio.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "NAudio.Core",
+      "version": "2.2.1",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/NAudio.Core/2.2.1",
+      "licenseFiles": [
+        "installer/legal/NAudio-2.2.1.LICENSE.txt"
+      ],
+      "status": "ready",
+      "notes": "NAudio 2.2.1 包内 license.txt 原样共用；各子包确为 2.2.1 且 nuspec 声明 MIT，逐包保留元数据与实际资产，未以单一总项隐藏传递 DLL。",
+      "authors": "Mark Heath",
+      "copyright": "© Mark Heath 2023",
+      "repositoryMetadata": {
+        "url": "https://github.com/naudio/NAudio"
+      },
+      "packageUrl": "https://www.nuget.org/packages/NAudio.Core/2.2.1",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/naudio.core/2.2.1/naudio.core.nuspec",
+        "nuspecSha256": "19633771b56d63ff45835231c7585ce33de38a41a0dab2dbcf20ae9385884376",
+        "nupkgSha256": "794645dbfd30e4880663d52d9d9224d55c301fa54228ff623c95d572c7887347"
+      },
+      "assetEvidence": [
+        "Plugins/AvConference/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netstandard2.0/NAudio.Core.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "NAudio.Midi",
+      "version": "2.2.1",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/NAudio.Midi/2.2.1",
+      "licenseFiles": [
+        "installer/legal/NAudio-2.2.1.LICENSE.txt"
+      ],
+      "status": "ready",
+      "notes": "NAudio 2.2.1 包内 license.txt 原样共用；各子包确为 2.2.1 且 nuspec 声明 MIT，逐包保留元数据与实际资产，未以单一总项隐藏传递 DLL。",
+      "authors": "Mark Heath",
+      "copyright": "© Mark Heath 2023",
+      "repositoryMetadata": {
+        "url": "https://github.com/naudio/NAudio"
+      },
+      "packageUrl": "https://www.nuget.org/packages/NAudio.Midi/2.2.1",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/naudio.midi/2.2.1/naudio.midi.nuspec",
+        "nuspecSha256": "0e821948e6fc5c33a8a625850f632b17839b7cc58d09c56195e3e3a480bd1c6a",
+        "nupkgSha256": "763d8fb1c12a3ac1203940c33b86bced220212bc1808bc2ea4fd38a1c1c7709a"
+      },
+      "assetEvidence": [
+        "Plugins/AvConference/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netstandard2.0/NAudio.Midi.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "NAudio.Wasapi",
+      "version": "2.2.1",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/NAudio.Wasapi/2.2.1",
+      "licenseFiles": [
+        "installer/legal/NAudio-2.2.1.LICENSE.txt"
+      ],
+      "status": "ready",
+      "notes": "NAudio 2.2.1 包内 license.txt 原样共用；各子包确为 2.2.1 且 nuspec 声明 MIT，逐包保留元数据与实际资产，未以单一总项隐藏传递 DLL。",
+      "authors": "Mark Heath",
+      "copyright": "© Mark Heath 2023",
+      "repositoryMetadata": {
+        "url": "https://github.com/naudio/NAudio"
+      },
+      "packageUrl": "https://www.nuget.org/packages/NAudio.Wasapi/2.2.1",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/naudio.wasapi/2.2.1/naudio.wasapi.nuspec",
+        "nuspecSha256": "cf5852d5a46e731c80c78e32acdd5a1ab9752a5b6a4a43320f637c12a75da12d",
+        "nupkgSha256": "c8396b8dbab86a2619edfd9158beaf18c21cb86677099b5594950fd8651b9d1a"
+      },
+      "assetEvidence": [
+        "Plugins/AvConference/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netstandard2.0/NAudio.Wasapi.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "NAudio.WinForms",
+      "version": "2.2.1",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/NAudio.WinForms/2.2.1",
+      "licenseFiles": [
+        "installer/legal/NAudio-2.2.1.LICENSE.txt"
+      ],
+      "status": "ready",
+      "notes": "NAudio 2.2.1 包内 license.txt 原样共用；各子包确为 2.2.1 且 nuspec 声明 MIT，逐包保留元数据与实际资产，未以单一总项隐藏传递 DLL。",
+      "authors": "Mark Heath",
+      "copyright": "© Mark Heath 2023",
+      "repositoryMetadata": {
+        "url": "https://github.com/naudio/NAudio"
+      },
+      "packageUrl": "https://www.nuget.org/packages/NAudio.WinForms/2.2.1",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/naudio.winforms/2.2.1/naudio.winforms.nuspec",
+        "nuspecSha256": "37ab557513558cc5d284d00589243c4359b278c9bac37de522b1f67c42b78260",
+        "nupkgSha256": "54ebc435672272ca29dc86689a12e39c3fde7446d3ee5282d7d73f39493f98c0"
+      },
+      "assetEvidence": [
+        "Plugins/AvConference/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netcoreapp3.1/NAudio.WinForms.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "NAudio.WinMM",
+      "version": "2.2.1",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/NAudio.WinMM/2.2.1",
+      "licenseFiles": [
+        "installer/legal/NAudio-2.2.1.LICENSE.txt"
+      ],
+      "status": "ready",
+      "notes": "NAudio 2.2.1 包内 license.txt 原样共用；各子包确为 2.2.1 且 nuspec 声明 MIT，逐包保留元数据与实际资产，未以单一总项隐藏传递 DLL。",
+      "authors": "NAudio.WinMM",
+      "copyright": "© Mark Heath 2023",
+      "repositoryMetadata": {
+        "url": "https://github.com/naudio/NAudio"
+      },
+      "packageUrl": "https://www.nuget.org/packages/NAudio.WinMM/2.2.1",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/naudio.winmm/2.2.1/naudio.winmm.nuspec",
+        "nuspecSha256": "8da8c6e702f1e889df619e76c04d9591516183881a356c35f7d42db52615b860",
+        "nupkgSha256": "48da978d715f219489c050ee8c32c64f80ff73718eba237ebcbc636ba5902be3"
+      },
+      "assetEvidence": [
+        "Plugins/AvConference/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netstandard2.0/NAudio.WinMM.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "NAudio",
+      "version": "2.2.1",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/NAudio/2.2.1",
+      "licenseFiles": [
+        "installer/legal/NAudio-2.2.1.LICENSE.txt"
+      ],
+      "status": "ready",
+      "notes": "NAudio 2.2.1 包内 license.txt 原样共用；各子包确为 2.2.1 且 nuspec 声明 MIT，逐包保留元数据与实际资产，未以单一总项隐藏传递 DLL。",
+      "authors": "Mark Heath & Contributors",
+      "copyright": "© Mark Heath 2023",
+      "repositoryMetadata": {
+        "url": "https://github.com/naudio/NAudio"
+      },
+      "packageUrl": "https://www.nuget.org/packages/NAudio/2.2.1",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/naudio/2.2.1/naudio.nuspec",
+        "nuspecSha256": "574e826830d5947b2f8e082f332461a7cf729818b6d2fdc25ffc97fb99b82585",
+        "nupkgSha256": "d1402cd555b1fa6a2b5eb6dc25139f0dba0aed72e4b033f791d3759ce2ade958"
+      },
+      "assetEvidence": [
+        "Plugins/AvConference/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/net6.0-windows7.0/NAudio.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "OpenTK.Audio.OpenAL",
+      "version": "4.9.4",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/opentk/opentk/tree/8d1d462877936922a3989f56aac8c17add824919",
+      "licenseFiles": [
+        "installer/legal/OpenTK-4.9.4.LICENSE.txt",
+        "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt"
+      ],
+      "status": "ready",
+      "notes": "官方 4.9.4 标签固定到提交 8d1d462877936922a3989f56aac8c17add824919；保存完整 LICENSE.md 与 THIRD_PARTIES.md，后者包含 OpenEXR BSD 通知。OpenTK 总包是元包，子包 DLL 逐项列出。",
+      "authors": "Team OpenTK",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/opentk/opentk.git"
+      },
+      "packageUrl": "https://www.nuget.org/packages/OpenTK.Audio.OpenAL/4.9.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/opentk.audio.openal/4.9.4/opentk.audio.openal.nuspec",
+        "nuspecSha256": "87c843efb7cff19126b29ce20e86508464a7b685a6f4f0832db5f96bc2033270",
+        "nupkgSha256": "d16e994589a47cb8c16f1cc5c27ff173e0d9d0097f677f0685587a6d38958914"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netcoreapp3.1/OpenTK.Audio.OpenAL.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "OpenTK.Compute",
+      "version": "4.9.4",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/opentk/opentk/tree/8d1d462877936922a3989f56aac8c17add824919",
+      "licenseFiles": [
+        "installer/legal/OpenTK-4.9.4.LICENSE.txt",
+        "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt"
+      ],
+      "status": "ready",
+      "notes": "官方 4.9.4 标签固定到提交 8d1d462877936922a3989f56aac8c17add824919；保存完整 LICENSE.md 与 THIRD_PARTIES.md，后者包含 OpenEXR BSD 通知。OpenTK 总包是元包，子包 DLL 逐项列出。",
+      "authors": "Team OpenTK",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/opentk/opentk.git"
+      },
+      "packageUrl": "https://www.nuget.org/packages/OpenTK.Compute/4.9.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/opentk.compute/4.9.4/opentk.compute.nuspec",
+        "nuspecSha256": "e5ff05fa2dcab8474768817e34c455b4d2c3fc639069f131879caf50ca8a99e8",
+        "nupkgSha256": "2943c61e30af772e8c44e08331f20a7a9d8d2d6af3b6b493bc44e0ed3ca10bd3"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netcoreapp3.1/OpenTK.Compute.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "OpenTK.Core",
+      "version": "4.9.4",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/opentk/opentk/tree/8d1d462877936922a3989f56aac8c17add824919",
+      "licenseFiles": [
+        "installer/legal/OpenTK-4.9.4.LICENSE.txt",
+        "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt"
+      ],
+      "status": "ready",
+      "notes": "官方 4.9.4 标签固定到提交 8d1d462877936922a3989f56aac8c17add824919；保存完整 LICENSE.md 与 THIRD_PARTIES.md，后者包含 OpenEXR BSD 通知。OpenTK 总包是元包，子包 DLL 逐项列出。",
+      "authors": "Team OpenTK",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/opentk/opentk.git"
+      },
+      "packageUrl": "https://www.nuget.org/packages/OpenTK.Core/4.9.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/opentk.core/4.9.4/opentk.core.nuspec",
+        "nuspecSha256": "f6f0d2ab9540a3838be5150a31cbadfd3f3e25396d51a75c5d1376447e30ba43",
+        "nupkgSha256": "c7a6a48c11142cc1f49a47a38ec8fcded40e82527e890dd7540293852485d421"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netstandard2.1/OpenTK.Core.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "OpenTK.Graphics",
+      "version": "4.9.4",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/opentk/opentk/tree/8d1d462877936922a3989f56aac8c17add824919",
+      "licenseFiles": [
+        "installer/legal/OpenTK-4.9.4.LICENSE.txt",
+        "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt"
+      ],
+      "status": "ready",
+      "notes": "官方 4.9.4 标签固定到提交 8d1d462877936922a3989f56aac8c17add824919；保存完整 LICENSE.md 与 THIRD_PARTIES.md，后者包含 OpenEXR BSD 通知。OpenTK 总包是元包，子包 DLL 逐项列出。",
+      "authors": "Team OpenTK",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/opentk/opentk.git"
+      },
+      "packageUrl": "https://www.nuget.org/packages/OpenTK.Graphics/4.9.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/opentk.graphics/4.9.4/opentk.graphics.nuspec",
+        "nuspecSha256": "280c0d9628645f8df78119a876d74205646bf54305d6f2c73e4df2b71fb899c1",
+        "nupkgSha256": "9da30d07f063e5f101aca4d7ded1c377bb176f45a984a4deccc98d8d00e18611"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netcoreapp3.1/OpenTK.Graphics.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "OpenTK.Input",
+      "version": "4.9.4",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/opentk/opentk/tree/8d1d462877936922a3989f56aac8c17add824919",
+      "licenseFiles": [
+        "installer/legal/OpenTK-4.9.4.LICENSE.txt",
+        "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt"
+      ],
+      "status": "ready",
+      "notes": "官方 4.9.4 标签固定到提交 8d1d462877936922a3989f56aac8c17add824919；保存完整 LICENSE.md 与 THIRD_PARTIES.md，后者包含 OpenEXR BSD 通知。OpenTK 总包是元包，子包 DLL 逐项列出。",
+      "authors": "Team OpenTK",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/opentk/opentk.git"
+      },
+      "packageUrl": "https://www.nuget.org/packages/OpenTK.Input/4.9.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/opentk.input/4.9.4/opentk.input.nuspec",
+        "nuspecSha256": "76a59dab418035016af5ce0dc11a71a73f5c8c2651026009cf7727f8d12bcce7",
+        "nupkgSha256": "93235dd3f4cca019b035e981bbdd0b906e3ccc47bf9512edfa365771acffb7db"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netstandard2.0/OpenTK.Input.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "OpenTK.Mathematics",
+      "version": "4.9.4",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/opentk/opentk/tree/8d1d462877936922a3989f56aac8c17add824919",
+      "licenseFiles": [
+        "installer/legal/OpenTK-4.9.4.LICENSE.txt",
+        "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt"
+      ],
+      "status": "ready",
+      "notes": "官方 4.9.4 标签固定到提交 8d1d462877936922a3989f56aac8c17add824919；保存完整 LICENSE.md 与 THIRD_PARTIES.md，后者包含 OpenEXR BSD 通知。OpenTK 总包是元包，子包 DLL 逐项列出。",
+      "authors": "Team OpenTK",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/opentk/opentk.git"
+      },
+      "packageUrl": "https://www.nuget.org/packages/OpenTK.Mathematics/4.9.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/opentk.mathematics/4.9.4/opentk.mathematics.nuspec",
+        "nuspecSha256": "7488abd0f7b2fd5bbb74d4f08ceadc9591cc1b3b57ad3099acd92c7e1cc0f1c6",
+        "nupkgSha256": "adb67919c907e263420a92fc52653c44431bd4252e3bebdba59304e3b0affda9"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netcoreapp3.1/OpenTK.Mathematics.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "OpenTK.redist.glfw",
+      "version": "3.4.0.44",
+      "license": "Zlib",
+      "sourceUrl": "https://www.nuget.org/packages/OpenTK.redist.glfw/3.4.0.44",
+      "licenseFiles": [
+        "installer/legal/OpenTK.redist.glfw-3.4.0.44.COPYING.txt"
+      ],
+      "status": "ready",
+      "notes": "包内 COPYING.md 原样保存；GLFW 许可不是 OpenTK 主库 MIT。nuspec repository commit=9d40a19a64652353c8f67b1c10d3622b07987da9，原元数据未给 repository URL，不猜测提交属于哪个仓库。",
+      "authors": "Team OpenTK",
+      "repositoryMetadata": {
+        "type": "git",
+        "commit": "9d40a19a64652353c8f67b1c10d3622b07987da9"
+      },
+      "packageUrl": "https://www.nuget.org/packages/OpenTK.redist.glfw/3.4.0.44",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/opentk.redist.glfw/3.4.0.44/opentk.redist.glfw.nuspec",
+        "nuspecSha256": "e63a1a9cbf42fc9299ebce18cf19847743f7fd554141d803a459dd15b3f80c97",
+        "nupkgSha256": "c505bfd32f258371ced5f08e5531c124449f60e5625fa6332ba17f2df5861ad5"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/linux-x64/native/libglfw.so.3",
+          "assetType": "native",
+          "rid": "linux-x64"
+        },
+        {
+          "path": "runtimes/osx-arm64/native/libglfw.3.dylib",
+          "assetType": "native",
+          "rid": "osx-arm64"
+        },
+        {
+          "path": "runtimes/osx-x64/native/libglfw.3.dylib",
+          "assetType": "native",
+          "rid": "osx-x64"
+        },
+        {
+          "path": "runtimes/win-x64/native/glfw3.dll",
+          "assetType": "native",
+          "rid": "win-x64"
+        },
+        {
+          "path": "runtimes/win-x86/native/glfw3.dll",
+          "assetType": "native",
+          "rid": "win-x86"
+        }
+      ]
+    },
+    {
+      "id": "OpenTK.Windowing.Common",
+      "version": "4.9.4",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/opentk/opentk/tree/8d1d462877936922a3989f56aac8c17add824919",
+      "licenseFiles": [
+        "installer/legal/OpenTK-4.9.4.LICENSE.txt",
+        "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt"
+      ],
+      "status": "ready",
+      "notes": "官方 4.9.4 标签固定到提交 8d1d462877936922a3989f56aac8c17add824919；保存完整 LICENSE.md 与 THIRD_PARTIES.md，后者包含 OpenEXR BSD 通知。OpenTK 总包是元包，子包 DLL 逐项列出。",
+      "authors": "Team OpenTK",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/opentk/opentk.git"
+      },
+      "packageUrl": "https://www.nuget.org/packages/OpenTK.Windowing.Common/4.9.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/opentk.windowing.common/4.9.4/opentk.windowing.common.nuspec",
+        "nuspecSha256": "962146c869a22bde47e5593102f872b351558c2a62f6e4d23c09f0e8ad28e7b3",
+        "nupkgSha256": "dc04626acbcf426c2cc34fe591c38fe52ec56134b6a077f12a3dd46b15928cc9"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netcoreapp3.1/OpenTK.Windowing.Common.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "OpenTK.Windowing.Desktop",
+      "version": "4.9.4",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/opentk/opentk/tree/8d1d462877936922a3989f56aac8c17add824919",
+      "licenseFiles": [
+        "installer/legal/OpenTK-4.9.4.LICENSE.txt",
+        "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt"
+      ],
+      "status": "ready",
+      "notes": "官方 4.9.4 标签固定到提交 8d1d462877936922a3989f56aac8c17add824919；保存完整 LICENSE.md 与 THIRD_PARTIES.md，后者包含 OpenEXR BSD 通知。OpenTK 总包是元包，子包 DLL 逐项列出。",
+      "authors": "Team OpenTK",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/opentk/opentk.git"
+      },
+      "packageUrl": "https://www.nuget.org/packages/OpenTK.Windowing.Desktop/4.9.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/opentk.windowing.desktop/4.9.4/opentk.windowing.desktop.nuspec",
+        "nuspecSha256": "156351fce180874bb2a8f5c10f82b18f60601d9d5c087bed604ff6f86bf17f20",
+        "nupkgSha256": "b309427f31f9c710bddf60142bf66bc266c17ca4051c3426bd944271cd9129d7"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netcoreapp3.1/OpenTK.Windowing.Desktop.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "OpenTK.Windowing.GraphicsLibraryFramework",
+      "version": "4.9.4",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/opentk/opentk/tree/8d1d462877936922a3989f56aac8c17add824919",
+      "licenseFiles": [
+        "installer/legal/OpenTK-4.9.4.LICENSE.txt",
+        "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt"
+      ],
+      "status": "ready",
+      "notes": "官方 4.9.4 标签固定到提交 8d1d462877936922a3989f56aac8c17add824919；保存完整 LICENSE.md 与 THIRD_PARTIES.md，后者包含 OpenEXR BSD 通知。OpenTK 总包是元包，子包 DLL 逐项列出。",
+      "authors": "Team OpenTK",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/opentk/opentk.git"
+      },
+      "packageUrl": "https://www.nuget.org/packages/OpenTK.Windowing.GraphicsLibraryFramework/4.9.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/opentk.windowing.graphicslibraryframework/4.9.4/opentk.windowing.graphicslibraryframework.nuspec",
+        "nuspecSha256": "84bd566ecbff5cb806c7f9bb85e4d6589a18891dea457baa1464691ac56be95e",
+        "nupkgSha256": "5a951ccef6c605390c9f71d1f9a9ec22bcc3cfc9e1b5a4993c80d9f70c6baeac"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netcoreapp3.1/OpenTK.Windowing.GraphicsLibraryFramework.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "OpenTK",
+      "version": "4.9.4",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/opentk/opentk/tree/8d1d462877936922a3989f56aac8c17add824919",
+      "licenseFiles": [
+        "installer/legal/OpenTK-4.9.4.LICENSE.txt",
+        "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt"
+      ],
+      "status": "ready",
+      "notes": "官方 4.9.4 标签固定到提交 8d1d462877936922a3989f56aac8c17add824919；保存完整 LICENSE.md 与 THIRD_PARTIES.md，后者包含 OpenEXR BSD 通知。OpenTK 总包是元包，子包 DLL 逐项列出。",
+      "authors": "Team OpenTK",
+      "copyright": "Copyright (c) 2006 - 2020 Stefanos Apostolopoulos <stapostol@gmail.com> for the Open Toolkit library.",
+      "packageUrl": "https://www.nuget.org/packages/OpenTK/4.9.4",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/opentk/4.9.4/opentk.nuspec",
+        "nuspecSha256": "c3768c4a8e9317c72d438a8dfe93ffdb2ef6fc5e9388563e80aededcc57503db",
+        "nupkgSha256": "71cb001a21e16bfbe3c3368552230aa72a82056067da6b371ca0378adf089226"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": []
+    },
+    {
+      "id": "RAMSPDToolkit-NDD",
+      "version": "1.6.0",
+      "license": "MPL-2.0",
+      "sourceUrl": "https://github.com/Blacktempel/RAMSPDToolkit/tree/848b69806ffda83ddf7ae9c81fc3d64d403aad8f",
+      "licenseFiles": [
+        "white-toolkit/LICENSE",
+        "installer/legal/RAMSPDToolkit-NDD-1.6.0.NOTICE.txt"
+      ],
+      "status": "ready",
+      "notes": "实际解析版本来自还原资产；NuGet nuspec 锁定源码提交 848b69806ffda83ddf7ae9c81fc3d64d403aad8f，不是以 master 代替版本。共用既有 MPL2 全文，独立通知为官方精确提交的连续原文节选，必须与全文和此源码地址一同分发。",
+      "authors": "RAMSPDToolkit-NDD",
+      "copyright": "Florian K.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/Blacktempel/RAMSPDToolkit",
+        "commit": "848b69806ffda83ddf7ae9c81fc3d64d403aad8f"
+      },
+      "packageUrl": "https://www.nuget.org/packages/RAMSPDToolkit-NDD/1.6.0",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/ramspdtoolkit-ndd/1.6.0/ramspdtoolkit-ndd.nuspec",
+        "nuspecSha256": "8e6a64979557ec3c07dac51d499712b6e0b1f7c8ab7931e97f1d40e8a678abe3",
+        "nupkgSha256": "c9da649d28287063f475fb66dff4511779bdf63615708962d266bfec09ef0eea"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/net10.0/RAMSPDToolkit-NDD.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "runtime.android-arm.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.android-arm.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.android-arm.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.android-arm.runtime.native.system.io.ports/10.0.11/runtime.android-arm.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "a36df2c56d44ebee7d0d3bc1e2e603b7d0e87f4138162f0545d7aadc1157c45f",
+        "nupkgSha256": "c69c7397e6048602f400608d25805b896f4e1ee5ff0ac40b9db04e540a4fcb5e"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/android-arm/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "android-arm"
+        }
+      ]
+    },
+    {
+      "id": "runtime.android-arm64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.android-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.android-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.android-arm64.runtime.native.system.io.ports/10.0.11/runtime.android-arm64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "72199c34bda4dcd7a09dceb45cc3c6f4bacdd9f371f14fa23bd7277cc1c2a1cb",
+        "nupkgSha256": "d22efe15fb3c13d7070eb49a833ec495c08bde8384b8ce19d2e777b504115ad6"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/android-arm64/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "android-arm64"
+        }
+      ]
+    },
+    {
+      "id": "runtime.android-x64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.android-x64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.android-x64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.android-x64.runtime.native.system.io.ports/10.0.11/runtime.android-x64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "6422cd52ca49a99ecd247fcdf83e90e0448dc6fb243d77b59e8a3f24812d370b",
+        "nupkgSha256": "6a5fde8be03c33127537f34bd711f2e1c9bed7c9ba941c10aa569b183c0de90a"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/android-x64/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "android-x64"
+        }
+      ]
+    },
+    {
+      "id": "runtime.android-x86.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.android-x86.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.android-x86.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.android-x86.runtime.native.system.io.ports/10.0.11/runtime.android-x86.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "6bd14730cc832f534f611a15992f0e8337cb5c95b189eb99ad6abb3201b3e530",
+        "nupkgSha256": "d8c947e44f4dd8a01ec521ceaefb06d95c1d9183f5e90857269e395c07b835a1"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/android-x86/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "android-x86"
+        }
+      ]
+    },
+    {
+      "id": "runtime.linux-arm.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.linux-arm.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.linux-arm.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.linux-arm.runtime.native.system.io.ports/10.0.11/runtime.linux-arm.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "1e4b2ffc7cde5e323f599bca7ddd174032d50602c97214d195f731f3d044bcc8",
+        "nupkgSha256": "c28aa544362377354bd50e9b17ac69eea9c9eb6fc7c61f8bf41f50b5f62ff216"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/linux-arm/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "linux-arm"
+        }
+      ]
+    },
+    {
+      "id": "runtime.linux-arm64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.linux-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.linux-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.linux-arm64.runtime.native.system.io.ports/10.0.11/runtime.linux-arm64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "012848bacc222747c14ebd4643855bdf7b9dc8dac7dda87c5034127870158e2c",
+        "nupkgSha256": "e45a32bce62fc0f4a677a7234a82bcb3b93f142fec6099ca62d79cc447d218ee"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/linux-arm64/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "linux-arm64"
+        }
+      ]
+    },
+    {
+      "id": "runtime.linux-bionic-arm64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.linux-bionic-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.linux-bionic-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.linux-bionic-arm64.runtime.native.system.io.ports/10.0.11/runtime.linux-bionic-arm64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "8129075b77fe1d486bb1deaddd4ccb820a8a50b44359d828dfd93b8544e081f8",
+        "nupkgSha256": "411e7dbe5fc2e10da8e2b82eae579552faa333bd16756759a6e3b879cf722d4d"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/linux-bionic-arm64/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "linux-bionic-arm64"
+        }
+      ]
+    },
+    {
+      "id": "runtime.linux-bionic-x64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.linux-bionic-x64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.linux-bionic-x64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.linux-bionic-x64.runtime.native.system.io.ports/10.0.11/runtime.linux-bionic-x64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "ca6ac54fde9e38821d1af02622b2b5789ce835826ec8ed6ff6df465886a0f7e5",
+        "nupkgSha256": "50a1aabf74dd0c6415e676e8ff59b5708b633b357926ae139d5e602181f902c2"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/linux-bionic-x64/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "linux-bionic-x64"
+        }
+      ]
+    },
+    {
+      "id": "runtime.linux-musl-arm.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.linux-musl-arm.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.linux-musl-arm.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.linux-musl-arm.runtime.native.system.io.ports/10.0.11/runtime.linux-musl-arm.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "e49f7af0a5a2bed60b1bf3d7ae9f6e49b128a839f1446e11a9cf1c44787ba2d3",
+        "nupkgSha256": "a1531aeaec1359f2a58481b9edaa54bdc0e2b75b80dd54a86e2f13fcd0358686"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/linux-musl-arm/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "linux-musl-arm"
+        }
+      ]
+    },
+    {
+      "id": "runtime.linux-musl-arm64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.linux-musl-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.linux-musl-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.linux-musl-arm64.runtime.native.system.io.ports/10.0.11/runtime.linux-musl-arm64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "a0d3b13315b8b381b639134c7f74b3dd02b77407d6dfcd85dab56991bb031893",
+        "nupkgSha256": "d2dc3c6fd7950c6240fd32f5776e4656e966cae30677f7adec308f02d8d63c33"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/linux-musl-arm64/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "linux-musl-arm64"
+        }
+      ]
+    },
+    {
+      "id": "runtime.linux-musl-x64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.linux-musl-x64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.linux-musl-x64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.linux-musl-x64.runtime.native.system.io.ports/10.0.11/runtime.linux-musl-x64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "e69bfe827121a1fe621700cb485ec1ff66353a790e5f6301b508eb67651cb308",
+        "nupkgSha256": "a023e5d220b49fadc862f932707f8278ab402f67e9f6df83733f043cefc5044e"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/linux-musl-x64/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "linux-musl-x64"
+        }
+      ]
+    },
+    {
+      "id": "runtime.linux-x64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.linux-x64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.linux-x64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.linux-x64.runtime.native.system.io.ports/10.0.11/runtime.linux-x64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "6497a464570e11b1312a077f424ce2aa2bafced26de129dba371733c017174dc",
+        "nupkgSha256": "7f1b2248387c9f3e7a7f0dabe4542d77554dc4373f0ae2b0b1d10d0b75d38bcd"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/linux-x64/native/libSystem.IO.Ports.Native.so",
+          "assetType": "native",
+          "rid": "linux-x64"
+        }
+      ]
+    },
+    {
+      "id": "runtime.maccatalyst-arm64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.maccatalyst-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.maccatalyst-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.maccatalyst-arm64.runtime.native.system.io.ports/10.0.11/runtime.maccatalyst-arm64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "9a7f70c034dd671c49cf8636f389af22f7dedb5e5dd8368d27e73c88581287e8",
+        "nupkgSha256": "ebf6f5deade523287aaedbd241f07c25ee2a6c7efadbbb35b43656ed99a93c9c"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/maccatalyst-arm64/native/libSystem.IO.Ports.Native.dylib",
+          "assetType": "native",
+          "rid": "maccatalyst-arm64"
+        }
+      ]
+    },
+    {
+      "id": "runtime.maccatalyst-x64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.maccatalyst-x64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.maccatalyst-x64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.maccatalyst-x64.runtime.native.system.io.ports/10.0.11/runtime.maccatalyst-x64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "be8d333152957be15e016b143756c6c12bdf4c91cdefd56107d964b7460a7021",
+        "nupkgSha256": "b2cd3ee8983e91656d32dda5f6d57a998d8947868e861c265a7bb988d7cf6ad3"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/maccatalyst-x64/native/libSystem.IO.Ports.Native.dylib",
+          "assetType": "native",
+          "rid": "maccatalyst-x64"
+        }
+      ]
+    },
+    {
+      "id": "runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.native.system.io.ports/10.0.11/runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "f02f6cb6f0be7ce3eb0050181e03a89d17f7ba0bfadd908a9462282ec5603400",
+        "nupkgSha256": "a2b146194493bb7b323222bf5369ded53a972f3ea793775bca0a40860fe0bd59"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": []
+    },
+    {
+      "id": "runtime.osx-arm64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.osx-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.osx-arm64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.osx-arm64.runtime.native.system.io.ports/10.0.11/runtime.osx-arm64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "abbb5bd37ca36ecc71d3b3340c5acc8afba3306776336ea755b37b3f4b75c56f",
+        "nupkgSha256": "db3ac0ba1ccf3da79bf5d260fa42283a381e8b722c0d6b25f0ba6aac6d0cfe86"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/osx-arm64/native/libSystem.IO.Ports.Native.dylib",
+          "assetType": "native",
+          "rid": "osx-arm64"
+        }
+      ]
+    },
+    {
+      "id": "runtime.osx-x64.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/runtime.osx-x64.runtime.native.System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "原生串口传递包，nuspec 与本包完整通知逐包核对。16 个 RID 子包通知原始字节一致，统一保存 LF 原件；runtime.native 元包另用其 CRLF 原件，两者仅换行不同。插件构建无 RID 且安装器整目录复制，因此 Android/Linux/macOS/MacCatalyst 原生文件虽然不在 Windows 执行，仍作为随带分发列项。runtime.native 总包只承载依赖关系，没有独立 DLL。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/runtime.osx-x64.runtime.native.System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/runtime.osx-x64.runtime.native.system.io.ports/10.0.11/runtime.osx-x64.runtime.native.system.io.ports.nuspec",
+        "nuspecSha256": "9f8579f3dc850df268252299735af145a878ce86a696a8a330afa8bce358f487",
+        "nupkgSha256": "1278dea3155bbcb4eeebbb1181799cb7bd864d57c0c42c6fa16494cf639e6e0b"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "runtimes/osx-x64/native/libSystem.IO.Ports.Native.dylib",
+          "assetType": "native",
+          "rid": "osx-x64"
+        }
+      ]
+    },
+    {
+      "id": "StbImageSharp",
+      "version": "2.30.15",
+      "license": "LicenseRef-Public-Domain-StbImageSharp AND (MIT OR Unlicense)",
+      "sourceUrl": "https://github.com/StbSharp/StbImageSharp/tree/6fd7aebe1dbf10e28d78745f42a0c095c61d1945",
+      "licenseFiles": [
+        "installer/legal/StbImageSharp-2.30.15.LICENSE.txt",
+        "installer/legal/StbImageSharp-2.30.15.NOTICE.txt"
+      ],
+      "status": "ready",
+      "notes": "NuGet 缺许可原文。官方 2.30.15 标签 README 的 License/Public Domain 节与同提交 generation/StbImageSharp.Generator/stb_image.h 末尾双许可块逐字节提取，含真实 Sean Barrett 2017 版权；未把父 stb 作者伪写成 C# 移植作者。",
+      "authors": "StbImageSharpTeam",
+      "packageUrl": "https://www.nuget.org/packages/StbImageSharp/2.30.15",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/stbimagesharp/2.30.15/stbimagesharp.nuspec",
+        "nuspecSha256": "301f66b86cdddf499b1960c7889f1e6caff84aed18bc6aa7857e724ded83b9de",
+        "nupkgSha256": "5af73ab8028eb0ec770f6fcfdcf283b3629da2044d381cd7962fdfc0dbf5e44e"
+      },
+      "assetEvidence": [
+        "FurMark/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netstandard2.0/StbImageSharp.dll",
+          "assetType": "runtime"
+        }
+      ]
+    },
+    {
+      "id": "System.CodeDom",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/System.CodeDom/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.CodeDom-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "本项版本 10.0.11 是硬件库生成器 PrivateAssets 链中的包参考，记录真实包许可与通知，但不作为独立运行时 DLL 分发。实际 System.CodeDom.dll 来自 Microsoft.WindowsDesktop.App.Runtime.win-x64 10.0.12 的 runtimes/win-x64/lib/net10.0/System.CodeDom.dll，随该框架项及其完整通知覆盖，不以构建包版本冒充成品版本。",
+      "distributionRole": "build-time-reference-only",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/System.CodeDom/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/system.codedom/10.0.11/system.codedom.nuspec",
+        "nuspecSha256": "1b242b1c2f1e817ea28c7fa3d8df6433e1d241d0495ec1af865798623db977a6",
+        "nupkgSha256": "d3e2753a5739f6936c39b73cd1ce8fda1f009e8125caa020e8225924011453fb"
+      },
+      "assetEvidence": [
+        "white-toolkit/XiaobaiHardwareMonitorLib/obj/project.assets.json"
+      ],
+      "distributedAssets": []
+    },
+    {
+      "id": "System.IO.FileSystem.AccessControl",
+      "version": "5.0.0",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/System.IO.FileSystem.AccessControl/5.0.0",
+      "licenseFiles": [
+        "installer/legal/System.IO.FileSystem.AccessControl-5.0.0.LICENSE.txt",
+        "installer/legal/System.IO.FileSystem.AccessControl-5.0.0.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "真实 5.0.0 包内 LICENSE.TXT 与完整 THIRD-PARTY-NOTICES.TXT；win 实现与插件运行时资产相关。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "git://github.com/dotnet/runtime",
+        "commit": "cf258a14b70ad9069470a108f13765e0e5988f51"
+      },
+      "packageUrl": "https://www.nuget.org/packages/System.IO.FileSystem.AccessControl/5.0.0",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/system.io.filesystem.accesscontrol/5.0.0/system.io.filesystem.accesscontrol.nuspec",
+        "nuspecSha256": "c18048e5fdd724b939c3f5a6fb710313ba3097c7c567f90804e650ab021737fb",
+        "nupkgSha256": "73d3250ca25f8fadd846f97b6eb44136ce7da25ae66cbf86d40ea84d2f32b447"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/netstandard2.0/System.IO.FileSystem.AccessControl.dll",
+          "assetType": "runtime"
+        },
+        {
+          "path": "runtimes/win/lib/netstandard2.0/System.IO.FileSystem.AccessControl.dll",
+          "assetType": "runtime",
+          "rid": "win"
+        }
+      ]
+    },
+    {
+      "id": "System.IO.Ports",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/System.IO.Ports/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.IO.Ports-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "包 nuspec 锁定 dotnet/dotnet e2f47b0110ed922f21a1522da67279133ce28f32；主许可来自该精确官方提交，完整第三方通知来自本包。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/System.IO.Ports/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/system.io.ports/10.0.11/system.io.ports.nuspec",
+        "nuspecSha256": "b6cfce341951bcddf20caf22b4b9e358174661cc6a2e811e248012e6fa189f3d",
+        "nupkgSha256": "3c56c762a3392d3e16bf3be9a4bff475b268e7fe66818f6562bf1e3380a5db27"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/net10.0/System.IO.Ports.dll",
+          "assetType": "runtime"
+        },
+        {
+          "path": "runtimes/unix/lib/net10.0/System.IO.Ports.dll",
+          "assetType": "runtime",
+          "rid": "unix"
+        },
+        {
+          "path": "runtimes/win/lib/net10.0/System.IO.Ports.dll",
+          "assetType": "runtime",
+          "rid": "win"
+        }
+      ]
+    },
+    {
+      "id": "System.Management",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/System.Management/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.Management-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "包 nuspec 锁定 dotnet/dotnet e2f47b0110ed922f21a1522da67279133ce28f32；主许可来自该精确官方提交，完整第三方通知来自本包。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/System.Management/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/system.management/10.0.11/system.management.nuspec",
+        "nuspecSha256": "6e62b099710996bc11be5a3dadc459b8431f42b8233edbd03de1043561a6a626",
+        "nupkgSha256": "ce176db883501822518e18b38263bdfd6c4c587b6ed3eb143b4dd2f35e8f271e"
+      },
+      "assetEvidence": [
+        "Plugins/ConfigCheck/obj/project.assets.json",
+        "Plugins/StressTest/obj/project.assets.json",
+        "验机软件/obj/project.assets.json"
+      ],
+      "distributedAssets": [
+        {
+          "path": "lib/net10.0/System.Management.dll",
+          "assetType": "runtime"
+        },
+        {
+          "path": "runtimes/win/lib/net10.0/System.Management.dll",
+          "assetType": "runtime",
+          "rid": "win"
+        }
+      ]
+    },
+    {
+      "id": "System.Threading.AccessControl",
+      "version": "10.0.11",
+      "license": "MIT",
+      "sourceUrl": "https://www.nuget.org/packages/System.Threading.AccessControl/10.0.11",
+      "licenseFiles": [
+        "installer/legal/dotnet-10.0.11.LICENSE.txt",
+        "installer/legal/System.Threading.AccessControl-10.0.11.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "包 nuspec 锁定 dotnet/dotnet e2f47b0110ed922f21a1522da67279133ce28f32；主许可来自该精确官方提交，完整第三方通知来自本包。 net10.0 runtime 为 _._，不另产生该包 DLL；功能由自包含 WindowsDesktop/NETCore 框架提供。",
+      "authors": "Microsoft",
+      "copyright": "© Microsoft Corporation. All rights reserved.",
+      "repositoryMetadata": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "e2f47b0110ed922f21a1522da67279133ce28f32"
+      },
+      "packageUrl": "https://www.nuget.org/packages/System.Threading.AccessControl/10.0.11",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/system.threading.accesscontrol/10.0.11/system.threading.accesscontrol.nuspec",
+        "nuspecSha256": "869687ddd8ed76dfbaf694abf349a2f12730d1423e091860e70155466f652cf1",
+        "nupkgSha256": "4f868057c211807c1d7a8deecf6c766d0247b9a7d0456a71384ec80b79fabfc7"
+      },
+      "assetEvidence": [
+        "white-toolkit/XiaobaiHardwareMonitorLib/obj/project.assets.json"
+      ],
+      "distributedAssets": []
+    },
+    {
+      "id": "OpenEXR-Half-in-OpenTK",
+      "version": "unversioned-notice-in-OpenTK-4.9.4",
+      "license": "BSD-3-Clause",
+      "sourceUrl": "https://github.com/opentk/opentk/blob/8d1d462877936922a3989f56aac8c17add824919/THIRD_PARTIES.md",
+      "licenseFiles": [
+        "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt"
+      ],
+      "status": "ready",
+      "notes": "OpenTK.Half 转换代码附带声明：Copyright (c) 2002 Industrial Light & Magic。上游未标 OpenEXR 发布版本，不伪造版本号。"
+    },
+    {
+      "id": "Microsoft.NETCore.App.Runtime.win-x64",
+      "version": "10.0.12",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/dotnet/dotnet/tree/95017c711e6afc1085133d440e42b4bd78155701",
+      "licenseFiles": [
+        "installer/legal/dotnet-runtime-10.0.12.LICENSE.txt",
+        "installer/legal/dotnet-runtime-10.0.12.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "FurMark 还原 downloadDependencies 锁定 10.0.12；self-contained 发布含该框架。全文来自实际缓存包，保留完整内嵌第三方通知。最终打包若另解析运行时版本必须重新核对。",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/microsoft.netcore.app.runtime.win-x64/10.0.12/microsoft.netcore.app.runtime.win-x64.nuspec",
+        "nuspecSha256": "2649fc5fcb95c80f991b6d47ad8e10b772923249e87d98f409ca54cee548c379",
+        "nupkgSha256": "0f63dee7ca4383cb16848966f81e439399e2058e1671ebe27e5eaf4b200e8691"
+      }
+    },
+    {
+      "id": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+      "version": "10.0.12",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/dotnet/dotnet/tree/95017c711e6afc1085133d440e42b4bd78155701",
+      "licenseFiles": [
+        "installer/legal/WindowsDesktop-runtime-10.0.12.LICENSE.txt",
+        "installer/legal/WindowsDesktop-WPF-10.0.12.THIRD-PARTY-NOTICES.txt",
+        "installer/legal/WindowsDesktop-WinForms-10.0.12.THIRD-PARTY-NOTICES.txt",
+        "installer/legal/dotnet-runtime-10.0.12.THIRD-PARTY-NOTICES.txt"
+      ],
+      "status": "ready",
+      "notes": "实际缓存包有 LICENSE，但无单独第三方通知；由该 nuspec 精确源码提交的 src/wpf 和 src/winforms 原样补齐两份完整通知。包括 WPF zlib、WinForms Ookii 等，不以单一 MIT 原文替代。",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/microsoft.windowsdesktop.app.runtime.win-x64/10.0.12/microsoft.windowsdesktop.app.runtime.win-x64.nuspec",
+        "nuspecSha256": "07565a5cd782179e3b8c356ceca851796d8353c10a1ef14a400d43ac1add00cf",
+        "nupkgSha256": "68bce56d2402969d82ac77fbd2b2a54f55fda86ea060366e6ddb832353dab80a"
+      }
+    },
+    {
+      "id": "Microsoft.Windows.SDK.NET.Ref",
+      "version": "10.0.19041.57",
+      "license": "LicenseRef-Microsoft-Windows-SDK",
+      "sourceUrl": "https://www.nuget.org/packages/Microsoft.Windows.SDK.NET.Ref/10.0.19041.57",
+      "licenseFiles": [
+        "installer/legal/Windows-SDK-NET-10.0.19041.57.LICENSE.rtf"
+      ],
+      "status": "blocked",
+      "notes": "downloadDependencies 锁定此包。并非只有编译引用：lib/net8.0/Microsoft.Windows.SDK.NET.dll 与 WinRT.Runtime.dll 实际随插件复制。包只有旧许可链接，已保存其真正指向的 sdk_license.rtf 原文；需确认对应 SDK 许可附带的可再分发清单与投影程序集分发依据，不能把 SDK 自行视为全包 MIT。原输出 Microsoft.Windows.SDK.NET.dll 产品版本 10.0.19041.55+7e1ba99b2f0c1ea5311dcb3acfe20a75335efd6e 与缓存字节一致，但不冒充包版本。",
+      "packageEvidence": {
+        "nuspecPath": "nuget-cache:/microsoft.windows.sdk.net.ref/10.0.19041.57/microsoft.windows.sdk.net.ref.nuspec",
+        "nuspecSha256": "ab5229d56bc17be4f78440c326aa8376f0577c5121a7c0b5a70b7d2819c6cd9a",
+        "nupkgSha256": "90b18f2cf7d7a23f5b0bfe2b86d8dda45881481f677ce36eccaf6e9ab50b6b4b"
+      },
+      "distributedAssets": [
+        {
+          "path": "lib/net8.0/Microsoft.Windows.SDK.NET.dll",
+          "assetType": "runtime",
+          "sha256": "0ec371d93798852e36461c8adddbeadce0f963a04752f0b64e54fe19c1c834a7"
+        },
+        {
+          "path": "lib/net8.0/WinRT.Runtime.dll",
+          "assetType": "runtime",
+          "sha256": "bcf3a14e8712a90837fc5c0d8c8a24696af2bd7f74e9767597ec81ededfb23db"
+        }
+      ]
+    },
+    {
+      "id": "WinRT.Runtime",
+      "version": "2.2.0.241111.1",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/microsoft/CsWinRT/tree/8649ee3eeb2445ca2a36d80d878ef60b96a6c65d",
+      "licenseFiles": [
+        "installer/legal/WinRT.Runtime-2.2.0.241111.1.LICENSE.txt"
+      ],
+      "status": "ready",
+      "notes": "由 Windows SDK NET Ref 包随带。DLL 产品版本 2.2.0.48161+8649ee3eeb2445ca2a36d80d878ef60b96a6c65d；官方标签 2.2.0.241111.1 精确映射同提交，许可从该提交取得。"
+    }
+  ],
+  "licenseFileEvidence": [
+    {
+      "path": "white-toolkit/XiaobaiHardwareMonitorLib/Hardware/Psu/Corsair/CorsairPsuGroup.cs",
+      "sourcePath": "LibreHardwareMonitor-master/LibreHardwareMonitorLib/Hardware/Psu/Corsair/CorsairPsuGroup.cs",
+      "sha256": "a899a7797b8ef389ed20f28c33a143a354f36ced35f2e91822d289e3a42ad475",
+      "sourceKind": "restored-file-notice",
+      "revision": "5aa2d7bdb6a3202175b00a28738f0111578ce24b",
+      "notes": "前导GNU v2原通知从历史对应源码恢复；哈希为当前完整源码文件原始字节，正文沿用当前实现。"
+    },
+    {
+      "path": "white-toolkit/XiaobaiHardwareMonitorLib/Hardware/Psu/Msi/MsiPsuGroup.cs",
+      "sourcePath": "LibreHardwareMonitor-master/LibreHardwareMonitorLib/Hardware/Psu/Msi/MsiPsuGroup.cs",
+      "sha256": "609972841fd3758ac0bc2043623b29a7ee609b7f0d5ae91bf8af3c9fb452bedb",
+      "sourceKind": "restored-file-notice",
+      "revision": "5aa2d7bdb6a3202175b00a28738f0111578ce24b",
+      "notes": "前导GNU v2原通知从历史对应源码恢复；哈希为当前完整源码文件原始字节，正文沿用当前实现。"
+    },
+    {
+      "path": "installer/legal/BlackSharp.Core-1.1.4.NOTICE.txt",
+      "sourceUrl": "https://raw.githubusercontent.com/Blacktempel/BlackSharp/c28ce7478f6141fe87b3bb06b7e9e82983808151/LICENSE",
+      "sha256": "891896b1ecdd18e759e4b71258b41a097b7729411220b5c71e8fb97a185d370e",
+      "gitBlobSha1": "0fb8797f4d8585da1da17e192fe7cb87648b090a",
+      "byteOffset": 0,
+      "byteLength": 31,
+      "sourceKind": "official-repository-excerpt"
+    },
+    {
+      "path": "installer/legal/OpenTK-4.9.4.LICENSE.txt",
+      "sourceUrl": "https://github.com/opentk/opentk/blob/8d1d462877936922a3989f56aac8c17add824919/LICENSE.md",
+      "gitBlobSha1": "dac5891990a734f1de85614675b6b130fab22940",
+      "sha256": "153d157c35f9f8229a206036450040952268da4d8d6c28a833c6d0463f56263d",
+      "sourceKind": "official-repository"
+    },
+    {
+      "path": "installer/legal/OpenTK-4.9.4.THIRD_PARTIES.txt",
+      "sourceUrl": "https://github.com/opentk/opentk/blob/8d1d462877936922a3989f56aac8c17add824919/THIRD_PARTIES.md",
+      "gitBlobSha1": "df61c8589fb3bad52b5de41040e5073b7d9db1bc",
+      "sha256": "2b499225ac89ff1a813b30e666ea0f2b5d22c5e71b25edc99ea0eb4bfd974fa6",
+      "sourceKind": "official-repository"
+    },
+    {
+      "path": "installer/legal/diskspd-2.0.20a.LICENSE.txt",
+      "sourceUrl": "https://github.com/microsoft/diskspd/blob/a796c20fda87a793b2032d31d253ded1fff29dbb/LICENSE",
+      "gitBlobSha1": "cd7af0736cf1e83b5521a6014b318bdcd10a3efb",
+      "sha256": "51735c96cc8534146e63277870ee9ce2cbe827f64a6c8fef03c7c0aa73a7a8ae",
+      "sourceKind": "official-repository"
+    },
+    {
+      "path": "installer/legal/curl-8.21.0.COPYING.txt",
+      "sourceUrl": "https://github.com/curl/curl/blob/curl-8_21_0/COPYING",
+      "gitBlobSha1": "2f71d999a9c8816b9ed595fbae9c9a7b6b7ad039",
+      "sha256": "82f2f4427d6545ee5aaac4f0b80428da6cc8ba41c2cf5da3a03680ec327b9681",
+      "sourceKind": "official-repository"
+    },
+    {
+      "path": "installer/legal/hwloc-2.8.0.COPYING.txt",
+      "sourceUrl": "https://github.com/open-mpi/hwloc/blob/hwloc-2.8.0/COPYING",
+      "gitBlobSha1": "e77516e18017178a5b427bd770a396392700e290",
+      "sha256": "d79a936a42f3c6cb7c8375a023d43f4435f4664d3a5a2ea6b4623cff83c7fc06",
+      "sourceKind": "official-repository"
+    },
+    {
+      "path": "installer/legal/Boost-1.76.0.LICENSE.txt",
+      "sourceUrl": "https://github.com/boostorg/boost/blob/boost-1.76.0/LICENSE_1_0.txt",
+      "gitBlobSha1": "36b7cd93cdfbac762f5be4c6ce276df2ea6305c2",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "sourceKind": "official-repository"
+    },
+    {
+      "path": "installer/legal/cJSON-1.7.13.LICENSE.txt",
+      "sourceUrl": "https://github.com/DaveGamble/cJSON/blob/v1.7.13/LICENSE",
+      "gitBlobSha1": "78deb0406d713ab9730e3c2447be1abdbd70b9a2",
+      "sha256": "a36dda207c36db5818729c54e7ad4e8b0c6fba847491ba64f372c1a2037b6d5c",
+      "sourceKind": "official-repository"
+    },
+    {
+      "path": "installer/legal/WinRT.Runtime-2.2.0.241111.1.LICENSE.txt",
+      "sourceUrl": "https://github.com/microsoft/CsWinRT/blob/8649ee3eeb2445ca2a36d80d878ef60b96a6c65d/LICENSE",
+      "gitBlobSha1": "3d8b93bc7987d14c848448c089e2ae15311380d7",
+      "sha256": "9906940f61b1f0b533fa7d99baf55178b2808fbe113ea51dfbfad8572ccd5f2b",
+      "sourceKind": "official-repository"
+    },
+    {
+      "path": "installer/legal/dotnet-10.0.11.LICENSE.txt",
+      "sourceUrl": "https://github.com/dotnet/dotnet/blob/e2f47b0110ed922f21a1522da67279133ce28f32/LICENSE.TXT",
+      "gitBlobSha1": "a616ed188dfce68ee308f674350ad242d8588c2b",
+      "sha256": "ae48df11a335dc1a615f4f938b69cba73bcf4485c4f97af49b38efb0f216353b",
+      "sourceKind": "official-repository"
+    },
+    {
+      "path": "installer/legal/WindowsDesktop-WPF-10.0.12.THIRD-PARTY-NOTICES.txt",
+      "sourceUrl": "https://github.com/dotnet/dotnet/blob/95017c711e6afc1085133d440e42b4bd78155701/src/wpf/THIRD-PARTY-NOTICES.TXT",
+      "gitBlobSha1": "c2ce2452c1dd7ff03eb862e1d8cd8f6117cee05b",
+      "sha256": "d23dba2fee20c6b59d8f7088ee9ed372459c952a319b7ca90f3eec370cc76eb9",
+      "sourceKind": "official-repository"
+    },
+    {
+      "path": "installer/legal/WindowsDesktop-WinForms-10.0.12.THIRD-PARTY-NOTICES.txt",
+      "sourceUrl": "https://github.com/dotnet/dotnet/blob/95017c711e6afc1085133d440e42b4bd78155701/src/winforms/THIRD-PARTY-NOTICES.TXT",
+      "gitBlobSha1": "d8d1743824a0ab5bdc7d45623ebee5e71cf59da1",
+      "sha256": "5a412b38efae0b162dc0893b319023f4cd14a8985a0f9f9ae01ac052b37a36eb",
+      "sourceKind": "official-repository"
+    },
+    {
+      "path": "installer/legal/Mono.Posix.NETStandard-1.0.0.LICENSE-reference.txt",
+      "sourceUrl": "https://github.com/mono/mono/blob/12dd9040252e5b9c63b8df9ef53777eb01232405/LICENSE",
+      "gitBlobSha1": "9251a04cf166a4d3bb91fa9b6c911927593856b8",
+      "sha256": "844242559dbdb96cb9cbe103b06c2bc8a349f19ad0b89d5c3cf830a8914333f6",
+      "sourceKind": "official-repository",
+      "notes": "仅为旧链接当前所指综合许可的参考原件，不证明 1.0.0 二进制及其 helper 已逐项核验。"
+    },
+    {
+      "path": "installer/legal/GMP-GPL-3.0.txt",
+      "sourceUrl": "https://github.com/gcc-mirror/gcc/blob/releases/gcc-14.2.0/COPYING3",
+      "gitBlobSha1": "94a9ed024d3859793618152ea559a168bbcbb5e2",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "sourceKind": "official-repository",
+      "notes": "标准全文，仅作待核实 GMP 许可路径，不证明本 DLL 适用此许可。"
+    },
+    {
+      "path": "installer/legal/GMP-LGPL-3.0.txt",
+      "sourceUrl": "https://raw.githubusercontent.com/gcc-mirror/gcc/releases/gcc-14.2.0/COPYING3.LIB",
+      "gitBlobSha1": "fc8a5de7edf437cdc98a216370faf7c757279bcb",
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+      "sourceKind": "official-repository",
+      "notes": "标准全文，仅作待核实 GMP 许可路径，不证明本 DLL 适用此许可。"
+    },
+    {
+      "path": "installer/legal/Windows-SDK-NET-10.0.19041.57.LICENSE.rtf",
+      "sourceUrl": "https://download.microsoft.com/download/0/F/F/0FF2B061-47DD-4F55-89B6-FD1D8C44F14D/sdk_license.rtf",
+      "requestedUrl": "https://aka.ms/WinSDKLicenseURL",
+      "sha256": "dd07eb178e00c6bba4148457fc00ff77cd4887eb521d504186fe59c9ec8bbe62",
+      "sourceKind": "official-license-link",
+      "notes": "真实重定向的 RTF 原文；SDK 投影程序集的具体可再分发依据仍 blocked。"
+    },
+    {
+      "path": "installer/legal/StbImageSharp-2.30.15.NOTICE.txt",
+      "sourceUrl": "https://github.com/StbSharp/StbImageSharp/blob/6fd7aebe1dbf10e28d78745f42a0c095c61d1945/README.md",
+      "gitBlobSha1": "d76ae0c517501793b294b39f6445485370ab8e69",
+      "byteOffset": 5170,
+      "byteLength": 25,
+      "sha256": "e60f62cf4bc5bdacece4a903c98afbd43f100c4beb601bf345bad1fd3a2ad98a",
+      "sourceKind": "official-repository-excerpt"
+    },
+    {
+      "path": "installer/legal/StbImageSharp-2.30.15.LICENSE.txt",
+      "sourceUrl": "https://github.com/StbSharp/StbImageSharp/blob/6fd7aebe1dbf10e28d78745f42a0c095c61d1945/generation/StbImageSharp.Generator/stb_image.h",
+      "gitBlobSha1": "e1fc7bd1f31fd4d17439b2dec34d083c0845e0ae",
+      "byteOffset": 280302,
+      "byteLength": 2674,
+      "sha256": "7587efcca32db8f95bf5860dea6dfa4be410ee723e1964db3689c8ddf2a2e4a9",
+      "sourceKind": "official-repository-excerpt"
+    },
+    {
+      "path": "installer/legal/PawnIO-2.2.0.NOTICE.txt",
+      "sourceUrl": "https://github.com/namazso/PawnIO/blob/5cdf470831fdfff3f7f1d06363ca6b230f3bf35a/README.md",
+      "gitBlobSha1": "e75b68fb8f5774bd1ac03f5d5868174b2b9aa92c",
+      "byteOffset": 83,
+      "byteLength": 2473,
+      "sha256": "07034de1103d2d6d8b4962ea2f389cc49649a8a68a7ce24e50c47f941ad324aa",
+      "sourceKind": "official-repository-excerpt"
+    },
+    {
+      "path": "installer/legal/CrystalDiskMark.NOTICE-reference.txt",
+      "sourceUrl": "https://github.com/hiyohiyo/CrystalDiskMark/blob/6be68235c6a22684b76f228dbfa96986a0d52e8d/DiskBench.cpp",
+      "gitBlobSha1": "982edfbf787f05a2797a19e06050ccad058e3572",
+      "byteOffset": 0,
+      "byteLength": 309,
+      "sha256": "e0705087d5bbfc08ee8ed154969bb379ab8350293a39520eee1c944f032a5b7e",
+      "sourceKind": "official-repository-excerpt",
+      "notes": "仅源码头参考，不是 CDM 9.0.3 成品对应的完整 MIT 证明。"
+    },
+    {
+      "path": "installer/legal/DiskInfoToolkit-2.1.3.NOTICE.txt",
+      "sourceUrl": "https://github.com/Blacktempel/DiskInfoToolkit/blob/7bc6437a854a86b88828433e431bfa5630c7a65d/ConsoleOutputTest/Program.cs",
+      "gitBlobSha1": "af434878f0e9a766333971d877c325a006ecd1b8",
+      "byteOffset": 0,
+      "byteLength": 248,
+      "sha256": "34fd4b7297300d8f679f6952002de8e69172cd817c336990a9eafb6d78956d4d",
+      "sourceKind": "official-repository-excerpt"
+    },
+    {
+      "path": "installer/legal/RAMSPDToolkit-NDD-1.6.0.NOTICE.txt",
+      "sourceUrl": "https://github.com/Blacktempel/RAMSPDToolkit/blob/848b69806ffda83ddf7ae9c81fc3d64d403aad8f/ConsoleOutputTest/Exceptions/GlobalExceptionHandler.cs",
+      "gitBlobSha1": "a92f90d6cff6993e1b89be1b5411e242ea2b2057",
+      "byteOffset": 0,
+      "byteLength": 410,
+      "sha256": "a1ba584af6b01a6f8f3f45d51629ef25d0936578f1c28b2a85bea46df8abf0e2",
+      "sourceKind": "official-repository-excerpt"
+    },
+    {
+      "path": "FurMark/Assets/LICENSE.FurMark.txt",
+      "sha256": "134d054922958dc3d75e7832b657d51d7578b207ac06d531a0d7969a2ed6ace9",
+      "sourceKind": "repository-baseline",
+      "revision": "e2e649f68505cbc7be838b46d2247409ae35d729",
+      "notes": "复用现有路径；按仓库 Git clean 换行过滤后与基线 blob 一致，sha256 是当前工作树原始字节。"
+    },
+    {
+      "path": "white-toolkit/LICENSE",
+      "sha256": "2684de17300e0a434686f1ec7f8af6045207a4b457a3fe04b2b9ce655e7c5d50",
+      "sourceKind": "repository-baseline",
+      "revision": "e2e649f68505cbc7be838b46d2247409ae35d729",
+      "notes": "共用现有 MPL-2.0 全文；按 Git clean 换行过滤后与基线 blob 一致，sha256 是当前工作树原始字节。"
+    },
+    {
+      "path": "white-toolkit/XiaobaiHardwareMonitorLib/Resources/PawnIo/COPYING",
+      "sha256": "1e7e6bae5a5bde32f1ae5a7c37a082d1ab03cf89354f7f936ac40be9e39a6531",
+      "sourceKind": "repository-baseline",
+      "revision": "e2e649f68505cbc7be838b46d2247409ae35d729",
+      "notes": "复用现有路径；按 Git clean 换行过滤后与基线 blob 一致，sha256 是当前工作树原始字节；不解除模块来源阻塞。"
+    },
+    {
+      "path": "验机软件/Tools/pawnio/COPYING.GPLv2",
+      "sha256": "498d32907f132c2cd7d3ae269f304aed87156293f63e724b83d9f62ed787d55a",
+      "sourceKind": "repository-baseline",
+      "revision": "e2e649f68505cbc7be838b46d2247409ae35d729",
+      "notes": "复用现有路径；按 Git clean 换行过滤后与基线 blob 一致，sha256 是当前工作树原始字节；设备 I/O 组合例外另见官方通知。"
+    },
+    {
+      "path": "验机软件/Tools/xiaobaiprime/license.txt",
+      "sha256": "9d8f6ce09e546117b64fada383346adfd0f0c40b3f0e4f8d5c3ed2b2a67df6d8",
+      "sourceKind": "repository-baseline",
+      "revision": "e2e649f68505cbc7be838b46d2247409ae35d729",
+      "notes": "复用现有路径；按 Git clean 换行过滤后与基线 blob 一致，sha256 是当前工作树原始字节；不解除成品来源阻塞。"
+    },
+    {
+      "path": "installer/legal/NAudio-2.2.1.LICENSE.txt",
+      "sha256": "303e01786b271eb464b3f43d18a375f2f17d37bc708a37c2fdf45b289fb5bfaa",
+      "sourceKind": "nuget-package",
+      "packageId": "NAudio",
+      "version": "2.2.1",
+      "packageMember": "license.txt"
+    },
+    {
+      "path": "installer/legal/HidSharp-2.6.4.LICENSE.txt",
+      "sha256": "b065e07179f06490c96bf946e73f821086b2f29efde395f092aea69a907eae16",
+      "sourceKind": "nuget-package",
+      "packageId": "HidSharp",
+      "version": "2.6.4",
+      "packageMember": "LICENSE.txt"
+    },
+    {
+      "path": "installer/legal/OpenTK.redist.glfw-3.4.0.44.COPYING.txt",
+      "sha256": "149704059b5d0bf551637e50042dd4de9c2cae921021f6636298911e3a5f9462",
+      "sourceKind": "nuget-package",
+      "packageId": "OpenTK.redist.glfw",
+      "version": "3.4.0.44",
+      "packageMember": "COPYING.md"
+    },
+    {
+      "path": "installer/legal/Microsoft.Win32.Registry-5.0.0.LICENSE.txt",
+      "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
+      "sourceKind": "nuget-package",
+      "packageId": "Microsoft.Win32.Registry",
+      "version": "5.0.0",
+      "packageMember": "LICENSE.TXT"
+    },
+    {
+      "path": "installer/legal/Microsoft.Win32.Registry-5.0.0.THIRD-PARTY-NOTICES.txt",
+      "sha256": "78e22d4d24a710d2a09426c09060f3448204778ed506b1da55447a6089b54fae",
+      "sourceKind": "nuget-package",
+      "packageId": "Microsoft.Win32.Registry",
+      "version": "5.0.0",
+      "packageMember": "THIRD-PARTY-NOTICES.TXT"
+    },
+    {
+      "path": "installer/legal/System.IO.FileSystem.AccessControl-5.0.0.LICENSE.txt",
+      "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
+      "sourceKind": "nuget-package",
+      "packageId": "System.IO.FileSystem.AccessControl",
+      "version": "5.0.0",
+      "packageMember": "LICENSE.TXT"
+    },
+    {
+      "path": "installer/legal/System.IO.FileSystem.AccessControl-5.0.0.THIRD-PARTY-NOTICES.txt",
+      "sha256": "78e22d4d24a710d2a09426c09060f3448204778ed506b1da55447a6089b54fae",
+      "sourceKind": "nuget-package",
+      "packageId": "System.IO.FileSystem.AccessControl",
+      "version": "5.0.0",
+      "packageMember": "THIRD-PARTY-NOTICES.TXT"
+    },
+    {
+      "path": "installer/legal/System.IO.Ports-native-10.0.11.THIRD-PARTY-NOTICES.txt",
+      "sha256": "66f1d4e44973185519bb4aa8a9718eb22fc7af2cc532e3ae9cfc4c127ee7fc54",
+      "sourceKind": "nuget-package",
+      "packageId": "runtime.android-arm.runtime.native.System.IO.Ports",
+      "version": "10.0.11",
+      "packageMember": "THIRD-PARTY-NOTICES.TXT"
+    },
+    {
+      "path": "installer/legal/System.CodeDom-10.0.11.THIRD-PARTY-NOTICES.txt",
+      "sha256": "6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21",
+      "sourceKind": "nuget-package",
+      "packageId": "System.CodeDom",
+      "version": "10.0.11",
+      "packageMember": "THIRD-PARTY-NOTICES.TXT"
+    },
+    {
+      "path": "installer/legal/System.IO.Ports-10.0.11.THIRD-PARTY-NOTICES.txt",
+      "sha256": "6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21",
+      "sourceKind": "nuget-package",
+      "packageId": "System.IO.Ports",
+      "version": "10.0.11",
+      "packageMember": "THIRD-PARTY-NOTICES.TXT"
+    },
+    {
+      "path": "installer/legal/System.Management-10.0.11.THIRD-PARTY-NOTICES.txt",
+      "sha256": "6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21",
+      "sourceKind": "nuget-package",
+      "packageId": "System.Management",
+      "version": "10.0.11",
+      "packageMember": "THIRD-PARTY-NOTICES.TXT"
+    },
+    {
+      "path": "installer/legal/System.Threading.AccessControl-10.0.11.THIRD-PARTY-NOTICES.txt",
+      "sha256": "6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21",
+      "sourceKind": "nuget-package",
+      "packageId": "System.Threading.AccessControl",
+      "version": "10.0.11",
+      "packageMember": "THIRD-PARTY-NOTICES.TXT"
+    },
+    {
+      "path": "installer/legal/dotnet-runtime-10.0.12.LICENSE.txt",
+      "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
+      "sourceKind": "nuget-package",
+      "packageId": "Microsoft.NETCore.App.Runtime.win-x64",
+      "version": "10.0.12",
+      "packageMember": "LICENSE.TXT"
+    },
+    {
+      "path": "installer/legal/dotnet-runtime-10.0.12.THIRD-PARTY-NOTICES.txt",
+      "sha256": "6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21",
+      "sourceKind": "nuget-package",
+      "packageId": "Microsoft.NETCore.App.Runtime.win-x64",
+      "version": "10.0.12",
+      "packageMember": "THIRD-PARTY-NOTICES.TXT"
+    },
+    {
+      "path": "installer/legal/WindowsDesktop-runtime-10.0.12.LICENSE.txt",
+      "sha256": "a89886665765362eb77e0f8e26602c924520041d1711b2eedc136434fe4d01ab",
+      "sourceKind": "nuget-package",
+      "packageId": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+      "version": "10.0.12",
+      "packageMember": "LICENSE"
+    }
+  ],
+  "inputEvidence": [
+    {
+      "path": "baseline-worktree:/Plugins/AvConference/obj/project.assets.json",
+      "sha256": "53af6fe18eff18326758eb4de403c5b7a8fa8f23a7afec7174eb57f80534a6e4",
+      "kind": "只读原工作树还原资产，未在目标工作树重建"
+    },
+    {
+      "path": "baseline-worktree:/Plugins/ConfigCheck/obj/project.assets.json",
+      "sha256": "d566e05c89320cfdce26b55f6d841d56b51e2a7f7008c6ac14471adf16ab18af",
+      "kind": "只读原工作树还原资产，未在目标工作树重建"
+    },
+    {
+      "path": "baseline-worktree:/Plugins/StressTest/obj/project.assets.json",
+      "sha256": "6e3bb5b2ecf6d5a108ce9fbe7521bfbef286dc690c4cdecfda307f825cbd4ece",
+      "kind": "只读原工作树还原资产，未在目标工作树重建"
+    },
+    {
+      "path": "baseline-worktree:/FurMark/obj/project.assets.json",
+      "sha256": "3eaf5c355fd207ad8a075a4c69c64e21d13856e3def889596a77c780a9d526aa",
+      "kind": "只读原工作树还原资产，未在目标工作树重建"
+    },
+    {
+      "path": "baseline-worktree:/验机软件/obj/project.assets.json",
+      "sha256": "3c772a93542dd4ea1e1c110eca450426874903eaff6f3ef8556627b33777d0d4",
+      "kind": "只读原工作树还原资产，未在目标工作树重建"
+    },
+    {
+      "path": "baseline-worktree:/white-toolkit/XiaobaiHardwareMonitorLib/obj/project.assets.json",
+      "sha256": "24d13661405eb408d2caeebc01f8ba473a495cf748b6861f7c260cfbb0a80bbb",
+      "kind": "只读原工作树还原资产，未在目标工作树重建"
+    }
+  ]
+}

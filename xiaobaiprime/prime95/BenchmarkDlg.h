@@ -1,6 +1,11 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+// BenchmarkDlg.h : header file
+//
+// Copyright 2017-2023 Mersenne Research, Inc.  All rights reserved
+//
+
+/////////////////////////////////////////////////////////////////////////////
+// CBenchmarkDlg dialog
+
 class CBenchmarkDlg : public CDialog
 {
 

@@ -1,6 +1,14 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| gwutil.c
+|
+| This file contains various utility routines that may be used by gwnum
+| routines, prime95, or other consumers of gwnum.
+| 
+|  Copyright 2004-2020 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
+/* Include files */
+
 #include <stdlib.h>
 #include <memory.h>
 #include <string.h>

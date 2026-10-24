@@ -1,5 +1,7 @@
-﻿// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
+﻿// This Source Code Form is subject to the terms of the GNU Public License, v. 2.0.
+// Copyright (C) 2024 demorfi<demorfi@gmail.com>
+// Copyright (C) LibreHardwareMonitor and Contributors.
+// All Rights Reserved.
 
 using System.Collections.Generic;
 using System.Linq;

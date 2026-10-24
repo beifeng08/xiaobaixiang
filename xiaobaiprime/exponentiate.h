@@ -1,6 +1,9 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| Copyright 2020-2021 Mersenne Research, Inc.  All rights reserved
+|
+| Auxiliary routines to exponentiate gwnums
++---------------------------------------------------------------------*/
+
 #ifndef _EXPONENTIATE_H
 #define _EXPONENTIATE_H
 

@@ -1,6 +1,14 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+// HyperLink.h : header file
+//
+//
+// HyperLink static control. Will open the default browser with the given URL
+// when the user clicks on the link.
+//
+// Copyright Chris Maunder, 1997-1999 (cmaunder@mail.com)
+// Feel free to use and distribute. May not be sold for profit. 
+
+// 2/29/00 -- P. Shaffer standard font mod.
+
 #if !defined(AFX_HYPERLINK_H__D1625061_574B_11D1_ABBA_00A0243D1382__INCLUDED_)
 #define AFX_HYPERLINK_H__D1625061_574B_11D1_ABBA_00A0243D1382__INCLUDED_
 

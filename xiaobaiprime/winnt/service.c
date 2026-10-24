@@ -1,6 +1,30 @@
-﻿// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+﻿// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+// PARTICULAR PURPOSE.
+//
+// Copyright (C) 1993-1995  Microsoft Corporation.  All Rights Reserved.
+//
+//  MODULE:   service.c
+//
+//  PURPOSE:  Implements functions required by all services
+//            windows.
+//
+//  FUNCTIONS:
+//    main(int argc, char **argv);
+//    service_ctrl(DWORD dwCtrlCode);
+//    service_main(DWORD dwArgc, LPTSTR *lpszArgv);
+//    CmdInstallService();
+//    CmdRemoveService();
+//    CmdDebugService(int argc, char **argv);
+//    ControlHandler ( DWORD dwCtrlType );
+//    GetLastErrorText( LPTSTR lpszBuf, DWORD dwSize );
+//
+//  COMMENTS:
+//
+//  AUTHOR: Craig Link - Microsoft Developer Support
+//
+
 #define bool int
 
 #include <windows.h>

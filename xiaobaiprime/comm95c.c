@@ -1,6 +1,12 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*
+ * Copyright 1995-2020 Mersenne Research, Inc.  All rights reserved
+ *
+ * Common routines and variables used by Prime95 and NTPrime
+ *
+ * Comm95b contains information used only during execution
+ * Comm95c contains information used during setup and execution
+ */ 
+
 #include <wininet.h>
 #include <process.h>
 #include <sddl.h>

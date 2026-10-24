@@ -25,13 +25,23 @@
 
 ; 本地验收包可用 /DPreview=1 与正式版并存，避免覆盖已安装版本及共享用户数据。
 #ifndef PackageVersion
-  #define PackageVersion "0.0.6-preview.1"
+  #define PackageVersion "0.0.7-preview.1"
 #endif
 #ifndef PackageFileVersion
-  #define PackageFileVersion "0.0.6.0"
+  #define PackageFileVersion "0.0.7.0"
 #endif
 #ifndef PublishSource
   #define PublishSource "..\publish"
+#endif
+; 本次交付始终使用安全预览身份；直接编译不能回落到正式卸载/驱动默认值。
+#ifndef Preview
+  #define Preview 1
+#endif
+#if !FileExists(PublishSource + "\preview-mode")
+  #error "Missing preview-mode marker; use build-release.ps1 to prepare payload"
+#endif
+#if !FileExists(PublishSource + "\licenses\license-files.iss")
+  #error "Missing exact license list; use build-release.ps1 to validate and prepare payload"
 #endif
 #ifdef Preview
   #ifdef MeetingPreview
@@ -54,7 +64,11 @@ AppId={#ProductId}
 AppName={#ProductName}
 AppVersion={#PackageVersion}
 AppVerName={#ProductName} {#PackageVersion}
-AppPublisher=笔吧验机
+AppPublisher=beifeng08 / 基于 Bibapcs BibaYanji 二次开发
+AppComments=验机辅助与离线记录；人工确认不等于自动认证
+LicenseFile={#PublishSource}\LICENSE.txt
+InfoBeforeFile={#PublishSource}\START-HERE.txt
+MinVersion=10.0.19041
 ; 只面向 x64 Windows（self-contained win-x64），且装到 C:\Program Files（而非 (x86)）
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
@@ -96,7 +110,7 @@ Name: "av"; Description: "影音会议（摄像头/麦克风/扬声器）"; Type
 Name: "stress"; Description: "散热测试（CPU/GPU/双烤 + 传感器监控，含 XiaobaiPrime/FurMark 工具）"; Types: full
 Name: "disk"; Description: "硬盘跑分（CrystalDiskMark 源码集成，SEQ1M/RND4K 四项）"; Types: full
 
-; 附加任务默认都勾选（用户可取消）：桌面快捷方式 / 开始菜单项 / PawnIO 驱动
+; 桌面快捷方式/开始菜单默认勾选；本次预览的 PawnIO 驱动默认不勾选。
 [Tasks]
 Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: "附加任务："
 Name: "startmenu"; Description: "创建开始菜单项"; GroupDescription: "附加任务："
@@ -104,7 +118,7 @@ Name: "startmenu"; Description: "创建开始菜单项"; GroupDescription: "附�
 ; 预览版只在用户主动选择后才安装内核驱动，默认不执行。
 Name: "pawnio"; Description: "安装 PawnIO 内核驱动（可选；请先确认需要修改系统驱动）"; GroupDescription: "附加任务："; Flags: unchecked
 #else
-Name: "pawnio"; Description: "安装 PawnIO 内核驱动（CPU/主板传感器需要；官方签名安装器，静默安装无需重启）"; GroupDescription: "附加任务："
+Name: "pawnio"; Description: "安装 PawnIO 内核驱动（CPU/主板传感器需要；历史安装器精确来源待核实）"; GroupDescription: "附加任务："
 #endif
 
 [Files]
@@ -120,11 +134,9 @@ Source: "{#PublishSource}\plugins\stress\*"; DestDir: "{app}\plugins\stress"; Co
 Source: "{#PublishSource}\plugins\disk\*"; DestDir: "{app}\plugins\disk"; Components: disk; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 烤机工具负载只有散热测试用：随 stress 组件安装（不勾散热可省约 130MB）
 Source: "{#PublishSource}\Tools\*"; DestDir: "{app}\Tools"; Components: stress; Flags: ignoreversion recursesubdirs createallsubdirs
-; 第三方许可：随主程序固定安装，全部落在 {app}\licenses\；安装根目录只有本项目 LICENSE.txt。
-; 清单与命名见 docs/third-party-licenses.md，打包脚本按同一张表填充此目录（多一份即重复声明，少一份即漏发）。
-; skipifsourcedoesntexist 只为兼容「拿旧 publish 单独编译」的场景；正式发布走 build-release.ps1，
-; 那里会校验 licenses/ 文件数与清单严格一致，缺一个就中止。
-Source: "{#PublishSource}\licenses\*"; DestDir: "{app}\licenses"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
+; 许可库存和所有引用原文随主程序安装；缺失时编译失败，不兼容缺通知的旧 publish。
+; Tools/plugins 原始通知继续保留，不能以去重为由删除。
+#include PublishSource + "\licenses\license-files.iss"
 
 [Icons]
 Name: "{group}\{#ProductName}"; Filename: "{app}\验机软件.exe"; Check: WizardIsTaskSelected('startmenu')

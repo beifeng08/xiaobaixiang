@@ -1,6 +1,16 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*
+ * Common routines and variables used by Prime95, Saver95, and NTPrime
+ *
+ * Comm95a contains information used only during setup
+ * Comm95b contains information used only during execution
+ * Comm95c contains information used during setup and execution
+ *
+ * Copyright 1995-2023 Mersenne Research, Inc.  All rights reserved
+ *
+ */ 
+
+/* Common global variables */
+
 #define MAX_THREAD_HANDLES	1024
 HANDLE	THREAD_HANDLES[MAX_THREAD_HANDLES] = {0};
 int	NUM_THREAD_HANDLES = 0;

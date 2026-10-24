@@ -1,6 +1,13 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| polymult.c
+|
+| This file contains the C routines for fast polynomial multiplication
+| 
+|  Copyright 2021-2023 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
+/* Include files */
+
 #include <stdlib.h>
 #include <math.h>
 #include <memory.h>

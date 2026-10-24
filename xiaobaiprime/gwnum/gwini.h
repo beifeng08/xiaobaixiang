@@ -1,6 +1,19 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| gwini.h
+|
+| This file contains the headers and definitions that are used to implement
+| reading and writing "INI" files.  These routines were developed over many years
+| for prime95, so there are several routines that are not used by gwnum.
+|
+| NOTE:  These routines only work if you open no more than 10 ini files.  Also,
+| you must not change the working directory at any time during program execution.
+|
+| ALSO NOTE:  Sorry, memory allocation errors are not handled properly and
+| documentation is incredibly poor.
+|
+|  Copyright 2016-2023 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
 #ifndef _GWINI_H
 #define _GWINI_H
 

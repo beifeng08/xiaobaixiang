@@ -1,6 +1,9 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| This file contains various utility routines that may be used by gwnum setup.
+|
+|  Copyright 2011-2023 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
 #ifndef _GWTABLES_H
 #define _GWTABLES_H
 

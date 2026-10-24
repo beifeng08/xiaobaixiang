@@ -1,6 +1,17 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+// PARTICULAR PURPOSE.
+//
+// Copyright (c) 1997-2021 Mersenne Research, Inc. All Rights Reserved.
+//
+*/
+
+/* Include file for primenet communication code */
+
+/* The current version number of the the PRIMENET.DLL API */
+
 #define	PRIMENET_VERSION			5
 #define	PRIMENET_TRANSACTION_API_VERSION	0.95
 

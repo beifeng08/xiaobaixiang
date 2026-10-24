@@ -1,6 +1,11 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*---------------------------------------------------------------------------------
+| Copyright 2020-2023 Mersenne Research, Inc.  All rights reserved
+|
+| This file contains routines to get proof initial residue from the Primenet server
++--------------------------------------------------------------------------------*/
+
+/* This callback routine assembles the server's response to our proof_get_data request */
+
 struct GetDataArg {
 	void	*buf;
 	int	bufsize;

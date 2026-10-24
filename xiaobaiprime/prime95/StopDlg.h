@@ -1,6 +1,11 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+// StopDlg.h : header file
+//
+//  Copyright 1995-2021 Mersenne Research, Inc. All rights reserved.
+//
+
+/////////////////////////////////////////////////////////////////////////////
+// CStopDlg dialog
+
 class CStopDlg : public CDialog
 {
 

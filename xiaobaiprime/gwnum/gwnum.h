@@ -1,6 +1,24 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| gwnum.h
+|
+| This file contains the headers and definitions that are used in the
+| multi-precision IBDWT arithmetic routines.  That is, all routines
+| that deal with the gwnum data type.
+|
+| Gwnums are great for applications that do a lot of multiplies modulo
+| a number.  Only Intel x86-platforms are supported.  Add and subtract
+| are also pretty fast.
+|
+| Gwnums are not suited to applications that need to convert to and from
+| binary frequently or need to change the modulus frequently.
+|
+| MULTI-THREAD WARNING: You CAN perform gwnum operations in different
+| threads IF AND ONLY IF each uses a different gwhandle structure
+| initialized by gwinit.
+| 
+|  Copyright 2002-2023 Mersenne Research, Inc.  All rights reserved.
++---------------------------------------------------------------------*/
+
 #ifndef _GWNUM_H
 #define _GWNUM_H
 

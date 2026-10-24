@@ -1,6 +1,16 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/*----------------------------------------------------------------------
+| Copyright 1995-2023 Mersenne Research, Inc.  All rights reserved
+|
+| This file contains routines to QA the gwnum FFT routines.
+| QA can be activated by using Advanced/Time menu choice on exponent 9900.
++---------------------------------------------------------------------*/
+
+/* TODO: test larger values of mul-by-const */
+/*	all_impl should work on small ffts by using the next large fft size */
+/*		to do the comparison (and/or x87) */
+
+/* Generate a random k of the given size */
+
 double gen_k (int bits)
 {
 	double	k;

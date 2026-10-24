@@ -1,6 +1,5 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/* Copyright 1995-2024 Mersenne Research, Inc.  All rights reserved */
+
 #ifndef _COMMONC_H
 #define _COMMONC_H
 

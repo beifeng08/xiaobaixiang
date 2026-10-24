@@ -1,6 +1,16 @@
-﻿// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+﻿/*----------------------------------------------------------------------
+| Copyright 1995-2024 Mersenne Research, Inc.  All rights reserved
+|
+| This file contains routines and global variables that are common for
+| all operating systems the program has been ported to.  It is included
+| in one of the source code files of each port.  See common.h for the
+| common #defines and common routine definitions.
+|
+| Commona contains information used only during setup
+| Commonb contains information used only during execution
+| Commonc contains information used during setup and execution
++---------------------------------------------------------------------*/
+
 static const char JUNK[]="Copyright 1996-2024 Mersenne Research, Inc. All rights reserved";
 
 char	INI_FILE[260] = {0};

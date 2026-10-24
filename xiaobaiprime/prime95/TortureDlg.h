@@ -1,6 +1,7 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+//
+// Copyright 1995-2023 Mersenne Research, Inc.  All rights reserved
+//
+
 #pragma once
 #include "afxwin.h"
 

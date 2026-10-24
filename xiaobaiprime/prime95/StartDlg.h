@@ -1,6 +1,11 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+// StartDlg.h : header file
+//
+//  Copyright 1995-2021 Mersenne Research, Inc. All rights reserved.
+//
+
+/////////////////////////////////////////////////////////////////////////////
+// CStartDlg dialog
+
 class CStartDlg : public CDialog
 {
 

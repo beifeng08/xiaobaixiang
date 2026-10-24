@@ -1,6 +1,6 @@
-// Copyright (c) 2026 OmniSensor
-// 本实现参考了公开文献与社区实践
-
+/* Copied with permission from https://github.com/preda/gpuowl/pm1 on 2020-08-11 */
+/* Code courtesy of Mihai Preda */
+
 #ifndef _PM1PROB_H
 #define _PM1PROB_H
 

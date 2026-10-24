@@ -21,3 +21,8 @@ installer/*.exe
 验机软件/Tools/furmark/
 /.claude/
 /验机软件/ReportWeb/poster-light_files/
+
+# 隔离交付工具、备份与本机验收输出
+/.tools/
+/.delivery-work/
+/.ai-memory/*/

@@ -92,7 +92,11 @@
                         <Button x:Name="PlayToneButton" Content="播放测试音" Click="PlayToneButton_Click"
                                 Style="{DynamicResource PrimaryButton}"
                                 ToolTip="通过所选设备播放 1 kHz 测试音（3 秒）"/>
+                        <Button x:Name="PlayLocalButton" Content="选择本地音乐…" Click="PlayLocalButton_Click"
+                                ToolTip="选择合法取得的本地音频试听；不上传、不复制到安装包"/>
                     </WrapPanel>
+                    <TextBlock Text="可选择本地《Out of Love》等音频试听。安装包不捆绑未核实授权的录音；请先降低音量。"
+                               Margin="2,6,0,0" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}"/>
                     <TextBlock x:Name="SpeakerStatus" Margin="2,6,0,0" TextWrapping="Wrap"
                                Foreground="{DynamicResource TextSecondaryBrush}"/>
                 </StackPanel>
